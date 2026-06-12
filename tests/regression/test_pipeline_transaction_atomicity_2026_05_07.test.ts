@@ -34,11 +34,14 @@
  * 0 rows == 0 rows) and never tested atomicity at all. Re-wired with
  * jest.resetModules + jest.doMock + require in beforeEach — explicit ordering,
  * no reliance on hoisting — mocking the first-party client layer
- * ('@/lib/knowledge/embeddings/client'). With the harness fixed, embedAndStore
- * is still non-atomic (no db.transaction in pipeline.ts), so Q1-b and Q2-a are
- * true red pins of the open Q1/Q2 findings — marked it.failing (green while
- * the bug persists, flips red when atomicity lands; then convert back to
- * plain it()).
+ * ('@/lib/knowledge/embeddings/client'). The harness fix turned Q1-b and Q2-a
+ * into true red pins of the open Q1/Q2 findings.
+ *
+ * RESOLVED 2026-06-12: embedAndStore now wraps each batch in db.transaction
+ * (pipeline.ts) — a mid-batch fault (FTS5 write failure OR wrong-dimension
+ * embedding) rolls the entire batch back, so vec0 and FTS5 row counts can never
+ * diverge. Q1-b and Q2-a are back to plain it() and assert the all-or-nothing
+ * contract.
  */
 
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
@@ -125,10 +128,9 @@ describe('Q1 — pipeline.ts dual-insert atomicity (vec0 + FTS5)', () => {
     expect(ftsCount).toBe(5);
   });
 
-  // it.failing: Q1 (HIGH) is a verified OPEN finding — embedAndStore has no
-  // db.transaction, so a mid-batch FTS fault leaves vec=3 / fts=2. Flips red
-  // (then convert to it()) when atomicity lands in pipeline.ts.
-  it.failing('Q1-b: when the FTS5 INSERT fails on chunk #3, vec count and fts count MUST stay aligned', async () => {
+  // Q1 (HIGH) FIXED: embedAndStore now wraps each batch in db.transaction, so a
+  // mid-batch FTS fault rolls the whole batch back → vec == fts (both 0).
+  it('Q1-b: when the FTS5 INSERT fails on chunk #3, vec count and fts count MUST stay aligned', async () => {
     // 5 valid 768-dim embeddings
     const embeddings = Array.from({ length: 5 }, () => new Float32Array(768).fill(0.02));
     mockEmbedDocuments.mockResolvedValueOnce(embeddings);
@@ -196,9 +198,9 @@ describe('Q2 — wrong-dim Vertex response leaves split-brain corpus', () => {
     jest.restoreAllMocks();
   });
 
-  // it.failing: Q2 (HIGH) is a verified OPEN finding — see Q1-b note; a
-  // wrong-dim embedding mid-batch leaves chunks 1-2 committed (vec=2, fts=2 ≠ 0).
-  it.failing('Q2-a: a single wrong-dim embedding (e.g. 100 dims) MUST NOT leave partially-written batch', async () => {
+  // Q2 (HIGH) FIXED: the per-batch db.transaction rolls back when vec0 rejects a
+  // wrong-dimension embedding mid-batch, so no partial rows survive (vec == fts == 0).
+  it('Q2-a: a single wrong-dim embedding (e.g. 100 dims) MUST NOT leave partially-written batch', async () => {
     // 4 valid 768-dim + 1 wrong-dim (length 100). The wrong-dim chunk is the 3rd.
     const embeddings = [
       new Float32Array(768).fill(0.05),

@@ -16,12 +16,11 @@
  *
  * Defense exists for the ToC; the symmetric defense for sections is missing.
  *
- * STATUS 2026-06-12: finding re-verified still OPEN — fetchWithRetry returns
- * `await response.text()` with no content-length or body-size guard. Both tests
- * are marked `it.failing` (jest: passes while the bug persists, flips red the
- * moment the cap lands) so the regression suite stays green for cold-QA without
- * masking the open finding. When the 10MB cap is added to fetchWithRetry,
- * convert these back to plain `it(...)`.
+ * RESOLVED 2026-06-12: fetchWithRetry now enforces the same 10MB cap as
+ * fetchWithTimeout — both the content-length header and the post-text() body
+ * length are checked, and an oversize section returns null (dropped, not
+ * retried). Both tests are back to plain `it(...)` and assert the section is
+ * excluded from the result.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
@@ -53,8 +52,7 @@ describe('Q6 — IMSBC section fetch missing 10MB body cap', () => {
     globalThis.fetch = originalFetch;
   });
 
-  // it.failing: documented OPEN finding (see header) — flips red when the cap is added.
-  it.failing('Q6-a: a section fetch declaring content-length > 10MB MUST be rejected (parity with ToC)', async () => {
+  it('Q6-a: a section fetch declaring content-length > 10MB MUST be rejected (parity with ToC)', async () => {
     // Section page advertises 11MB — same defense MUST apply as for ToC.
     globalThis.fetch = (async (input: any) => {
       const url = typeof input === 'string' ? input : input?.url ?? String(input);
@@ -79,19 +77,16 @@ describe('Q6 — IMSBC section fetch missing 10MB body cap', () => {
 
     const result = await scrapeImsbc(TOC_URL);
 
-    // Today scraper returns the section anyway because fetchWithRetry skips
-    // the size guard. Strict contract: section over the cap is dropped or
-    // throws — at minimum, the resulting array MUST NOT include this section.
-    // Failing test pins the missing cap.
+    // fetchWithRetry now drops the section on the content-length guard, so it
+    // must NOT appear in the result array.
     const sections = result.filter(s => s.sourceUrl === SECTION_URL);
     expect(sections).toHaveLength(0);
   });
 
-  // it.failing: documented OPEN finding (see header) — flips red when the cap is added.
-  it.failing('Q6-b: a section fetch with no content-length but body > 10MB MUST be rejected', async () => {
+  it('Q6-b: a section fetch with no content-length but body > 10MB MUST be rejected', async () => {
     // Some malicious mirrors omit content-length (chunked transfer-encoding).
-    // The post-text() body length check exists in fetchWithTimeout but NOT in
-    // fetchWithRetry — so this attack vector is unguarded today.
+    // The post-text() body length check in fetchWithTimeout is now mirrored in
+    // fetchWithRetry, so this vector is guarded too.
     const bigBody = '<p>Z</p>' + 'A'.repeat(11 * 1024 * 1024); // ~11MB
 
     globalThis.fetch = (async (input: any) => {

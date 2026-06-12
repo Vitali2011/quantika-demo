@@ -118,32 +118,43 @@ export async function embedAndStore(
       ? db.prepare(`INSERT INTO ${ftsTable} (content, metadata) VALUES (@content, @metadata)`)
       : null;
 
-    for (let j = 0; j < batch.length; j++) {
-      const chunk = batch[j];
-      const embedding = embeddings[j];
+    // Atomicity (Q1/Q2): the vec0 + FTS5 dual-insert MUST be all-or-nothing.
+    // Wrap the whole batch in a better-sqlite3 transaction so that if ANY row
+    // faults mid-batch — an FTS5 write failure, or a wrong-dimension embedding
+    // rejected by vec0's FLOAT[768] column — every row of this batch rolls back.
+    // Without this, earlier rows commit to vec0 with no FTS5 counterpart and the
+    // hybrid (RRF) corpus silently desynchronises. The embedDocuments() await
+    // above already resolved, so the transaction body is fully synchronous —
+    // required for better-sqlite3 transactions.
+    const insertBatch = db.transaction(() => {
+      for (let j = 0; j < batch.length; j++) {
+        const chunk = batch[j];
+        const embedding = embeddings[j];
 
-      // Convert Float32Array to JSON array string for vec0
-      const embeddingJson = JSON.stringify(Array.from(embedding));
+        // Convert Float32Array to JSON array string for vec0
+        const embeddingJson = JSON.stringify(Array.from(embedding));
 
-      // Normalize NaN/Infinity to 0 to prevent silent JSON corruption (NaN → null)
-      const metadataJson = JSON.stringify(chunk.metadata, (_key, value) =>
-        typeof value === 'number' && !Number.isFinite(value) ? 0 : value
-      );
+        // Normalize NaN/Infinity to 0 to prevent silent JSON corruption (NaN → null)
+        const metadataJson = JSON.stringify(chunk.metadata, (_key, value) =>
+          typeof value === 'number' && !Number.isFinite(value) ? 0 : value
+        );
 
-      // Insert into vec0 table
-      stmt.run({
-        content: chunk.content,
-        metadata: metadataJson,
-        embedding: embeddingJson,
-      });
-
-      // Dual-insert into FTS5 table if ftsTable is provided
-      if (ftsStmt) {
-        ftsStmt.run({
+        // Insert into vec0 table
+        stmt.run({
           content: chunk.content,
           metadata: metadataJson,
+          embedding: embeddingJson,
         });
+
+        // Dual-insert into FTS5 table if ftsTable is provided
+        if (ftsStmt) {
+          ftsStmt.run({
+            content: chunk.content,
+            metadata: metadataJson,
+          });
+        }
       }
-    }
+    });
+    insertBatch();
   }
 }
