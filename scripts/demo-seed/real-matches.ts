@@ -2,6 +2,11 @@
 /**
  * real-matches.ts — seed demo-seed.db with REAL cargo↔vessel pairs.
  *
+ * LEGACY SEEDER — superseded by regenerate-matches.ts
+ * (npx tsx scripts/demo-seed/regenerate-matches.ts), which rebuilds matches
+ * through the real engine (analyzePairs) and writes the full canonical row
+ * shape. Keep this script only for bootstrap/debug; do not extend its row shape.
+ *
  * Replaces the 6 synthetic SEAGULL fixtures from patch-fit.ts with pairs
  * derived from the actual demo corpus (demo-parsed-cargoes.json + demo-parsed-vessels.json).
  *
@@ -368,9 +373,13 @@ async function main(): Promise<void> {
         freightRateSource,
         fitPercent: fb.fitPercent,
         fitBreakdown: JSON.stringify(fb),
-        // reason_structured drives the main-board score-breakdown expander
-        // (MatchesClient.tsx). Same per-factor breakdown as fit_breakdown.
-        reasonStructured: JSON.stringify(fb),
+        // reason_structured intentionally NULL (audit B.1): the MatchesClient
+        // "Show Breakdown" expander expects the legacy ScoreBreakdown shape
+        // ({points, max} components + vagueRegionAdjustment); this script has
+        // no ScoreBreakdown, and stringifying the FitBreakdown here rendered
+        // NaN% bars. NULL hides the legacy panel; the fit panel reads the
+        // fit_breakdown column written below.
+        reasonStructured: null,
         // worksheet_json drives the cargo↔vessel comparison table (MatchWorksheet.tsx).
         // Mirror lib/types.ts MatchWorksheet shape; without it the detail table is blank.
         worksheetJson: JSON.stringify({

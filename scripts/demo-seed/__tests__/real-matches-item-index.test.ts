@@ -3,6 +3,8 @@
  * and vessel_item_index on INSERT (fixes Source Attribution itemIndex=0 default
  * masking the correct cargo line in hydrate-demo-session.ts).
  */
+import * as fs from 'fs';
+import * as path from 'path';
 import Database from 'better-sqlite3';
 import {
   buildMatchInsertSql,
@@ -140,5 +142,18 @@ describe('real-matches INSERT persists item indexes (#791 cause B)', () => {
     const cnt = (db.prepare('SELECT COUNT(*) AS n FROM matches').get() as { n: number }).n;
     expect(cnt).toBe(1);
     db.close();
+  });
+});
+
+describe('real-matches reason_structured shape (audit B.1)', () => {
+  it('does not write a FitBreakdown into reason_structured (UI expects legacy {points,max})', () => {
+    const src = fs.readFileSync(
+      path.resolve(__dirname, '../real-matches.ts'),
+      'utf8',
+    );
+    // The bug: reasonStructured: JSON.stringify(fb) — fb is a FitBreakdown,
+    // whose components lack points/max → MatchesClient renders NaN% bars.
+    expect(src).not.toMatch(/reasonStructured:\s*JSON\.stringify\(fb\)/);
+    expect(src).toMatch(/reasonStructured:\s*null/);
   });
 });
