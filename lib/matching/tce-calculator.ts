@@ -197,12 +197,17 @@ function _routeTransitsSuez(portA: string | null | undefined, portB: string | nu
          (eastOfSuez.has(basinB) && westOfSuez.has(basinA));
 }
 
-// A route transits the Bosporus if one endpoint is on the Med/Marmara side and the
-// other is on the Black Sea side. Intra-Med and intra-BlackSea routes do not transit.
+// A route transits the Bosporus when exactly one endpoint lies inside the Black
+// Sea and the other is a known basin outside it (med, atlantic, indian,
+// eastafrica, westafrica — every exit from the Black Sea passes the strait).
+// Intra-Med, intra-BlackSea and unknown-basin routes do not transit. (Audit C.1:
+// the old med↔blacksea-only rule dropped the Bosporus fee on Black Sea ↔
+// east-of-Suez voyages — Novorossiysk→Mumbai paid Suez but not Bosporus.)
 function _routeTransitsBosporus(portA: string | null | undefined, portB: string | null | undefined): boolean {
   const a = _classifyPortBasin(portA);
   const b = _classifyPortBasin(portB);
-  return (a === 'med' && b === 'blacksea') || (a === 'blacksea' && b === 'med');
+  if (a === 'unknown' || b === 'unknown') return false;
+  return (a === 'blacksea') !== (b === 'blacksea');
 }
 
 // Derive approximate net tonnage from DWT (bulker convention: NT ≈ DWT × 0.65).
