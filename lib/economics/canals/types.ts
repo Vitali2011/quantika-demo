@@ -19,7 +19,10 @@ export interface CanalTariffRow {
 export interface CanalQuote {
   baseFeeUsd: number;
   unitFeeUsd: number;
+  /** Informational war-risk premium — NEVER included in totalUsd (the TCE chain
+   *  prices war-risk itself; summing here double-counted — audit C.8). */
   warRiskUsd: number;
+  /** Canal dues only (war-risk excluded — see warRiskUsd). */
   totalUsd: number;
   source: string;
 }
