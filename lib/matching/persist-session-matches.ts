@@ -179,6 +179,10 @@ export function persistSessionMatches(
       consumption_estimated,
       ballast_distance_nm: eco.ballast_distance_nm ?? null,
       breakeven_tce_usd_per_day: vesselDwt ? breakevenTceByDwt(vesselDwt) : null,
+      // Refresh stale per-session rows on every render: economics drift with
+      // the live bunker price and re-parses; without this the first insert
+      // fossilizes for the whole session (audit B.6).
+      refreshComputed: true,
     });
   }
 }

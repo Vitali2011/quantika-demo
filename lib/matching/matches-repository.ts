@@ -66,6 +66,14 @@ export interface CreateMatchInput {
   consumption_estimated?: number | null;
   ballast_distance_nm?: number | null;
   breakeven_tce_usd_per_day?: number | null;
+  /**
+   * When the (cargo_id, vessel_id, user_id) row already exists, refresh the
+   * engine-computed columns in place instead of silently keeping the stale
+   * first-insert values (audit B.6). NEVER touches status (user action),
+   * created_at, or identity columns. Opt-in: only the per-session persist
+   * path passes it; seed/regen writers keep pure INSERT OR IGNORE semantics.
+   */
+  refreshComputed?: boolean;
 }
 
 export interface ListMatchesOptions {
@@ -224,6 +232,11 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     if (withBallast) args.push(ballast_distance_nm);
     if (withBreakeven) args.push(breakeven_tce_usd_per_day);
     result = stmt.run(...args);
+    if (result.changes === 0 && input.refreshComputed) {
+      // Duplicate ignored — refresh computed columns in place so the
+      // existing-row fetch below returns live values (audit B.6).
+      refreshComputedColumns(db, input, now);
+    }
   } else if (hasVesselNameColumns(db)) {
     const reason_structured = input.reason_structured ?? null;
     const cargo_type = input.cargo_type ?? null;
@@ -404,6 +417,47 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
   }
 
   return getMatch(db, result.lastInsertRowid as number) as StoredMatch;
+}
+
+/** See CreateMatchInput.refreshComputed. Only called from the hasFitColumns branch. */
+function refreshComputedColumns(
+  db: Database.Database,
+  input: CreateMatchInput,
+  now: number,
+): void {
+  const sets: string[] = [
+    'score = ?', 'reason = ?', 'reason_structured = ?', 'cargo_type = ?',
+    'load_port = ?', 'discharge_port = ?', 'laycan_start = ?', 'laycan_end = ?',
+    'vessel_dwt = ?', 'tce_usd_per_day = ?', 'distance_nm = ?',
+    'freight_rate_usd_per_mt = ?', 'freight_rate_source = ?',
+    'vessel_name = ?', 'cargo_ref = ?', 'fit_percent = ?', 'fit_breakdown = ?',
+    'updated_at = ?',
+  ];
+  const args: Array<string | number | null> = [
+    input.score, input.reason, input.reason_structured ?? null, input.cargo_type ?? null,
+    input.load_port ?? null, input.discharge_port ?? null,
+    input.laycan_start ?? null, input.laycan_end ?? null,
+    input.vessel_dwt ?? null, input.tce_usd_per_day ?? null, input.distance_nm ?? null,
+    input.freight_rate_usd_per_mt ?? null, input.freight_rate_source ?? null,
+    input.vessel_name ?? null, input.cargo_ref ?? null,
+    input.fit_percent ?? null, input.fit_breakdown ?? null,
+    now,
+  ];
+  if (hasItemIndexColumns(db)) {
+    sets.push('cargo_item_index = ?', 'vessel_item_index = ?');
+    args.push(input.cargo_item_index ?? 0, input.vessel_item_index ?? 0);
+  }
+  if (hasWorksheetColumn(db)) { sets.push('worksheet_json = ?'); args.push(input.worksheet_json ?? null); }
+  if (hasConsumptionEstimatedColumn(db)) { sets.push('consumption_estimated = ?'); args.push(input.consumption_estimated ?? null); }
+  if (hasBallastDistanceColumn(db)) { sets.push('ballast_distance_nm = ?'); args.push(input.ballast_distance_nm ?? null); }
+  if (hasBreakevenColumn(db)) { sets.push('breakeven_tce_usd_per_day = ?'); args.push(input.breakeven_tce_usd_per_day ?? null); }
+  const user_id = input.user_id !== undefined ? input.user_id : null;
+  args.push(input.cargo_id, input.vessel_id, user_id, user_id);
+  db.prepare(
+    `UPDATE matches SET ${sets.join(', ')}
+     WHERE cargo_id = ? AND vessel_id = ?
+       AND ((user_id IS NULL AND ? IS NULL) OR user_id = ?)`,
+  ).run(...args);
 }
 
 export function getMatch(db: Database.Database, id: number): StoredMatch | null {
