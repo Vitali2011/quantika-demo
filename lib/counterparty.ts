@@ -64,7 +64,8 @@ export function buildVesselPassport(
     passport.pi = { club: vessel.pandi, isIg: isIgClub(vessel.pandi) };
   }
 
-  if (typeof vessel.built === 'number' && Number.isFinite(vessel.built)) {
+  // built sanity floor: parser noise like 0 or 2-digit years must not yield age 2000+ (review followup)
+  if (typeof vessel.built === 'number' && Number.isFinite(vessel.built) && vessel.built >= 1900) {
     const age = refYear - vessel.built;
     if (age >= 0) passport.age = age;
   }
