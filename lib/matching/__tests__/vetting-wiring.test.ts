@@ -14,6 +14,7 @@ import migration026 from '@/lib/migrations/026-charterers';
 import migration028 from '@/lib/migrations/028-psc-history';
 import { PSC_FIXTURE } from '@/lib/knowledge/sources/psc/fixture';
 import { upsertInspection, getDetentionCount } from '@/lib/market/psc-repository';
+import { upsertCharterer } from '@/lib/market/charterers-repository';
 import { analyzePairs } from '@/lib/matching/pair-analyzer';
 import { resolveChartererTier } from '@/lib/matching/charterer-tier';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
@@ -141,7 +142,20 @@ describe('vetting wiring — PSC detentions lower fit (behavioral)', () => {
     expect(fitDetained!).toBeLessThan(fitClean!);
   });
 
-  it('resolveChartererTier returns null today (documented gap)', () => {
+  it('resolveChartererTier resolves a seeded tier by name', () => {
+    // audit A.1: resolver is live now — normalized-name lookup over charterers table
+    upsertCharterer(db, {
+      id: 'vetting-weak-co',
+      name: 'Vetting Weak Co',
+      tier: 'weak',
+      payment_history: '[]',
+      require_lc: 1,
+      notes: null,
+    });
+    expect(
+      resolveChartererTier(db, { ...makeMatchableCargo(), chartererName: 'Vetting Weak Co' }),
+    ).toBe('weak');
+    // cargo without chartererName still resolves to null (neutral fit)
     expect(resolveChartererTier(db, makeMatchableCargo())).toBeNull();
   });
 });
