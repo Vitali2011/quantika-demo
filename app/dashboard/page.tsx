@@ -182,6 +182,18 @@ export default async function DashboardPage() {
           </Link>
         )}
 
+        {/* audit D revive: ROI report surface */}
+        <Link
+          href="/reports/roi"
+          className="flex items-center justify-between p-4 bg-ds-surface border border-ds-border rounded-ds-lg hover:bg-ds-surface-muted transition-colors"
+        >
+          <div>
+            <p className="text-sm font-semibold text-ds-text">ROI report</p>
+            <p className="text-xs text-ds-text-muted">90-day savings summary preview</p>
+          </div>
+          <span className="text-ds-text-subtle text-sm">→</span>
+        </Link>
+
       </div>
     </div>
   );
