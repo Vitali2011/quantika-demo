@@ -336,14 +336,22 @@ export function checkImsbcLoadability(
   // Group B
   const restrictions = vessel?.restrictions ?? [];
   const hasDgRestriction = restrictions.some((r) => DG_RESTRICTION_RE.test(r));
+  // Dual-hazard concentrates (e.g. copper concentrate — Group B in the table,
+  // but liquefaction-prone like Group A): an explicit liquefaction restriction
+  // ("no concentrates", "no liquefiable") blocks them too (audit C.3).
+  const isConcentrate = key.includes('concentrate');
+  const hasLiquefactionRestriction =
+    isConcentrate && restrictions.some((r) => GROUP_A_RESTRICTION_RE.test(r));
 
-  if (hasDgRestriction) {
+  if (hasDgRestriction || hasLiquefactionRestriction) {
     return {
       group: 'B',
       imoClass,
       verdict: 'incompatible',
       requirements,
-      rationale: `IMSBC Group B (IMDG Class ${imoClass ?? 'chemical hazard'}) — vessel restrictions prohibit dangerous-goods carriage`,
+      rationale: hasDgRestriction
+        ? `IMSBC Group B (IMDG Class ${imoClass ?? 'chemical hazard'}) — vessel restrictions prohibit dangerous-goods carriage`
+        : `IMSBC Group B concentrate (liquefaction-prone) — vessel restrictions prohibit liquefiable/concentrate cargoes`,
     };
   }
 

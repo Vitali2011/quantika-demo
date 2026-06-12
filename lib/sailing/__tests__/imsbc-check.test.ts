@@ -274,3 +274,48 @@ describe('Group A vs liquefaction-restricted vessel (audit C.3)', () => {
     expect(r.verdict).toBe('ok');
   });
 });
+
+describe('dual-hazard Group B concentrates vs liquefaction-restricted vessel (audit C.3)', () => {
+  // imsbc-groups.json: 'copper concentrate' is the dual-hazard entry — Group B
+  // (IMDG 4.2) but liquefaction-prone like Group A. 'zinc concentrate' and
+  // 'lead concentrate' are Group A in the table (Group A branch covers them).
+  it.each([
+    ['copper concentrate', 'no concentrates'],
+    ['copper conc', 'No liquefiable cargoes'],
+    ['cu concentrate', 'no TML cargoes'],
+  ])('%s blocked by "%s"', (cargo, restriction) => {
+    const r = checkImsbcLoadability(cargo, { restrictions: [restriction] });
+    expect(r.group).toBe('B');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it.each([
+    ['zinc conc', 'No liquefiable cargoes'],
+    ['lead concentrate', 'no TML cargoes'],
+  ])('%s (Group A in table) blocked by "%s" via Group A branch', (cargo, restriction) => {
+    const r = checkImsbcLoadability(cargo, { restrictions: [restriction] });
+    expect(r.group).toBe('A');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it('copper concentrate without liquefaction restriction keeps Group B caution', () => {
+    const r = checkImsbcLoadability('copper concentrate', { restrictions: [] });
+    expect(r.group).toBe('B');
+    expect(r.verdict).toBe('caution');
+  });
+
+  it('copper concentrate still blocked by DG restriction (existing path intact)', () => {
+    const r = checkImsbcLoadability('copper concentrate', { restrictions: ['no dangerous goods'] });
+    expect(r.group).toBe('B');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it.each([['sulphur'], ['ammonium nitrate']])(
+    'non-concentrate Group B cargo %s ignores liquefaction restrictions',
+    (cargo) => {
+      const r = checkImsbcLoadability(cargo, { restrictions: ['no concentrates'] });
+      expect(r.group).toBe('B');
+      expect(r.verdict).toBe('caution');
+    },
+  );
+});
