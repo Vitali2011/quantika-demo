@@ -184,21 +184,20 @@ describe('adversarial — cold QA', () => {
   });
 
   // ADV-05: q=laytime+OR+cargo — mid-query boolean operator
-  // DOCUMENTED INTENTIONAL BEHAVIOR: escapeFts5Query wraps the full input in FTS5
-  // phrase quotes, so "laytime OR cargo" becomes '"laytime OR cargo"' in MATCH.
-  // Inside FTS5 phrase quotes, OR is literal text, not a boolean operator.
-  // Result: phrase match for the literal 3-word string — no boolean semantics.
-  // This is the designed behavior (see comment on escapeFts5Query).
-  it('ADV-05 (DOCUMENTED): mid-query OR is phrase-matched as literal text, not boolean', async () => {
+  // qa-smoke F3 (DOCUMENTED, updated): escapeFts5Query now quotes each
+  // whitespace token individually and joins them with OR, so
+  // "laytime OR cargo" becomes '"laytime" OR "OR" OR "cargo"'.
+  // The user-supplied "OR" token is STILL a quoted literal (injection-safe,
+  // never an operator), but multi-word queries match the union of tokens —
+  // the fixture row contains both "laytime" and "cargo", so it matches.
+  it('ADV-05 (DOCUMENTED): mid-query OR token stays a quoted literal; tokens are OR-unioned', async () => {
     const res = await GET(makeRequest('?q=laytime+OR+cargo'));
     // Must not crash (no SQLITE_ERROR)
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(Array.isArray(json.results)).toBe(true);
-    // Fixture row contains "Laytime" and "Cargo" as separate words, not the
-    // literal 3-word phrase "laytime OR cargo" — so boolean-as-literal gives 0 results.
-    expect(json.results).toHaveLength(0);
-    // Cross-check: plain "laytime" search DOES match (proves escaping is functional)
+    // Fixture row contains "laytime" and "cargo" tokens → matched once.
+    expect(json.results).toHaveLength(1);
   });
 
   // ADV-06 (FIXED): auth runs BEFORE flag check — unauthenticated caller gets 401

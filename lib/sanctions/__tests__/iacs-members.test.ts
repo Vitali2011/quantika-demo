@@ -1,8 +1,9 @@
 import { IACS_MEMBERS, isIacs } from '../iacs-members';
 
 describe('IACS_MEMBERS', () => {
-  it('contains exactly 8 members', () => {
-    expect(IACS_MEMBERS).toHaveLength(8);
+  it('contains exactly 9 members', () => {
+    // qa-smoke F5: IRS (Indian Register of Shipping) is an IACS member — was missing
+    expect(IACS_MEMBERS).toHaveLength(9);
   });
 
   it('includes standard abbreviations', () => {
@@ -14,6 +15,7 @@ describe('IACS_MEMBERS', () => {
     expect(IACS_MEMBERS).toContain('KR');
     expect(IACS_MEMBERS).toContain('CCS');
     expect(IACS_MEMBERS).toContain('RINA');
+    expect(IACS_MEMBERS).toContain('IRS'); // qa-smoke F5
   });
 });
 
@@ -35,6 +37,8 @@ describe('isIacs', () => {
     expect(isIacs('China Classification Society')).toBe(true);
     expect(isIacs('Registro Italiano Navale')).toBe(true);
     expect(isIacs('American Bureau of Shipping')).toBe(true);
+    expect(isIacs('Indian Register of Shipping')).toBe(true); // qa-smoke F5
+    expect(isIacs('IRS')).toBe(true); // qa-smoke F5
   });
 
   it('returns false for unknown classification societies', () => {

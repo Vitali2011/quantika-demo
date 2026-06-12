@@ -35,15 +35,23 @@ function isMalformedFts5Query(q: string): boolean {
 }
 
 /**
- * Escape a plain-text query for safe FTS5 MATCH binding (phrase match).
- * Mirrors lib/knowledge/embeddings/retriever-sqlite.ts.
+ * Escape a plain-text query for safe FTS5 MATCH binding.
  *
- * INTENTIONAL: mid-query boolean operators (e.g. "laytime OR cargo") become
- * literal text inside FTS5 phrase quotes — not boolean operators. All queries
- * are phrase-matched. Boolean search is not supported by design (simpler, safer).
+ * qa-smoke F3: each whitespace-separated token is individually quoted (FTS5
+ * string, injection-safe — same escaping as before) and tokens are joined
+ * with OR. Multi-word queries ("ice clause") now match the union of their
+ * tokens instead of requiring the literal phrase, so a multi-word query
+ * always returns a superset of any single token's results. User-supplied
+ * boolean operators are still neutralized: each token is inside FTS5 quotes,
+ * so "laytime OR cargo" becomes "laytime" OR "OR" OR "cargo" (literal "OR").
  */
 function escapeFts5Query(q: string): string {
-  return `"${q.replace(/"/g, '""')}"`;
+  return q
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((t) => `"${t.replace(/"/g, '""')}"`)
+    .join(' OR ');
 }
 
 export async function GET(request: NextRequest) {
@@ -101,15 +109,17 @@ export async function GET(request: NextRequest) {
         SELECT content, metadata
         FROM bimco_fts
         WHERE content MATCH ?
+        ORDER BY rank
         LIMIT ?
       `;
-      params = [query ? escapeFts5Query(query) : '*', limit];
+      params = [query.trim() ? escapeFts5Query(query) : '*', limit];
     } else if (query && query.trim() !== '') {
       // Search without charter party filter
       sql = `
         SELECT content, metadata
         FROM bimco_fts
         WHERE content MATCH ?
+        ORDER BY rank
         LIMIT ?
       `;
       params = [escapeFts5Query(query), limit];
@@ -138,6 +148,24 @@ export async function GET(request: NextRequest) {
         }
       });
     }
+
+    // qa-smoke F2: clauses are stored as multiple chunks — dedup by
+    // clauseNumber + charterParty, keeping the first (best-ranked, see
+    // ORDER BY rank) chunk per clause. Rows without a parseable dedup key
+    // are kept as-is.
+    const seen = new Set<string>();
+    results = results.filter((row) => {
+      try {
+        const meta = JSON.parse(row.metadata);
+        if (meta.clauseNumber == null || meta.charterParty == null) return true;
+        const key = `${meta.charterParty}::${meta.clauseNumber}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      } catch {
+        return true;
+      }
+    });
 
     return NextResponse.json({
       results,

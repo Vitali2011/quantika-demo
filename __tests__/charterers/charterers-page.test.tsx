@@ -36,11 +36,12 @@ const MOCK_CHARTERERS = [
 ];
 
 describe('CharterersTable column headers', () => {
-  it('renders exact reference header labels: Name / Email / Last Contact / Last Email Snippet / Status', async () => {
+  // qa-smoke F1: third column renders require_lc — header renamed to L/C Required
+  it('renders exact reference header labels: Name / Email / L/C Required / Last Email Snippet / Status', async () => {
     const { CharterersTable } = await import('@/components/charterers/CharterersTable');
     const { container } = render(<CharterersTable charterers={[]} />);
     const ths = Array.from(container.querySelectorAll('th')).map((th) => th.textContent?.trim());
-    expect(ths).toEqual(['Name', 'Email', 'Last Contact', 'Last Email Snippet', 'Status']);
+    expect(ths).toEqual(['Name', 'Email', 'L/C Required', 'Last Email Snippet', 'Status']);
   });
 });
 
