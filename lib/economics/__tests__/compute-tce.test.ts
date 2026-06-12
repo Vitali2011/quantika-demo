@@ -424,4 +424,14 @@ describe('computeTce — behavioral invariants', () => {
     const high = computeTce({ ...base, bunkerPriceUsdPerMt: 900 });
     expect(high.tceUsdPerDay).toBeLessThan(low.tceUsdPerDay);
   });
+
+  it('clamps a negative freight rate to 0 — no negative gross freight (audit C.8)', () => {
+    const r = computeTce({
+      dwt: 50000, valueUsd: 15_000_000, speedKts: 13, consumptionMtPerDay: 28,
+      freightRateUsdPerMt: -12, quantityMt: 50000, distanceNm: 3000,
+      bunkerPriceUsdPerMt: 600, euaPriceEur: 0, canalUsd: 0, daUsd: 0,
+    });
+    expect(r.breakdown.gross_freight_usd).toBe(0);
+    expect(r.breakdown.freight_rate_usd_per_mt).toBe(0);
+  });
 });

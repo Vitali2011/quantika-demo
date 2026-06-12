@@ -23,6 +23,7 @@ import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { isEuCountry } from '@/lib/validation/sanctions';
 import { routeTransitsBosporus, quoteBosporusSafe, routeTransitsSuez, quoteSuezSafe } from '@/lib/matching/tce-calculator';
+import { NT_DWT_RATIO } from '@/lib/constants';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
@@ -105,7 +106,7 @@ function resolveCanalUsd(body: z.infer<typeof VoyageInputSchema>): number {
   // general-cargo for SCNT/dues purposes.
   const rawType = body.vessel.type ?? 'bulker';
   const vesselType = rawType === 'mpp' ? 'general' : rawType;
-  const vesselNt = body.vessel.nt ?? Math.round(body.vessel.dwt * 0.6);
+  const vesselNt = body.vessel.nt ?? Math.round(body.vessel.dwt * NT_DWT_RATIO);
   try {
     if (code === 'suez') {
       const input: SuezInput = {
