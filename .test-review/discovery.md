@@ -1,82 +1,76 @@
-# Discovery: claude/compassionate-jennings-cb6e62
+# Discovery: feat/wave-c-engine-logic
 
-Branch: claude/compassionate-jennings-cb6e62
-HEAD: dded0315
-Date: 2026-06-12
-Diff range: 004edba2..HEAD (campaign cumulative; 004edba2 = merge-base with main, so ≡ main..HEAD)
-Commits: 10 — "fix(buckets): bucket rows read canonical engine economics instead of flat-bunker estimate (audit B.3)" ... "docs(plans): write-path convergence plan (audit пункт Б)"
+Branch: feat/wave-c-engine-logic
+HEAD: 13029428
+Base: main e9070fe2
+Date: 2026-06-12 (cold-start adversarial review, test-skill v0.4.2)
 
-## Changed Files
+## Scope (16 commits, 38 files, +1647/−114)
 
-- `docs/superpowers/plans/2026-06-12-write-path-convergence.md` (added, +734) — the campaign plan (spec source)
-- `lib/matching/compute-matches.ts` (modified, +32/-0)
-  - Modified: `computeAndPersistMatches()` — adds `bucketReason`/`worksheetForPersist` derivation; extends `createMatch` call with `fit_percent`, `fit_breakdown`, `cargo_item_index`, `vessel_item_index`, `worksheet_json`, `breakeven_tce_usd_per_day`
-- `lib/matching/matches-repository.ts` (modified, +54/-0)
-  - Added: `refreshComputedColumns()` (private), `CreateMatchInput.refreshComputed?: boolean`
-  - Modified: `createMatch()` — `result.changes === 0 && input.refreshComputed` → in-place UPDATE (only in `hasFitColumns` branch)
-- `lib/matching/persist-session-matches.ts` (modified, +18/-1)
-  - Modified: `persistSessionMatches()` — first-wins dedup by `cargoEmailId|vesselEmailId` before loop; passes `refreshComputed: true` to `createMatch`
-- `lib/matching/session-buckets.ts` (modified, +18/-5)
-  - Modified: `toBucketRows()` — reads `m.economics?.{tceUsdPerDay,freightRateUsdPerMt,freightRateSource}` first; legacy flat-bunker estimate only as fallback when `tce_usd_per_day == null`
-- `package.json` (modified, +1) — new script `seed:regen: tsx scripts/demo-seed/regenerate-matches.ts`
-- `scripts/demo-seed/build.ts` (modified, +5/-1) — comment-only banner (LEGACY BOOTSTRAP MATCHES)
-- `scripts/demo-seed/real-matches.ts` (modified, +12/-3) — `reasonStructured: JSON.stringify(fb)` → `reasonStructured: null`; header deprecation banner
-- `scripts/demo-seed/seed-all.ts` (modified, +18/-5) — chains `regenerate-matches.ts --db <outDb>` via spawnSync between build and validate; renumbers log lines 1/5..5/5 → 1/6..6/6
-- New tests (campaign's own):
-  - `lib/matching/__tests__/matches-repository-refresh.test.ts` (+196) — 4 refreshComputed tests + 1 first-wins dedup test
-  - `lib/matching/__tests__/session-buckets-economics.test.ts` (+78) — 3 tests (engine-first, null fallback, estimate fallback)
-  - `lib/matching/__tests__/write-path-field-parity.test.ts` (+193) — 1 parity test (21 columns, both write paths)
-  - `scripts/demo-seed/__tests__/real-matches-item-index.test.ts` (+15) — source-level regex assertion (B.1)
-  - `scripts/demo-seed/__tests__/seed-all-window.test.ts` (+20) — source-level assertions (B.4)
+Wave C of the 2026-06-12 logic audit. Plan: `docs/superpowers/plans/2026-06-12-wave-c-engine-logic.md`.
+8 sanctioned spec changes (C.1–C.8) — founder-approved; verified implemented, not re-reported as bugs:
 
-## Stated Scope
+| Item | Change | Files |
+|------|--------|-------|
+| C.1 | Bosporus charged on ANY Black Sea exit (was med↔blacksea only) | `lib/matching/tce-calculator.ts:200-213` |
+| C.2 | `/api/voyage/tce` rejects durationDays ≤ 0 (was 200 with $0) | `app/api/voyage/tce/route.ts:86` |
+| C.3 | IMSBC Group A hard-blocks on liquefaction-restricted vessels + dual-hazard Group B concentrates | `lib/sailing/imsbc-check.ts:272-360`, `match-filters.ts` (comment) |
+| C.4 | Hold-cleanliness incompatible → matchLevel 'weak' → review bucket | `lib/matching/hold-cleanliness.ts:31-33` |
+| C.5 | One match per ITEM pair: migration 051 + repository + persist + regen + dashboard + UI keys | `lib/migrations/051-*`, `matches-repository.ts`, `persist-session-matches.ts`, `regenerate-matches.ts`, `app/dashboard/page.tsx`, `app/matches/MatchesClient.tsx` |
+| C.6 | 90–100k DWT fallback → panamax (was capesize) | `lib/sailing/readiness-gap.ts:88-99` |
+| C.7 | Back half of laycan window → 'tight' (was 'ideal') + distinct explanation copy | `lib/sailing/readiness-gap.ts:117-137,162-169` |
+| C.8 | Negative freight clamp; Suez war-risk out of totalUsd; NT_DWT_RATIO 0.65 canonical; economics 0.1-rounding | `compute-tce.ts:136-138`, `canals/suez.ts:96-99`, `canals/types.ts`, `constants.ts:121-125`, `fit-breakdown.ts:518`, both API routes |
 
-Source: `docs/superpowers/plans/2026-06-12-write-path-convergence.md`
+## Verified wiring (read from code, not the plan)
 
-In scope (verbatim goal): "Make every writer of `matches` rows produce the same shape and the same economics convention, so a match renders identically regardless of which path (live precompute, /matches render, bucket tabs, seed regen, legacy seeders) last touched it."
+- `applyHoldCleanliness` has exactly ONE caller: `pair-analyzer.ts:771` — after level
+  assignment (:751), before sort/partition (:775+). Partition `matchLevel==='weak'` →
+  `lowConfidenceMatches` (pair-analyzer:798-800). Dashboard filters `good|possible`
+  (`app/dashboard/page.tsx:74`) → demoted pairs leave priority cards. ✓
+- `routeTransitsBosporus` exported; consumed by buildMatchEconomics (laden+ballast) AND
+  `app/api/voyage/tce/route.ts:263,277` (laden+ballast) — one change covers both paths. ✓
+- `classifyVesselByDwt` consumers: fit-breakdown (:221 class-fit, :658 ballast radius, :700),
+  match-scoring:259, readiness-gap:211 (bunker defaults), laden-draft:44.
+  `breakevenTceByDwt` is pure-DWT thresholds (no class mapping) — no 90–100k hole there. ✓
+- EconomicsTab is the only client POSTing `/api/voyage/tce`; durationDays =
+  ballastDays + ladenDays + 2 (`canonical-tce-inputs.ts:50`) ≥ 2 when `ready` → C.2's 400
+  unreachable from the UI. ✓
+- Migration 034 index name `idx_matches_unique_cargo_vessel_user` matches 051's DROP exactly;
+  no other code creates either index. `runMigrations(db, migrations)` signature confirmed. ✓
+- `createMatch` writers: persist-session-matches:165 (item-aware ✓), compute-matches:128
+  (passes item indices ✓), `app/api/matches/route.ts:169` (does NOT pass item indices → defaults 0,
+  pre-existing manual-create path), regen:697 (explicit item columns ✓).
+  Seed-builder writers NOT in plan scope: `scripts/demo-seed/build.ts:655,752` (keeps
+  one-per-email-pair dedup), `patch-fit.ts:357`, `real-matches.ts:91` — local-only seed tools.
+- Slug (`toMatchSlug(cargoId, vesselId)`) carries NO item index. Producers:
+  app/cargo/[id]:341, app/vessel/[id]:213, ActionPanel:65. `getMatchBySlug` now ORDER BY
+  fit DESC, score DESC, id ASC — deterministic best-item resolution.
+- `toBucketRows` (`lib/matching/session-buckets.ts:92-117`) builds StoredMatch rows WITHOUT
+  `cargo_item_index`/`vessel_item_index` → MatchesClient bucket key `?? 0` degrades —
+  see attack plan A6.
 
-Out of scope (verbatim): W5 refactor (`reason_structured` → fitBreakdown end-to-end + UI panel consolidation); rewriting `build.ts`'s matches stage on the real engine; migration-044 one-match-per-email-pair product decision (audit A.1); prod deploy / seed re-apply.
+## .claude/rules overlap
 
-Audit traceability: B.1 → Task 3 (real-matches reason_structured) · B.2 → Task 2 (precompute field parity) · B.3 → Task 1 (bucket economics) · B.4/B.5 → Task 4 (seed-all regen chain) · B.6 → Task 5 (refreshComputed).
+None. Diff does not touch `lib/ai-provider.ts`, `lib/knowledge/embeddings/*`,
+`app/api/admin/**`, or `middleware.ts`. The two touched API routes (/api/voyage/tce,
+/api/canal/*) pre-exist and have no admin/bypass interaction.
 
-Note: commit `c2e2c1a2` ("fix(persist): first-wins dedup per email pair so refreshComputed cannot demote to a worse duplicate") is an ADDITIONAL fix not in the plan tasks — discovered during implementation; plan's Task 5 did not anticipate the duplicate-email-pair × refreshComputed interaction.
+## Existing test coverage added by the branch
 
-## Specs Covered (invariants, verbatim where possible)
+- New: tce-calculator-bosporus (5), voyage-tce-duration (3), matches-item-uniqueness (4),
+  persist-session-matches-multi-item (1), match-slug item-resolution (1), readiness C.6/C.7
+  blocks, imsbc-check +4 describes (~20 cases incl. acceptance-phrasing guards), canal NT
+  parity (1), compute-tce clamp (1), suez war-risk exclusion (2), fit-breakdown 0.1-rounding (1),
+  hold-cleanliness demotion (3), match-filters hard-gate (1).
+- Rewritten under sanction: matches-repository-refresh (B.6 dedup → item-aware),
+  persist-dedup-tie-semantics (banner comment present ✓), ballast-size-cap 95k case,
+  match-realism-buckets fixture re-routed strait-free (Constanta), match-worksheet-migration
+  (50→51 — NOTE: asserts `last.name === 'matches-item-unique'` while the 050 assert used the
+  file-prefixed `'050-matches-breakeven'`; checked 051 source: `name: 'matches-item-unique'` — consistent).
 
-From `docs/superpowers/plans/2026-06-12-write-path-convergence.md`:
+## Known pre-existing failures (stated by caller, to verify on base)
 
-- T1/B.3: bucket rows use canonical engine economics (`m.economics`) when present; "falls back to null (not a fabricated number) when engine economics and ports are both absent"; legacy estimate only when economics absent AND distance resolvable.
-- T2/B.2: "precompute and session-persist write the SAME columns for the same match" — PARITY_COLUMNS list incl. fit_percent, fit_breakdown, worksheet_json, breakeven_tce_usd_per_day; numeric agreement on fit_percent/tce/breakeven.
-- T3/B.1: real-matches must NOT write FitBreakdown into reason_structured ("UI expects legacy {points,max}"; NaN% bars otherwise); `reasonStructured: null`.
-- T4/B.4/B.5: seed-all chains regenerate-matches after build; `npm run seed:all` now produces the same matches as the manual regen; regen step failure throws.
-- T5/B.6: `refreshComputed` "NEVER touches status (user action), created_at, or identity columns. Opt-in: only the per-session persist path passes it; seed/regen writers keep pure INSERT OR IGNORE semantics." Refresh respects user_id boundary (NULL seed row vs session copy).
-- Post-plan invariant (commit c2e2c1a2): "Engine matches arrive sorted by fitPercent DESC; with refreshComputed a later duplicate (same email pair, different item index) would overwrite the better earlier row (last-wins). Keep the first (best) per unique key."
-- Plan ground truth claim: `app/matches/MatchesClient.tsx:876-898` — UI expects legacy ScoreBreakdown (`comp.points / comp.max`); guards on `match.reason_structured &&` so null hides the panel gracefully.
-- Plan ground truth claim: `regenerate-matches.ts:714` writes reason_structured from legacy `m.scoreBreakdown` (correct shape).
-- compute-matches.ts NOTE (in-diff comment): "m.worksheet is currently absent on engine output (only demo hydrate/regen attach worksheets), so this block is forward-parity; the demo-hydrated gap on existing rows is closed by refreshComputed (B.6)."
-
-## Project Rules (inventory for Phase 2)
-
-- `.claude/rules/ai-provider.md` — scope `lib/ai-provider.ts`: NOT in diff (mocked in a new test only). No path intersection.
-- `.claude/rules/retriever.md` — scope `lib/knowledge/embeddings/retriever*`: no intersection.
-- `.claude/rules/admin-api.md` — scope `app/api/admin/**` + middleware.ts: no intersection.
-
-## Existing Test Coverage (Baseline)
-
-- `lib/matching/__tests__/` + `scripts/demo-seed/__tests__/`: 487 tests — BASELINE OK (rtk jest, 0 fail)
-- `__tests__/api/compute-matches*.test.ts`, `__tests__/matches-persist-race.test.ts`, `__tests__/persist-session-matches-applied-cap.test.ts`, `__tests__/lib/matching/`: 62 tests — BASELINE OK
-- Overall baseline: 549 passed, 0 failed (targeted suites; full `npm test` forbidden by environment).
-- Relevant pre-existing suites: `matches-repository*.test.ts` (insert/list semantics), `persist-session-matches-*.test.ts` (fit/m3/DA parity/worksheet filters), `__tests__/matches-persist-race.test.ts` (concurrency), `__tests__/api/compute-matches.test.ts` (precompute endpoint path).
-
-## Red Flags (raw observations, no classification)
-
-- `refreshComputedColumns()` builds SQL from a `sets` array + positional args — column/arg count coupling is manual (18 base + up to 7 conditional); any drift = wrong-column writes. New symbol, has tests.
-- `refreshComputedColumns` is only wired in the `hasFitColumns(db)` branch of `createMatch`; the two legacy branches (hasVesselNameColumns / else) silently ignore the flag.
-- `persistSessionMatches` dedup key is `cargoEmailId|vesselEmailId` but cargo/vessel lookup key is `emailId|itemIndex` — dedup drops later item-index matches entirely.
-- `toBucketRows` engine-first read keys off `tce_usd_per_day == null` only — if economics has tce but null freight fields, mixed-source row possible (freight stays null while estimate path skipped).
-- seed-all regen spawnSync: `regenerate-matches.ts --db <outDb>` — flag contract with regenerate-matches.ts arg parser unverified in diff (source-level test only checks the string "regenerate-matches.ts" appears).
-- `compute-matches.ts` worksheet block: in-diff NOTE admits `m.worksheet` is currently always absent on engine output → worksheet_json from precompute is always NULL today (forward-parity only). Parity test passes because BOTH paths write null worksheet.
-- `write-path-field-parity.test.ts` asserts null-parity (aNull === bNull) for most columns; exact equality only for fit_percent/tce/breakeven — value drift in other columns (e.g. reason, score) would pass.
-- No fast-check in repo (property-based testing not available without adding a dep).
-- `real-matches.ts` is standalone-legacy (per plan: not referenced by package.json or seed-all) — changed line is in a `main()` that only runs when invoked directly.
-- Campaign's seed tests for B.1/B.4 are source-regex assertions, not behavioral.
+8 suites / 16 tests on base main. Blast-radius carve-in candidates (touch values this branch
+changes): `ballast-size-cap-adversarial:273` (#846 — file modified by branch),
+`test_imsbc_section_size_cap` (IMSBC verdicts changed), `test_economics_confidence_adv` +
+`test_economics_edge_cases` (computeTce changed). Must diff base-vs-branch failure signatures.

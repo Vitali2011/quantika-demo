@@ -117,4 +117,40 @@ describe('applyHoldCleanliness', () => {
       expect(m.confidence?.blockSend).toBe(false);
     });
   });
+
+  /** Audit C.4: blockSend=true used to leave the match in mainMatches AND let
+   *  classifyPriority flag it 'urgent'. Demoting matchLevel to 'weak' routes it
+   *  to the review bucket via the existing partition rule (pair-analyzer:798). */
+  describe('matchLevel demotion (audit C.4)', () => {
+    it('incompatible last cargo (coal → grain) demotes matchLevel to weak', () => {
+      const m = makeMatch({
+        confidence: {
+          level: 'verified',
+          blockSend: false,
+          blockedFields: [],
+          fieldConfidences: [],
+        },
+      });
+      applyHoldCleanliness(m, makeCargo('grain'), makeVessel('coal') as ParsedVessel);
+      // sanity: fixture really trips the incompatible branch
+      expect(m.confidence?.blockSend).toBe(true);
+      expect(m.matchLevel).toBe('weak');
+      expect(m.issues.join()).toContain('Hold cleanliness');
+    });
+
+    it('compatible cargo (wheat → wheat) keeps its matchLevel', () => {
+      const m = makeMatch();
+      applyHoldCleanliness(m, makeCargo('wheat'), makeVessel('wheat') as ParsedVessel);
+      expect(m.matchLevel).toBe('good');
+    });
+
+    it('requires_extra_clean (wheat → DRI, compatible) does not demote matchLevel', () => {
+      const m = makeMatch({
+        confidence: { level: 'inferred', blockSend: false, blockedFields: [], fieldConfidences: [] },
+      });
+      applyHoldCleanliness(m, makeCargo('DRI'), makeVessel('wheat') as ParsedVessel);
+      expect(m.confidence?.blockSend).toBe(false);
+      expect(m.matchLevel).toBe('good');
+    });
+  });
 });

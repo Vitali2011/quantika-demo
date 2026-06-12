@@ -246,3 +246,99 @@ describe('checkImsbcLoadability — unknown cargo (neutral)', () => {
     expect(r.verdict).toBe('ok');
   });
 });
+
+describe('Group A vs liquefaction-restricted vessel (audit C.3)', () => {
+  // Group A cargo confirmed from imsbc-groups.json ("nickel ore": group A).
+  const GROUP_A_CARGO = 'nickel ore';
+
+  it.each([
+    ['no concentrates'],
+    ['No liquefiable cargoes'],
+    ['NO GROUP A CARGOES'],
+    ['no nickel ore'],
+    ['no TML cargoes'],
+  ])('restriction "%s" → incompatible', (restriction) => {
+    const r = checkImsbcLoadability(GROUP_A_CARGO, { restrictions: [restriction] });
+    expect(r.group).toBe('A');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it('Group A without matching restriction stays caution (TML cert required)', () => {
+    const r = checkImsbcLoadability(GROUP_A_CARGO, { restrictions: ['no DG'] });
+    expect(r.verdict).toBe('caution');
+  });
+
+  it('Group C cargo unaffected by liquefaction restrictions', () => {
+    // 'grain' is not an IMSBC key — 'wheat' is the confirmed Group C entry.
+    const r = checkImsbcLoadability('wheat', { restrictions: ['no concentrates'] });
+    expect(r.verdict).toBe('ok');
+  });
+});
+
+describe('dual-hazard Group B concentrates vs liquefaction-restricted vessel (audit C.3)', () => {
+  // imsbc-groups.json: 'copper concentrate' is the dual-hazard entry — Group B
+  // (IMDG 4.2) but liquefaction-prone like Group A. 'zinc concentrate' and
+  // 'lead concentrate' are Group A in the table (Group A branch covers them).
+  it.each([
+    ['copper concentrate', 'no concentrates'],
+    ['copper conc', 'No liquefiable cargoes'],
+    ['cu concentrate', 'no TML cargoes'],
+  ])('%s blocked by "%s"', (cargo, restriction) => {
+    const r = checkImsbcLoadability(cargo, { restrictions: [restriction] });
+    expect(r.group).toBe('B');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it.each([
+    ['zinc conc', 'No liquefiable cargoes'],
+    ['lead concentrate', 'no TML cargoes'],
+  ])('%s (Group A in table) blocked by "%s" via Group A branch', (cargo, restriction) => {
+    const r = checkImsbcLoadability(cargo, { restrictions: [restriction] });
+    expect(r.group).toBe('A');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it('copper concentrate without liquefaction restriction keeps Group B caution', () => {
+    const r = checkImsbcLoadability('copper concentrate', { restrictions: [] });
+    expect(r.group).toBe('B');
+    expect(r.verdict).toBe('caution');
+  });
+
+  it('copper concentrate still blocked by DG restriction (existing path intact)', () => {
+    const r = checkImsbcLoadability('copper concentrate', { restrictions: ['no dangerous goods'] });
+    expect(r.group).toBe('B');
+    expect(r.verdict).toBe('incompatible');
+  });
+
+  it.each([['sulphur'], ['ammonium nitrate']])(
+    'non-concentrate Group B cargo %s ignores liquefaction restrictions',
+    (cargo) => {
+      const r = checkImsbcLoadability(cargo, { restrictions: ['no concentrates'] });
+      expect(r.group).toBe('B');
+      expect(r.verdict).toBe('caution');
+    },
+  );
+});
+
+describe('acceptance phrasing does NOT trigger the liquefaction block (QA 2026-06-12)', () => {
+  // "no more/less than TML" is how acceptance conditions read in position
+  // lists — a vessel explicitly AGREEING to carry Group A must not hard-block.
+  it.each([
+    ['moisture content no more than TML'],
+    ['group A accepted provided moisture no more than TML'],
+    ['no restrictions on concentrates'],
+    ['no liquefied petroleum gas'],
+    ['TML certificate available'],
+    ['last cargo concentrates'],
+  ])('restriction "%s" keeps Group A caution', (restriction) => {
+    const r = checkImsbcLoadability('nickel ore', { restrictions: [restriction] });
+    expect(r.group).toBe('A');
+    expect(r.verdict).toBe('caution');
+  });
+
+  it('prohibition clauses still block after the guards', () => {
+    for (const restriction of ['no concentrates', 'No liquefiable cargoes', 'no TML cargoes', 'no cargoes prone to liquefaction']) {
+      expect(checkImsbcLoadability('nickel ore', { restrictions: [restriction] }).verdict).toBe('incompatible');
+    }
+  });
+});

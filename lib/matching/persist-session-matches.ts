@@ -57,13 +57,13 @@ export function persistSessionMatches(
     bunkerPriceUsdPerMt = undefined;
   }
 
-  // Engine matches arrive sorted by fitPercent DESC; with refreshComputed a
-  // later duplicate (same email pair, different item index) would overwrite
-  // the better earlier row (last-wins). Keep the first (best) per unique key —
-  // mirrors the INSERT OR IGNORE first-wins semantics this loop had before B.6.
+  // Engine matches arrive sorted by fitPercent DESC. Guard against duplicate
+  // ITEM pairs only — keep the first (best). Since migration 051 uniqueness is
+  // item-aware: different items of the same email are distinct matches and all
+  // persist (audit C.5, founder 2026-06-12; replaces the B.6 email-pair key).
   const seenPairs = new Set<string>();
   const dedupedMatches = sessionMatches.filter((m) => {
-    const k = `${m.cargoEmailId}|${m.vesselEmailId}`;
+    const k = `${m.cargoEmailId}|${m.cargoItemIndex}|${m.vesselEmailId}|${m.vesselItemIndex}`;
     if (seenPairs.has(k)) return false;
     seenPairs.add(k);
     return true;

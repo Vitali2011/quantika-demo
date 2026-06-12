@@ -132,8 +132,10 @@ export function computeTce(inputs: TceInputs): TceResult {
   const duration = safeNum(computeDurationDays(inputs));
   const bunkerPrice = safeNum(inputs.bunkerPriceUsdPerMt);
   const distance = safeNum(inputs.distanceNm);
-  const quantity = safeNum(inputs.quantityMt);
-  const rate = safeNum(inputs.freightRateUsdPerMt);
+  // Negative freight/quantity is nonsense input (bad parse/manual typo) — clamp
+  // to 0 so gross freight never goes negative (audit C.8 + QA F3).
+  const quantity = Math.max(0, safeNum(inputs.quantityMt));
+  const rate = Math.max(0, safeNum(inputs.freightRateUsdPerMt));
   const valueUsd = safeNum(inputs.valueUsd);
   const euLegPercent = safeNum(inputs.euLegPercent);
   const euaPrice = safeNum(inputs.euaPriceEur);

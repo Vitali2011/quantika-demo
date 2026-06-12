@@ -90,8 +90,13 @@ export function classifyVesselByDwt(dwt: number | null | undefined): VesselClass
   for (const [name, range] of Object.entries(VESSEL_CLASS)) {
     if (dwt >= range.minDwt && dwt <= range.maxDwt) return name as VesselClassName;
   }
-  // Gap between handysize (≤35k) and supramax (50k+) — lean handysize for demo
-  return dwt < 50000 ? 'handysize' : 'capesize';
+  // Gaps between class ranges: <50k leans handysize (demo corpus skew);
+  // 90–100k post-panamax economics sit closer to panamax than capesize
+  // (audit C.6 — the old ≥50k fallback sent 90–100k to capesize: 45mt/day
+  // consumption + capesize ballast radius for a baby-cape hull).
+  if (dwt < 50000) return 'handysize';
+  if (dwt < 100000) return 'panamax';
+  return 'capesize';
 }
 
 /** Returns true when the raw open-date string signals the vessel is immediately available.
@@ -112,14 +117,15 @@ function isoDay(d: Date): string {
 
 function classifyVerdict(gapDays: number, windowDays: number): ReadinessVerdict {
   // gapDays = laycanSTART - arrival. windowDays = laycanEND - laycanSTART (>= 0).
-  // Laycan is a WINDOW [start, end]: a vessel arriving anywhere inside it is ON-TIME.
-  // 'late' fires only past the cancelling date (END), NOT >1d after the start. The old
-  // `gap < -1 → late` wrongly rejected vessels arriving mid-window (false negatives).
+  // Laycan is a WINDOW [start, end]: a vessel arriving anywhere inside it is
+  // ON-TIME, but the deeper into the window it lands, the less slack remains
+  // before the cancelling date. Front half → 'ideal'; back half → 'tight'
+  // (audit C.7 — previously the whole window rated 'ideal' up to cancelling).
+  // 'late' fires only past the cancelling date (END), NOT >1d after the start.
   const w = Number.isFinite(windowDays) ? Math.max(0, windowDays) : 0;
   if (gapDays < -1) {
-    // Arrives > 1 day after laycan START. On-time while still within the window
-    // (arrival before cancelling = start + window); late only past the cancelling date.
-    return gapDays < -1 - w ? 'late' : 'ideal';
+    if (gapDays < -1 - w) return 'late'; // past the cancelling date
+    return -gapDays > w / 2 ? 'tight' : 'ideal'; // back half of the window cuts it fine
   }
   if (gapDays < 0.5) return 'tight'; // arrives right at the start — cuts it fine
   if (gapDays <= 5) return 'ideal'; // small buffer before laydays commence
@@ -156,6 +162,11 @@ function buildExplanation(args: {
         ? `${spotPrefix}${arrStr} → ${gap}d before ${lcStr} — can sail immediately, ideal.`
         : `Vessel ${openStr} → ${arrStr} → ${gap}d before ${lcStr} — clean window.`;
     case 'tight':
+      // Two tight shapes (audit C.7): arrival AT the window start (gapDays >= -1)
+      // vs deep INTO the window, close to the cancelling date (gapDays < -1).
+      if (!isSpot && gapDays != null && gapDays < -1) {
+        return `Vessel ${openStr} → ${arrStr} → ${gap}d into the laycan window — close to cancelling, tight timing.`;
+      }
       return isSpot
         ? `${spotPrefix}${arrStr} → cuts it fine for ${lcStr} — tight but feasible.`
         : `Vessel ${openStr} → ${arrStr} → arrives right at ${lcStr} — tight timing.`;
