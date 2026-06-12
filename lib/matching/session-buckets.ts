@@ -54,10 +54,11 @@ export function toBucketRows(
 
     // Canonical engine economics (#819 Phase B(b)): pair-analyzer attaches
     // m.economics (computeStoredMatchEconomics — live bunker, port-DA, canal,
-    // war-risk-excluded convention) to EVERY pair before bucket partition, so
-    // bucket matches already carry the same one-truth TCE the shortlist stores.
-    // Read it here (exactly like regenerate-matches.ts writeBucket) so bucket
-    // tabs and the main board agree numerically.
+    // war-risk-excluded convention) to every pair with a resolvable distance
+    // before bucket partition, so bucket matches already carry the same
+    // one-truth TCE the shortlist stores. Read it here (same economics-first
+    // read as regenerate-matches.ts writeBucket) so bucket tabs and the main
+    // board agree numerically.
     let tce_usd_per_day: number | null = m.economics?.tceUsdPerDay ?? null;
     let freight_rate_usd_per_mt: number | null = m.economics?.freightRateUsdPerMt ?? null;
     let freight_rate_source: string | null = m.economics?.freightRateSource ?? null;

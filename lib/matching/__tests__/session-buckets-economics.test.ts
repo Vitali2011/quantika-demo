@@ -7,7 +7,7 @@
  * estimate, so bucket tabs agree numerically with the main board.
  */
 import { toBucketRows } from '@/lib/matching/session-buckets';
-import type { Match } from '@/lib/types';
+import type { Match, ParsedCargo, ParsedVessel } from '@/lib/types';
 
 function makeMatch(overrides: Partial<Match> = {}): Match {
   return {
@@ -46,5 +46,33 @@ describe('toBucketRows economics source', () => {
     expect(row.tce_usd_per_day).toBeNull();
     expect(row.freight_rate_usd_per_mt).toBeNull();
     expect(row.freight_rate_source).toBeNull();
+  });
+
+  it('estimates TCE via the legacy fallback when engine economics is absent but ports resolve', () => {
+    // emailId/itemIndex line up with makeMatch() defaults (c1|0, v1|0) so the
+    // cargo/vessel maps inside toBucketRows find these fixtures.
+    const cargo = {
+      emailId: 'c1',
+      itemIndex: 0,
+      originPort: { value: 'Rotterdam', confidence: 'confirmed', source_text: 'Rotterdam' },
+      destinationPort: { value: 'Santos', confidence: 'confirmed', source_text: 'Santos' },
+      cargoType: { value: 'GRAIN', confidence: 'confirmed', source_text: 'grain' },
+      weightMt: { value: 50000, confidence: 'confirmed', source_text: '50000' },
+    } as unknown as ParsedCargo;
+    const vessel = {
+      emailId: 'v1',
+      itemIndex: 0,
+      dwtSummer: { value: 55000, confidence: 'confirmed', source_text: '55000' },
+      speedLaden: '14',
+      consumption: '28',
+    } as unknown as ParsedVessel;
+
+    // makeMatch() has no economics → the engine-first read yields null and the
+    // estimate fallback must fire off the resolvable Rotterdam→Santos leg.
+    // No exact dollar assertions — they would couple the test to rate tables.
+    const [row] = toBucketRows([makeMatch()], [cargo], [vessel]);
+    expect(row.tce_usd_per_day).not.toBeNull();
+    expect(row.freight_rate_usd_per_mt).not.toBeNull();
+    expect(row.freight_rate_source).toBe('estimated');
   });
 });
