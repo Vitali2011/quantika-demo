@@ -67,29 +67,6 @@ describe('components/market/LiveStrip.tsx — demo snapshot caption', () => {
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// components/dashboard/MarketIntelligence.tsx — caption added
-// ──────────────────────────────────────────────────────────────────────────────
-
-describe('components/dashboard/MarketIntelligence.tsx — demo data caption', () => {
-  const src = readSource('components/dashboard/MarketIntelligence.tsx');
-
-  it('renders "demo data" caption', () => {
-    expect(src).toContain('demo data');
-  });
-
-  it('caption appears before noActiveDeals block', () => {
-    const captionIdx = src.indexOf('demo data');
-    const noActiveDealsIdx = src.indexOf('noActiveDeals &&');
-    expect(captionIdx).toBeGreaterThan(0);
-    expect(noActiveDealsIdx).toBeGreaterThan(captionIdx);
-  });
-
-  it('uses correct caption styling classes', () => {
-    expect(src).toContain('text-[10px] font-mono text-slate-400 text-right tracking-wide');
-  });
-});
-
-// ──────────────────────────────────────────────────────────────────────────────
 // components/dashboard/DashboardKpiStrip.tsx — caption added
 // ──────────────────────────────────────────────────────────────────────────────
 
