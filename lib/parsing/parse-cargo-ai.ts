@@ -24,6 +24,7 @@ export interface RawCargoItem {
   discharge_rate?: string | null;
   commission_percent?: number | string | null;
   commission_terms?: string | null;
+  charterer_name?: string | null;
   payout_condition?: string | null;
   freight_rate_usd?: number | null;
   special_requirements?: string | null;
@@ -131,6 +132,9 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
       dischargeRate: extractStr(item.discharge_rate),
       commissionPercent: extractNum(item.commission_percent),
       commissionTerms: extractStr(item.commission_terms),
+      chartererName: typeof item.charterer_name === 'string' && item.charterer_name.trim() !== ''
+        ? item.charterer_name.trim()
+        : null,
       payoutCondition: extractStr(item.payout_condition),
       freightRateUsd: extractNum(item.freight_rate_usd),
       specialRequirements: extractStr(item.special_requirements),
