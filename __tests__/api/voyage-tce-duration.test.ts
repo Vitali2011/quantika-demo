@@ -51,6 +51,11 @@ describe('POST /api/voyage/tce durationDays validation (audit C.2)', () => {
     expect(res.status).toBe(400);
   });
 
+  it('rejects Infinity durationDays with 400 — JSON 1e999 parses to Infinity (QA F4)', async () => {
+    const res = await POST(makeReq({ ...BASE, durationDays: 1e999 }));
+    expect(res.status).toBe(400);
+  });
+
   it('accepts positive durationDays', async () => {
     const res = await POST(makeReq({ ...BASE, durationDays: 12 }));
     expect(res.status).toBe(200);

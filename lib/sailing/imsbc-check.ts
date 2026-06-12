@@ -271,13 +271,18 @@ const DG_RESTRICTION_RE = /\bno\b.{0,40}(?:dg\b|dangerous\s+goods?\b|hazmat\b|ha
 
 // Vessel restriction patterns indicating IMSBC Group A (liquefaction-risk)
 // cargoes are prohibited: "no concentrates", "no liquefiable cargoes",
-// "no Group A", "no nickel ore", "no TML cargoes". (Audit C.3 — Group A
-// previously never hard-blocked, even on explicitly restricted vessels.)
-// Guards (QA 2026-06-12): `no` followed by more/less/restriction is acceptance
-// phrasing, not prohibition — "moisture no more than TML", "no restrictions on
-// concentrates" must NOT block. `liquefia/liquefact` (not bare `liquef`) keeps
-// "no liquefied petroleum gas" from matching a dry-bulk liquefaction ban.
-const GROUP_A_RESTRICTION_RE = /\bno\b(?!\s+(?:more|less|restrictions?)\b).{0,40}?(?:concentrates?\b|liquefia\w*|liquefact\w*|group\s*a\b|nickel\s+ore\b|\btml\b)/i;
+// "no Group A", "no nickel ore", "no TML cargoes", "cannot carry concentrates".
+// (Audit C.3 — Group A previously never hard-blocked, even on explicitly
+// restricted vessels.)
+// Guards (QA 2026-06-12, two rounds): `no` followed by more/less/restriction is
+// acceptance phrasing ("moisture no more than TML", "no restrictions on
+// concentrates"); the window [^.;,] must not bridge clause/sentence boundaries
+// ("no DG cargoes. TML certificate on board", "no grabs, holds suitable for
+// concentrates" are NOT prohibitions). `liquefia/liquefact` (not bare `liquef`)
+// keeps "no liquefied petroleum gas" from matching a dry-bulk liquefaction ban.
+// Trade-off: a comma-separated ban list ("no DG, concentrates") is missed →
+// stays 'caution' (conservative; a false block kills a legitimate match).
+const GROUP_A_RESTRICTION_RE = /\b(?:no|cannot\s+(?:carry|load|accept)|can'?t\s+(?:carry|load|accept))\b(?!\s+(?:more|less|restrictions?)\b)[^.;,]{0,40}?(?:concentrates?\b|liquefia\w*|liquefact\w*|group\s*a\b|nickel\s+ore\b|\btml\b)/i;
 
 /**
  * Check whether a cargo is loadable on a vessel per IMSBC Code.

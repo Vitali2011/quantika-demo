@@ -386,11 +386,10 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           return (
             <ul className="space-y-4" data-testid="bucket-list">
               {bucketRows.map((match) => (
-                // Composite key: since migration 051 pairs are unique per ITEM — two items
-                // of the same email pair are distinct rows (audit C.5), so the key must
-                // include both item indices (?? 0 covers pre-044 rows without the columns).
-                // Only one bucket renders per tab, so buckets never collide with each other.
-                <li key={`${match.cargo_id}|${match.cargo_item_index ?? 0}|${match.vessel_id}|${match.vessel_item_index ?? 0}`} className="bg-white rounded-lg border overflow-hidden">
+                // Bucket rows carry unique ids (negative synthetic from toBucketRows,
+                // positive DB ids otherwise) — the one collision-free key. A composite
+                // pair|item key broke when a feed omitted item columns (QA F1, audit C.5).
+                <li key={match.id} className="bg-white rounded-lg border overflow-hidden">
                   <div className="flex items-start gap-3 p-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">

@@ -679,11 +679,11 @@ async function main() {
 
   const fits = (arr: Match[]) => arr.map((m) => m.fitPercent ?? 0).filter((n) => n > 0).sort((a, b) => a - b);
   const fm = fits(mainClean);
-  console.log(`[regen] BUCKETS (deduped to email-pair · main floor fit>=${MAIN_FIT_FLOOR}):`);
+  console.log(`[regen] BUCKETS (deduped per item-pair + content · main floor fit>=${MAIN_FIT_FLOOR}):`);
   console.log(`  main (NULL):            ${mainClean.length}  · fit min ${fm[0]?.toFixed(0)} med ${fm[Math.floor(fm.length/2)]?.toFixed(0)} max ${fm[fm.length-1]?.toFixed(0)} · ≥80:${fm.filter(x=>x>=80).length} ≥70:${fm.filter(x=>x>=70).length}`);
   console.log(`  review (__demo_review__):       ${review.length}  (engine-low ${dedup(result.lowConfidenceMatches).length} + demoted sub-floor ${demoted.length})`);
   console.log(`  insufficient (__demo_insufficient__): ${insufficient.length}`);
-  console.log(`  (dropped main cleanliness-blocked: ${result.matches.filter((m) => m.confidence?.blockSend === true).length}; engine blocked total: ${result.blockedMatches.length})`);
+  console.log(`  (cleanliness-blocked are engine-demoted to review since audit C.4; blockSend safety-net dropped from main: ${result.matches.filter((m) => m.confidence?.blockSend === true).length}; engine blocked total: ${result.blockedMatches.length})`);
 
   if (DRY) { db.close(); console.log('[regen] DRY — no writes.'); return; }
 

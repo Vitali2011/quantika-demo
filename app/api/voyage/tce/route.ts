@@ -73,7 +73,7 @@ const VoyageInputSchema = z.object({
   route: z.object({
     originPort: z.string(),
     destinationPort: z.string(),
-    distanceNm: z.number().positive('distanceNm must be > 0').optional(),
+    distanceNm: z.number().positive('distanceNm must be > 0').finite().optional(),
     viaSuez: z.boolean().optional(),
     viaCanal: z.string().optional(),
   }),
@@ -83,7 +83,8 @@ const VoyageInputSchema = z.object({
   }),
   bunkerPriceUsdPerMt: z.number().optional(),
   euaPriceEur: z.number().optional(),
-  durationDays: z.number().positive('durationDays must be > 0'),
+  // .finite(): JSON.parse('1e999') yields Infinity, which .positive() admits (QA F4).
+  durationDays: z.number().positive('durationDays must be > 0').finite(),
   euLegPercent: z.number().optional(),
   daysInHra: z.number().optional(),
   canalUsd: z.number().optional(),
