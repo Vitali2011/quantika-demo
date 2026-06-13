@@ -24,17 +24,25 @@ import { buildTmiRows } from './tmi-fixture';
 export { buildTmiRows };
 
 function getFrozenDate(db: Database.Database): string {
-  // 1. Try demo_seed_meta
-  const meta = db
-    .prepare(`SELECT frozen_date FROM demo_seed_meta WHERE id=1`)
-    .get() as { frozen_date?: string } | undefined;
-  if (meta?.frozen_date) return meta.frozen_date;
+  // 1. Try demo_seed_meta (may not exist on fresh DBs — guard against missing table)
+  try {
+    const meta = db
+      .prepare(`SELECT frozen_date FROM demo_seed_meta WHERE id=1`)
+      .get() as { frozen_date?: string } | undefined;
+    if (meta?.frozen_date) return meta.frozen_date;
+  } catch {
+    // Table doesn't exist — fall through to next fallback
+  }
 
-  // 2. Try latest market_indices date
-  const latest = db
-    .prepare(`SELECT MAX(index_date) d FROM market_indices`)
-    .get() as { d?: string } | undefined;
-  if (latest?.d) return latest.d;
+  // 2. Try latest tmi date in market_indices (anchored to tmi, not bhsi/drewry)
+  try {
+    const latest = db
+      .prepare(`SELECT MAX(index_date) AS d FROM market_indices WHERE index_name='tmi'`)
+      .get() as { d?: string } | undefined;
+    if (latest?.d) return latest.d;
+  } catch {
+    // Table doesn't exist — fall through to today
+  }
 
   // 3. Fall back to today (UTC)
   return new Date().toISOString().slice(0, 10);
