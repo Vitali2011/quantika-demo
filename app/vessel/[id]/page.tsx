@@ -17,6 +17,7 @@ import { PscHistoryLink } from '@/components/vessel/PscHistoryLink';
 import { VesselPassportPanel } from '@/components/vessel/VesselPassportPanel';
 import { buildVesselPassport } from '@/lib/counterparty';
 import { getStore } from '@/lib/session-store';
+import { isDemoMode } from '@/lib/demo-mode';
 
 // Only the three canonical string labels are valid. Guard against numeric
 // confidence scores from the parser reaching the ConfIcon branch — a truthy
@@ -49,7 +50,10 @@ export default async function VesselDetailPage({ params }: Props) {
   if (!sessionId) redirect('/');
 
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) {
+    if (isDemoMode()) redirect(`/api/demo/rehydrate?next=/vessel/${id}`);
+    redirect('/');
+  }
 
   const email = session.emails.find(e => e.id === id);
   if (!email) notFound();

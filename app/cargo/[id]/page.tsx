@@ -13,6 +13,7 @@ import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
 import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 import { Anchor, FileText, Ship } from 'lucide-react';
 import { toMatchSlug } from '@/lib/matching/match-slug';
+import { isDemoMode } from '@/lib/demo-mode';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -51,7 +52,10 @@ export default async function CargoDetailPage({ params }: Props) {
   if (!sessionId) redirect('/');
 
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) {
+    if (isDemoMode()) redirect(`/api/demo/rehydrate?next=/cargo/${id}`);
+    redirect('/');
+  }
 
   const email = session.emails.find(e => e.id === id);
   if (!email) notFound();

@@ -6,6 +6,8 @@ import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
 import { getMatch, getMatchBySlug } from '@/lib/matching/matches-repository';
 import { fromMatchSlug } from '@/lib/matching/match-slug';
+import { isDemoMode } from '@/lib/demo-mode';
+import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
 import { Badge } from '@/components/ui/badge';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
@@ -35,7 +37,10 @@ export default async function MatchDetailPage({ params }: Props) {
   const sessionId = cookieStore.get('session_id')?.value;
   if (!sessionId) redirect('/dashboard');
   const session = getSession(sessionId);
-  if (!session) redirect('/dashboard');
+  if (!session) {
+    if (isDemoMode()) redirect(`/api/demo/rehydrate?next=/match/${id}`);
+    redirect('/dashboard');
+  }
 
   const db = getStore().getDatabase();
   let storedMatch;
@@ -50,8 +55,16 @@ export default async function MatchDetailPage({ params }: Props) {
     storedMatch = getMatchBySlug(db, keys.cargo_id, keys.vessel_id, sessionId);
   }
 
-  // Session isolation: 404 if match not found or belongs to another session
-  if (!storedMatch || storedMatch.user_id !== sessionId) notFound();
+  // Session isolation: 404 if match not found or belongs to another session.
+  // Demo mode: stale numeric ID (owned by evicted session) — re-persist under new session
+  // then resolve via stable cargo_id/vessel_id slug.
+  if (!storedMatch || storedMatch.user_id !== sessionId) {
+    if (isDemoMode() && storedMatch && storedMatch.user_id !== sessionId && session) {
+      persistSessionMatches(db, sessionId!, session.matches, session.parsedCargos, session.parsedVessels);
+      storedMatch = getMatchBySlug(db, storedMatch.cargo_id, storedMatch.vessel_id, sessionId!) ?? null;
+    }
+    if (!storedMatch || storedMatch.user_id !== sessionId) notFound();
+  }
 
   // Enrich with in-session data if still available (session may have expired/reloaded)
   const sessionMatch = session.matches.find(

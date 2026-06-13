@@ -9,6 +9,7 @@ import { CopyButton } from '@/components/copy-button';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { safeRender, getConf, ConfIcon } from '@/lib/ui-render';
 import { formatDate, formatNumber } from '@/lib/utils';
+import { isDemoMode } from '@/lib/demo-mode';
 
 // Only render ConfIcon for the three canonical string labels. Numeric scores
 // (0–1) from the parser are truthy but invalid — rendering them would leave a
@@ -38,7 +39,10 @@ export default async function FixtureDetailPage({ params }: Props) {
   const sessionId = cookieStore.get('session_id')?.value;
   if (!sessionId) redirect('/');
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) {
+    if (isDemoMode()) redirect(`/api/demo/rehydrate?next=/fixture/${id}`);
+    redirect('/');
+  }
   const email = session.emails.find(e => e.id === id);
   if (!email) notFound();
   const recap = session.parsedFixtureRecaps.find(r => r.emailId === id);
