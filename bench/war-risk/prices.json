@@ -1,0 +1,5 @@
+{
+  "_source": "claude-api skill pricing table, fetched 2026-06-13",
+  "claude-sonnet-4-6": { "in_per_mtok_usd": 3.0, "out_per_mtok_usd": 15.0 },
+  "claude-opus-4-8": { "in_per_mtok_usd": 5.0, "out_per_mtok_usd": 25.0 }
+}
