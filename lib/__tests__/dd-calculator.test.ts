@@ -261,6 +261,78 @@ describe('calculateDemurrageDespatch', () => {
     });
   });
 
+  describe('epsilon balanced band (EPSILON=0.01) — #691', () => {
+    // Sub-minute noise: 0 < |netHours| <= 0.01 must be "balanced" with zero money,
+    // matching the EPSILON band in calculator.ts. Previously strict > 0 / < 0 caused
+    // a tiny demurrage/despatch charge even when the laytime label said "balanced".
+
+    const makeResult = (netHours: number): LaytimeResult => ({
+      allowedLaytimeHours: 120,
+      usedLaytimeHours: 120 + netHours,
+      demurrageOrDespatch: Math.abs(netHours) <= 0.01 ? 'balanced' : netHours > 0 ? 'demurrage' : 'despatch',
+      netHours,
+      breakdown: [],
+    });
+
+    it('netHours=0.005 → balanced, all amounts 0 (within epsilon, previously charged demurrage)', () => {
+      const result = calculateDemurrageDespatch({
+        laytimeResult: makeResult(0.005),
+        demurrageRateUsdPerDay: 8000,
+      });
+      expect(result.status).toBe('balanced');
+      expect(result.demurrageAmount).toBe(0);
+      expect(result.despatchAmount).toBe(0);
+      expect(result.netAmount).toBe(0);
+    });
+
+    it('netHours=-0.005 → balanced, all amounts 0 (within epsilon, previously charged despatch)', () => {
+      const result = calculateDemurrageDespatch({
+        laytimeResult: makeResult(-0.005),
+        demurrageRateUsdPerDay: 8000,
+      });
+      expect(result.status).toBe('balanced');
+      expect(result.demurrageAmount).toBe(0);
+      expect(result.despatchAmount).toBe(0);
+      expect(result.netAmount).toBe(0);
+    });
+
+    it('netHours=0 → balanced, all amounts 0', () => {
+      const result = calculateDemurrageDespatch({
+        laytimeResult: makeResult(0),
+        demurrageRateUsdPerDay: 8000,
+      });
+      expect(result.status).toBe('balanced');
+      expect(result.demurrageAmount).toBe(0);
+      expect(result.despatchAmount).toBe(0);
+      expect(result.netAmount).toBe(0);
+    });
+
+    it('netHours=0.02 → demurrage with correct amount (outside epsilon)', () => {
+      const result = calculateDemurrageDespatch({
+        laytimeResult: makeResult(0.02),
+        demurrageRateUsdPerDay: 8000,
+      });
+      expect(result.status).toBe('demurrage');
+      // amount = (0.02 / 24) * 8000
+      expect(result.demurrageAmount).toBeCloseTo((0.02 / 24) * 8000, 10);
+      expect(result.despatchAmount).toBe(0);
+      expect(result.netAmount).toBeGreaterThan(0);
+    });
+
+    it('netHours=-0.02 → despatch with correct amount (outside epsilon)', () => {
+      const result = calculateDemurrageDespatch({
+        laytimeResult: makeResult(-0.02),
+        demurrageRateUsdPerDay: 8000,
+        despatchRateUsdPerDay: 4000,
+      });
+      expect(result.status).toBe('despatch');
+      // amount = (0.02 / 24) * 4000
+      expect(result.despatchAmount).toBeCloseTo((0.02 / 24) * 4000, 10);
+      expect(result.demurrageAmount).toBe(0);
+      expect(result.netAmount).toBeLessThan(0);
+    });
+  });
+
   describe('magnitude assertions', () => {
     it('demurrageAmount is always >= 0 for positive rates and positive netHours', () => {
       const result = calculateDemurrageDespatch({

@@ -51,24 +51,29 @@ export function calculateDemurrageDespatch(
 
   const netHours = laytimeResult.netHours;
 
+  // Must match calculator.ts EPSILON — laytime label and D/D money must agree (#691).
+  // Sub-minute noise (|netHours| <= 0.01 h = ≤36 s) is treated as balanced:
+  // no charge, no payment, to prevent label/money divergence on exactly-on-time voyages.
+  const EPSILON = 0.01;
+
   let status: 'demurrage' | 'despatch' | 'balanced';
   let demurrageAmount = 0;
   let despatchAmount = 0;
   let demurrageHours = 0;
   let despatchHours = 0;
 
-  if (netHours > 0) {
-    // Demurrage case: used more time than allowed
+  if (netHours > EPSILON) {
+    // Demurrage case: used more time than allowed (beyond noise threshold)
     status = 'demurrage';
     demurrageHours = netHours;
     demurrageAmount = (netHours / 24) * demurrageRateUsdPerDay;
-  } else if (netHours < 0) {
-    // Despatch case: finished earlier than allowed
+  } else if (netHours < -EPSILON) {
+    // Despatch case: finished earlier than allowed (beyond noise threshold)
     status = 'despatch';
     despatchHours = Math.abs(netHours);
     despatchAmount = (Math.abs(netHours) / 24) * despatchRate;
   } else {
-    // Balanced case: exactly on time
+    // Balanced case: within ±EPSILON noise band (includes exactly on time)
     status = 'balanced';
   }
 
