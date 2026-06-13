@@ -11,14 +11,22 @@ mkdir -p "$OUT"
 
 WT="$(bash "${ROOT}/scripts/bench/new-run-worktree.sh" "$ARM" "$RUN")"
 
+# Isolated claude config — the ambient skill ecosystem (superpowers/orchestrator)
+# hijacks the agent into writing a PLAN instead of code. Clean dir carries ONLY auth
+# creds + minimal settings: no skills, no plugins, no hooks. (Validity fix 2026-06-13.)
+CLEAN="${ROOT}/bench/war-risk/.clean-claude"
+mkdir -p "$CLEAN"
+[ -f "$CLEAN/.credentials.json" ] || cp "$HOME/.claude/.credentials.json" "$CLEAN/.credentials.json" 2>/dev/null || true
+printf '{"defaultMode":"auto"}\n' > "$CLEAN/settings.json"
+
 CMD=(claude --print --output-format json --model "$MODEL" --effort "$EFFORT" --max-budget-usd "$BUDGET")
 if [ "${DRYRUN:-0}" = "1" ]; then
-  printf 'DRYRUN cwd=%s cmd=%s < %s\n' "$WT" "${CMD[*]}" "$BRIEF"
+  printf 'DRYRUN cwd=%s cmd=CLAUDE_CONFIG_DIR=%s %s < %s\n' "$WT" "$CLEAN" "${CMD[*]}" "$BRIEF"
   git worktree remove --force "$WT"; exit 0
 fi
 
-# Run claude inside the worktree, feeding the brief on stdin.
-( cd "$WT" && "${CMD[@]}" < "$BRIEF" ) > "${OUT}/run.json" 2> "${OUT}/run.err" || true
+# Run claude inside the worktree with isolated config, feeding the brief on stdin.
+( cd "$WT" && CLAUDE_CONFIG_DIR="$CLEAN" "${CMD[@]}" < "$BRIEF" ) > "${OUT}/run.json" 2> "${OUT}/run.err" || true
 
 # Capture the produced diff (agent's changes vs the start SHA) and usage metrics.
 git -C "$WT" add -A

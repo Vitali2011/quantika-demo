@@ -1,5 +1,11 @@
 # Task: war-risk premium — live JWC rates + Suez-transit detection
 
+> EXECUTION MODE — read first. Implement directly, right now. Edit the actual
+> TypeScript source files and add focused unit tests. Do NOT write a plan, design
+> doc, or markdown spec. Do NOT defer to a planning/brainstorming step or ask for
+> approval before coding. Your work is judged ONLY on working code changes to the
+> files below — a plan document scores zero.
+
 You are working in the quantika-demo repo (maritime freight matching). Implement the
 following three fixes in the war-risk premium calculation. Do NOT change parsers,
 DB migrations, or the RAG/knowledge ingestion path. Add focused unit tests for your

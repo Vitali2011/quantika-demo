@@ -1,3 +1,4 @@
 results/
 worktrees/
 *.sample.json
+.clean-claude/
