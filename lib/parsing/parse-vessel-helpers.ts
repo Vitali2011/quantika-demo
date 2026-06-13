@@ -139,6 +139,24 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
     }
   }
 
+  // CAPACITY_PLAUSIBILITY: null grain/bale capacity when cbm < 0.5 × DWT (#793).
+  // Only fires when both capacity and DWT are present and positive.
+  const dwtRaw = out['dwt_summer'];
+  const dwt = isConfField(dwtRaw)
+    ? (typeof dwtRaw.value === 'number' ? dwtRaw.value : null)
+    : (typeof dwtRaw === 'number' ? dwtRaw : null);
+  if (dwt !== null && dwt > 0) {
+    for (const capKey of ['grain_capacity', 'bale_capacity']) {
+      const capRaw = out[capKey];
+      const cbm = isConfField(capRaw)
+        ? (typeof capRaw.value === 'number' ? capRaw.value : null)
+        : (typeof capRaw === 'number' ? capRaw : null);
+      if (cbm !== null && cbm > 0 && cbm < 0.5 * dwt) {
+        out[capKey] = null;
+      }
+    }
+  }
+
   // BUILT_FROM_DATE: null out when source_text contains a month name
   if ('built' in out) out['built'] = nullBuiltIfCalendarDate(out['built']);
 
