@@ -80,4 +80,34 @@ describe('#793 — vessel capacity plausibility guard', () => {
     expect(vessels[0].grainCapacity).toBeNull();
     expect(vessels[0].baleCapacity).toBe(3000);
   });
+
+  it('nulls grain/bale capacity when cbm is implausibly LARGE (> 2.5 x DWT) #976', () => {
+    // MV BBA LARISA scenario: DWT 5007, grain 220577 cbm (220577 > 2.5 * 5007 = 12517.5)
+    const raw = JSON.stringify({
+      vessel_name: 'MV BBA LARISA',
+      imo: '9166510',
+      dwt_summer: 5007,
+      grain_capacity: 220577,
+      bale_capacity: 213000,
+    });
+    const vessels = parseVesselAIResponse(raw, 'test-email');
+    expect(vessels).toHaveLength(1);
+    expect(vessels[0].grainCapacity).toBeNull();
+    expect(vessels[0].baleCapacity).toBeNull();
+  });
+
+  it('keeps grain/bale capacity at the plausible upper end (<= 2.5 x DWT) #976', () => {
+    // Legit large-cube vessel: 12000 cbm on 5007 DWT (ratio 2.40 < 2.5 -> plausible)
+    const raw = JSON.stringify({
+      vessel_name: 'MV LEGIT MPP',
+      imo: '1234568',
+      dwt_summer: 5007,
+      grain_capacity: 12000,
+      bale_capacity: 11500,
+    });
+    const vessels = parseVesselAIResponse(raw, 'test-email');
+    expect(vessels).toHaveLength(1);
+    expect(vessels[0].grainCapacity).toBe(12000);
+    expect(vessels[0].baleCapacity).toBe(11500);
+  });
 });

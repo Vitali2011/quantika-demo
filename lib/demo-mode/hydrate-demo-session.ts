@@ -111,6 +111,19 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     if (v.grainCapacityUnit && v.grainCapacityUnit !== 'cbm') {
       v.grainCapacityUnit = 'cbm';
     }
+    // CAPACITY_PLAUSIBILITY upper bound: same rule as preNormalizeRawVessel (#976).
+    // Fixes already-persisted CBFT-as-CBM values in demo-seed.db.
+    const dwtVal = typeof v.dwtSummer === 'object' && v.dwtSummer !== null
+      ? (v.dwtSummer as { value?: number }).value ?? null
+      : (typeof v.dwtSummer === 'number' ? v.dwtSummer : null);
+    if (dwtVal !== null && dwtVal > 0) {
+      if (v.grainCapacity !== null && v.grainCapacity !== undefined && v.grainCapacity > 2.5 * dwtVal) {
+        v.grainCapacity = null;
+      }
+      if (v.baleCapacity !== null && v.baleCapacity !== undefined && v.baleCapacity > 2.5 * dwtVal) {
+        v.baleCapacity = null;
+      }
+    }
   }
 
   const colNames = new Set((db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>).map((c) => c.name));

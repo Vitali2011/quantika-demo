@@ -139,8 +139,8 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
     }
   }
 
-  // CAPACITY_PLAUSIBILITY: null grain/bale capacity when cbm < 0.5 × DWT (#793).
-  // Only fires when both capacity and DWT are present and positive.
+  // CAPACITY_PLAUSIBILITY: null grain/bale capacity outside 0.5x-2.5x DWT range (#793/#976).
+  // Both bounds fire only when capacity and DWT are present and positive.
   const dwtRaw = out['dwt_summer'];
   const dwt = isConfField(dwtRaw)
     ? (typeof dwtRaw.value === 'number' ? dwtRaw.value : null)
@@ -151,7 +151,7 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
       const cbm = isConfField(capRaw)
         ? (typeof capRaw.value === 'number' ? capRaw.value : null)
         : (typeof capRaw === 'number' ? capRaw : null);
-      if (cbm !== null && cbm > 0 && cbm < 0.5 * dwt) {
+      if (cbm !== null && cbm > 0 && (cbm < 0.5 * dwt || cbm > 2.5 * dwt)) {
         out[capKey] = null;
       }
     }
