@@ -25,7 +25,7 @@ import { applyHoldCleanliness } from '@/lib/matching/hold-cleanliness';
 import type Database from 'better-sqlite3';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
-import { getDetentionCount } from '@/lib/market/psc-repository';
+import { getDetentionCount, hasInspectionData } from '@/lib/market/psc-repository';
 import { resolveChartererTier } from '@/lib/matching/charterer-tier';
 import { formatNumber } from '@/lib/utils';
 import { LLMTimeoutError } from '@/lib/openai';
@@ -730,9 +730,9 @@ export async function analyzePairs(
       const econ = computeMatchEconomicsFor(m, cargos, vessels, db, economicsCalcAt, bunkerPriceUsdPerMt);
       if (econ) m.economics = econ;
       const imo = vessel.imo;
-      const detentionCount = db && imo
+      const detentionCount = db && imo && hasInspectionData(db, imo)
         ? getDetentionCount(db, imo, `${refYear - PSC_LOOKBACK_YEARS}-01-01`)
-        : undefined; // no db/IMO → leave PSC neutral (omit factor)
+        : undefined; // no PSC rows for this vessel → leave factor neutral, no fake "0 detentions" (audit A.2)
       const chartererTier = db ? resolveChartererTier(db, cargo) : null;
       const fb = computeFitBreakdown({
         cargo,

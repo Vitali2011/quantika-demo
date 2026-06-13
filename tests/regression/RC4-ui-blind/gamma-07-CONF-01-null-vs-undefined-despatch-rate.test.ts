@@ -41,7 +41,15 @@ describe('regression gamma-07-CONF-01: null vs undefined despatchRate', () => {
     expect(data.dd.breakdown.despatchRate).toBe(5000); // default = 10000 / 2
   });
 
-  it('despatchRateUsdPerDay: null should be treated as undefined (fallback to default)', async () => {
+  it('despatchRateUsdPerDay: null is rejected with explicit 400 (strict contract, not silent coercion)', async () => {
+    // Finding 7-02 RESOLVED — re-pinned to the actual contract. The route validates
+    // `!== undefined` values as finite numbers and rejects null with an explicit 400
+    // and a clear message (app/api/laytime/calculate/route.ts:94-99). This is neither
+    // of the feared failure modes (null→0 silent coercion, or an unhandled 500).
+    // The sole UI caller (app/laytime/page.tsx) keeps the field as
+    // `number | undefined` — undefined is dropped by JSON.stringify, so no real
+    // client ever sends null. Strict rejection is the deliberate contract; this
+    // test now locks it.
     const request = createRequest({
       allowedLaytimeDays: 5,
       mode: 'SHEX',
@@ -54,10 +62,8 @@ describe('regression gamma-07-CONF-01: null vs undefined despatchRate', () => {
     const response = await POST(request);
     const data = await response.json();
 
-    // EXPECTATION: null should behave like undefined → use default
-    // IF this fails: API treats null as 0 or throws → finding confirmed
-    expect(response.status).toBe(200);
-    expect(data.dd.breakdown.despatchRate).toBe(5000);
-    // NOTE: This test MAY fail if API validation rejects null — that's the bug we're looking for
+    expect(response.status).toBe(400);
+    expect(data.error).toBe('despatchRateUsdPerDay must be a finite number');
+    expect(data).not.toHaveProperty('dd'); // no partial success payload on validation error
   });
 });

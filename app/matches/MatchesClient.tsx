@@ -50,11 +50,70 @@ interface ScoreComponent {
 }
 
 type QuickFilter = 'all' | 'fresh' | 'score80' | 'dwt50_60';
-type SortBy = 'fit' | 'score' | 'freshness' | 'tce';
+export type SortBy =
+  | 'fit' | 'score' | 'freshness' | 'tce'
+  | 'cargo_type' | 'vessel_name' | 'route' | 'dwt' | 'laycan';
+export type SortDir = 'asc' | 'desc';
 type Density = 'table' | 'cards';
 type Tab = 'matches' | 'review' | 'insufficient';
 
-const SORT_LABELS: Record<SortBy, string> = { fit: 'Fit %', score: 'Score', freshness: 'Freshness', tce: 'TCE/day' };
+const SORT_LABELS: Record<SortBy, string> = {
+  fit: 'Fit %', score: 'Score', freshness: 'Freshness', tce: 'TCE/day',
+  cargo_type: 'Cargo type', vessel_name: 'Vessel name', route: 'Route', dwt: 'DWT', laycan: 'Laycan',
+};
+
+/** Default direction per column: numbers/dates desc-first, text asc-first (laycan = earliest first). */
+export const DEFAULT_DIR: Record<SortBy, SortDir> = {
+  fit: 'desc', score: 'desc', freshness: 'desc', tce: 'desc',
+  dwt: 'desc', laycan: 'asc',
+  cargo_type: 'asc', vessel_name: 'asc', route: 'asc',
+};
+
+/** Column comparator. null/undefined values always sink to the END regardless of direction. */
+export function compareMatches(a: StoredMatch, b: StoredMatch, sortBy: SortBy, dir: SortDir): number {
+  const flip = dir === 'asc' ? -1 : 1;
+  const str = (x: string | null | undefined, y: string | null | undefined): number => {
+    if (!x && !y) return 0;
+    if (!x) return 1;
+    if (!y) return -1;
+    return x.localeCompare(y) * (dir === 'asc' ? 1 : -1);
+  };
+  if (sortBy === 'freshness') return (b.created_at - a.created_at) * flip;
+  if (sortBy === 'tce') {
+    if (a.tce_usd_per_day == null && b.tce_usd_per_day == null) return 0;
+    if (a.tce_usd_per_day == null) return 1;
+    if (b.tce_usd_per_day == null) return -1;
+    return (b.tce_usd_per_day - a.tce_usd_per_day) * flip;
+  }
+  if (sortBy === 'dwt') {
+    if (a.vessel_dwt == null && b.vessel_dwt == null) return 0;
+    if (a.vessel_dwt == null) return 1;
+    if (b.vessel_dwt == null) return -1;
+    return (b.vessel_dwt - a.vessel_dwt) * flip;
+  }
+  if (sortBy === 'laycan') {
+    if (a.laycan_start == null && b.laycan_start == null) return 0;
+    if (a.laycan_start == null) return 1;
+    if (b.laycan_start == null) return -1;
+    return (b.laycan_start - a.laycan_start) * flip;
+  }
+  if (sortBy === 'cargo_type') return str(a.cargo_type, b.cargo_type);
+  if (sortBy === 'vessel_name') return str(a.vessel_name, b.vessel_name);
+  if (sortBy === 'route') return str(a.load_port, b.load_port) || str(a.discharge_port, b.discharge_port);
+  // Both 'fit' and legacy 'score' sort by fit_percent (score fallback); score as tie-break.
+  // Null-guards before arithmetic — synthetic/legacy rows may lack both fields (NaN otherwise).
+  const aFit = a.fit_percent ?? a.score;
+  const bFit = b.fit_percent ?? b.score;
+  if (aFit == null && bFit == null) return 0;
+  if (aFit == null) return 1;
+  if (bFit == null) return -1;
+  const fitDiff = (bFit - aFit) * flip;
+  if (fitDiff !== 0) return fitDiff;
+  if (a.score == null && b.score == null) return 0;
+  if (a.score == null) return 1;
+  if (b.score == null) return -1;
+  return (b.score - a.score) * flip;
+}
 
 function scoreClass(score: number): string {
   if (score >= 93) return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
@@ -120,11 +179,13 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const [showModal, setShowModal] = useState<{ action: string; count: number } | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>(() => isOwner ? 'tce' : 'fit');
+  const [sortDir, setSortDir] = useState<SortDir>(() => DEFAULT_DIR[isOwner ? 'tce' : 'fit']);
   // Derived-state-during-render resets sort on mode switch without cascading renders.
   const [prevIsOwner, setPrevIsOwner] = useState(isOwner);
   if (prevIsOwner !== isOwner) {
     setPrevIsOwner(isOwner);
     setSortBy(isOwner ? 'tce' : 'fit');
+    setSortDir(DEFAULT_DIR[isOwner ? 'tce' : 'fit']);
   }
 
   // CD design state
@@ -322,13 +383,39 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           (quickFilter === 'score80' && (m.fit_percent ?? effectiveScore(m, clientNow)) >= 80) ||
           (quickFilter === 'dwt50_60' && m.vessel_dwt != null && m.vessel_dwt >= 50000 && m.vessel_dwt <= 60000))
     )
-    .sort((a, b) => {
-      if (sortBy === 'freshness') return b.created_at - a.created_at;
-      if (sortBy === 'tce') return (b.tce_usd_per_day ?? 0) - (a.tce_usd_per_day ?? 0);
-      // Both 'fit' and legacy 'score' sort by fit_percent; use score as tie-break
-      const fitDiff = (b.fit_percent ?? b.score) - (a.fit_percent ?? a.score);
-      return fitDiff !== 0 ? fitDiff : b.score - a.score;
-    });
+    .sort((a, b) => compareMatches(a, b, sortBy, sortDir));
+
+  // Column-header sorting: click active column → toggle direction; click new column → its default direction.
+  function handleHeaderClick(key: SortBy) {
+    if (sortBy === key) {
+      setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
+    } else {
+      setSortBy(key);
+      setSortDir(DEFAULT_DIR[key]);
+    }
+  }
+
+  const headerCols: Array<{ label: string; key: SortBy | null }> = isOwner
+    ? [
+        { label: 'FIT %', key: 'fit' },
+        { label: 'Cargo', key: 'cargo_type' },
+        { label: 'Route', key: 'route' },
+        { label: 'DWT', key: 'dwt' },
+        { label: 'TCE / day', key: 'tce' },
+        { label: 'Vessel', key: 'vessel_name' },
+        { label: 'Laycan', key: 'laycan' },
+        { label: '', key: null },
+      ]
+    : [
+        { label: 'FIT %', key: 'fit' },
+        { label: 'Vessel', key: 'vessel_name' },
+        { label: 'Route', key: 'route' },
+        { label: 'DWT', key: 'dwt' },
+        { label: 'TCE / day', key: 'tce' },
+        { label: 'Cargo', key: 'cargo_type' },
+        { label: 'Laycan', key: 'laycan' },
+        { label: '', key: null },
+      ];
 
   // Update status filter and persist to URL
   function applyStatusFilter(status: MatchStatus | null) {
@@ -394,10 +481,10 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
           return (
             <ul className="space-y-4" data-testid="bucket-list">
               {bucketRows.map((match) => (
-                // Composite key: a cargo↔vessel pair is unique within a bucket, and only
-                // one bucket renders per tab — so this never collides with the other bucket's
-                // synthetic ids regardless of row counts.
-                <li key={`${match.cargo_id}|${match.vessel_id}`} className="bg-white rounded-lg border overflow-hidden">
+                // Bucket rows carry unique ids (negative synthetic from toBucketRows,
+                // positive DB ids otherwise) — the one collision-free key. A composite
+                // pair|item key broke when a feed omitted item columns (QA F1, audit C.5).
+                <li key={match.id} className="bg-white rounded-lg border overflow-hidden">
                   <div className="flex items-start gap-3 p-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
@@ -488,13 +575,22 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
               <span className="text-xs font-mono text-ds-text-muted">Sort:</span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortBy)}
+                onChange={(e) => {
+                  const key = e.target.value as SortBy;
+                  setSortBy(key);
+                  setSortDir(DEFAULT_DIR[key]);
+                }}
                 className="h-8 px-2 border border-ds-border rounded-lg bg-ds-surface text-ds-text text-xs font-mono cursor-pointer hover:border-ds-border-strong transition-colors"
               >
                 <option data-testid="sort-fit" value="fit">Fit %</option>
                 <option data-testid="sort-score" value="score">Score</option>
                 <option data-testid="sort-freshness" value="freshness">Freshness</option>
                 <option data-testid="sort-tce" value="tce">TCE/day</option>
+                <option data-testid="sort-cargo_type" value="cargo_type">Cargo type</option>
+                <option data-testid="sort-vessel_name" value="vessel_name">Vessel name</option>
+                <option data-testid="sort-route" value="route">Route</option>
+                <option data-testid="sort-dwt" value="dwt">DWT</option>
+                <option data-testid="sort-laycan" value="laycan">Laycan</option>
               </select>
             </div>
 
@@ -973,17 +1069,30 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                 </colgroup>
                 <thead>
                   <tr className="bg-ds-surface-muted border-b border-ds-border">
-                    {(isOwner
-                      ? ['FIT %', 'Cargo', 'Route', 'DWT', 'TCE / day', 'Vessel', 'Laycan', '']
-                      : ['FIT %', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', '']
-                    ).map((h, i) => (
-                      <th
-                        key={i}
-                        className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i === 3 || i === 4 || i === 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
-                      >
-                        {h}
-                      </th>
-                    ))}
+                    {headerCols.map((col, i) => {
+                      const key = col.key;
+                      return (
+                        <th
+                          key={i}
+                          aria-sort={key ? (sortBy === key ? (sortDir === 'desc' ? 'descending' : 'ascending') : 'none') : undefined}
+                          className={`font-mono text-[10.5px] tracking-[0.14em] uppercase text-ds-text-muted font-medium py-[14px] px-3 whitespace-nowrap ${i === 0 ? 'text-left pl-5' : i === 3 || i === 4 || i === 6 ? 'text-right' : 'text-left'} ${i === 7 ? 'pr-5' : ''}`}
+                        >
+                          {key ? (
+                            <button
+                              type="button"
+                              data-testid={`th-sort-${key}`}
+                              onClick={() => handleHeaderClick(key)}
+                              className="cursor-pointer hover:text-ds-text transition-colors"
+                            >
+                              {col.label}
+                              {sortBy === key ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ''}
+                            </button>
+                          ) : (
+                            col.label
+                          )}
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody>

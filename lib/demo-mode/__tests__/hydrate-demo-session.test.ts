@@ -144,8 +144,8 @@ describe('buildDemoSessionBlob', () => {
       vesselValueUsd: estimateVesselValueUsd(3176),
     });
 
-    // UI rounds 666.96 → "$667"; test parity with exact oracle value
-    expect(oracle.premiumUsd).toBeCloseTo(667, 0);
+    // UI rounds 1778.56 → "$1779"; live red-sea rate 0.2% × $889,280 (#war-risk-v2-value-shift)
+    expect(oracle.premiumUsd).toBeCloseTo(1779, 0);
     const bd = blob.matches[0].economics!.breakdown;
     expect(bd.warRiskPremium).toBe(oracle.premiumUsd);
     expect(bd.warRiskZones).toEqual(expect.arrayContaining(['Red Sea / Bab al-Mandeb HRA']));

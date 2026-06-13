@@ -36,5 +36,7 @@ export function deriveBucketReason(i: BucketReasonInput): BucketReason {
       return { bucket: 'lowConfidence',
         reason: `TCE $${Math.round(i.tceUsdPerDay).toLocaleString('en-US')}/day is below the $${floor.toLocaleString('en-US')}/day breakeven for this size.` };
   }
+  // 'blocked' is assigned by the sanctions-gate (pair-analyzer.ts) before persist-session-matches
+  // runs, and copied directly into worksheetForPersist. deriveBucketReason never returns 'blocked'.
   return { bucket: 'main', reason: 'Passed all hard filters and economic thresholds.' };
 }

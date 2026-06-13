@@ -74,6 +74,8 @@ export interface TCEBreakdown {
   war_risk_usd: number;
   ets_eur: number;
   ets_usd: number;
+  /** FuelEU Maritime GHG penalty (audit A.5). 0 unless FUELEU_ENABLED + EU leg. */
+  fueleu_usd: number;
   gross_freight_usd: number;
   total_costs_usd: number;
   net_voyage_usd: number;
@@ -90,6 +92,7 @@ export interface TCEBreakdown {
     da: boolean;
     war_risk: boolean;
     ets: boolean;
+    fueleu: boolean;
   };
   /** W6a: DataQuality for the DA line (sourced from port_da_estimates confidence). */
   da_quality?: DataQuality;

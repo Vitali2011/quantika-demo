@@ -164,7 +164,24 @@ async function fetchWithRetry(url: string, timeoutMs: number, retries: number): 
         return null;
       }
 
-      return await response.text();
+      // Guard (Q6): cap section body at 10MB — parity with fetchWithTimeout (ToC).
+      // Section pages were previously unguarded; a pathological/malicious mirror
+      // could serve a 100MB section and, with MAX_CONCURRENT parallel fetches,
+      // land hundreds of MB in process memory before sanitize-html runs. Oversize
+      // is not transient → drop the section (return null) rather than retry.
+      const MAX_RESPONSE_BYTES = 10 * 1024 * 1024;
+      const contentLength = response.headers?.get?.('content-length');
+      if (contentLength && parseInt(contentLength, 10) > MAX_RESPONSE_BYTES) {
+        console.warn(`Section response too large: ${contentLength} bytes (max ${MAX_RESPONSE_BYTES}): ${url}`);
+        return null;
+      }
+
+      const text = await response.text();
+      if (text.length > MAX_RESPONSE_BYTES) {
+        console.warn(`Section response body too large: ${text.length} chars (max ${MAX_RESPONSE_BYTES}): ${url}`);
+        return null;
+      }
+      return text;
     } catch (error) {
       if (attempt < retries && (error as Error).name !== 'AbortError') {
         await new Promise((resolve) => setTimeout(resolve, 1000));

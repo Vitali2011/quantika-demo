@@ -1,4 +1,5 @@
-export const IACS_MEMBERS = ['DNV', 'LR', 'ABS', 'BV', 'NKK', 'KR', 'CCS', 'RINA'] as const;
+// qa-smoke F5: IRS (Indian Register of Shipping) is an IACS member — was missing
+export const IACS_MEMBERS = ['DNV', 'LR', 'ABS', 'BV', 'NKK', 'KR', 'CCS', 'RINA', 'IRS'] as const;
 export type IacsMember = typeof IACS_MEMBERS[number];
 
 const ALIASES: Record<string, IacsMember> = {
@@ -14,6 +15,7 @@ const ALIASES: Record<string, IacsMember> = {
   'korean register of shipping': 'KR',
   'china classification society': 'CCS',
   'registro italiano navale': 'RINA',
+  'indian register of shipping': 'IRS', // qa-smoke F5
 };
 
 export function isIacs(className: string): boolean {

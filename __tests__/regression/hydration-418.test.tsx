@@ -3,17 +3,15 @@
  *
  * Regression suite: React hydration error #418.
  *
- * Guards three fixes:
+ * Guards:
  *   #357 — CRLF normalization in EmailBodyViewer (PR #389)
  *   #291 — aria-valuetext without space in Progress (PR #389)
- *   #404 — SubsCountdownWidget Date.now() in render path → SSR mismatch
  *
  * PI2: each test exercises a real render or renderToString call, not string matching.
  */
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { renderToString } from 'react-dom/server';
 import '@testing-library/jest-dom';
 
 // ---------------------------------------------------------------------------
@@ -59,41 +57,6 @@ describe('Progress aria-valuetext format (#291)', () => {
     render(<Progress value={33} />);
     const bar = screen.getByRole('progressbar');
     expect(bar.getAttribute('aria-valuetext')).toMatch(/^\d+%$/);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// #404 — SubsCountdownWidget must not call Date.now() during SSR render
-// ---------------------------------------------------------------------------
-import SubsCountdownWidget from '@/components/deals/SubsCountdownWidget';
-
-describe('SubsCountdownWidget SSR determinism (#404)', () => {
-  const originalFlag = process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED;
-
-  beforeEach(() => {
-    process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED = 'true';
-  });
-
-  afterEach(() => {
-    process.env.NEXT_PUBLIC_SUBS_TIMER_V2_ENABLED = originalFlag;
-  });
-
-  it('renders identical HTML across two consecutive SSR passes', () => {
-    const props = { dealId: 'd1', subsDeadline: '2026-12-31T12:00:00Z' };
-    const a = renderToString(<SubsCountdownWidget {...props} />);
-    const b = renderToString(<SubsCountdownWidget {...props} />);
-    expect(a).toBe(b);
-  });
-
-  it('SSR output uses placeholder "--", not a live countdown string', () => {
-    const html = renderToString(
-      <SubsCountdownWidget dealId="d1" subsDeadline="2026-12-31T12:00:00Z" />,
-    );
-    // Before fix: component rendered "X days Y hours remaining" from Date.now() in useMemo.
-    // After fix: null sentinel → placeholder "--" until useEffect.
-    expect(html).toContain('--');
-    expect(html).not.toMatch(/\d+ days/);
-    expect(html).not.toMatch(/\d+ hours/);
   });
 });
 

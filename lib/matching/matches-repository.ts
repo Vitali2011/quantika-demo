@@ -66,6 +66,14 @@ export interface CreateMatchInput {
   consumption_estimated?: number | null;
   ballast_distance_nm?: number | null;
   breakeven_tce_usd_per_day?: number | null;
+  /**
+   * When the (cargo_id, vessel_id, user_id) row already exists, refresh the
+   * engine-computed columns in place instead of silently keeping the stale
+   * first-insert values (audit B.6). NEVER touches status (user action),
+   * created_at, or identity columns. Opt-in: only the per-session persist
+   * path passes it; seed/regen writers keep pure INSERT OR IGNORE semantics.
+   */
+  refreshComputed?: boolean;
 }
 
 export interface ListMatchesOptions {
@@ -224,6 +232,11 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     if (withBallast) args.push(ballast_distance_nm);
     if (withBreakeven) args.push(breakeven_tce_usd_per_day);
     result = stmt.run(...args);
+    if (result.changes === 0 && input.refreshComputed) {
+      // Duplicate ignored — refresh computed columns in place so the
+      // existing-row fetch below returns live values (audit B.6).
+      refreshComputedColumns(db, input, now);
+    }
   } else if (hasVesselNameColumns(db)) {
     const reason_structured = input.reason_structured ?? null;
     const cargo_type = input.cargo_type ?? null;
@@ -391,19 +404,71 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
   }
 
   if (result.changes === 0) {
-    // Duplicate silently ignored by UNIQUE constraint — return the existing row.
-    const existing = db
-      .prepare(
-        `SELECT * FROM matches
+    // Duplicate silently ignored by UNIQUE constraint — return the existing row
+    // (item-aware since migration 051; legacy DBs without item columns keep the
+    // coarse pair lookup).
+    const withIdx = hasItemIndexColumns(db);
+    const sql = `SELECT * FROM matches
          WHERE cargo_id = ? AND vessel_id = ?
            AND (user_id = ? OR (user_id IS NULL AND ? IS NULL))
-         LIMIT 1`,
-      )
-      .get(input.cargo_id, input.vessel_id, user_id, user_id) as StoredMatch | undefined;
+           ${withIdx ? 'AND cargo_item_index = ? AND vessel_item_index = ?' : ''}
+         LIMIT 1`;
+    const params: Array<string | number | null> = [input.cargo_id, input.vessel_id, user_id, user_id];
+    if (withIdx) params.push(input.cargo_item_index ?? 0, input.vessel_item_index ?? 0);
+    const existing = db.prepare(sql).get(...params) as StoredMatch | undefined;
     return existing!;
   }
 
   return getMatch(db, result.lastInsertRowid as number) as StoredMatch;
+}
+
+/** See CreateMatchInput.refreshComputed. Only called from the hasFitColumns branch. */
+function refreshComputedColumns(
+  db: Database.Database,
+  input: CreateMatchInput,
+  now: number,
+): void {
+  const sets: string[] = [
+    'score = ?', 'reason = ?', 'reason_structured = ?', 'cargo_type = ?',
+    'load_port = ?', 'discharge_port = ?', 'laycan_start = ?', 'laycan_end = ?',
+    'vessel_dwt = ?', 'tce_usd_per_day = ?', 'distance_nm = ?',
+    'freight_rate_usd_per_mt = ?', 'freight_rate_source = ?',
+    'vessel_name = ?', 'cargo_ref = ?', 'fit_percent = ?', 'fit_breakdown = ?',
+    'updated_at = ?',
+  ];
+  const args: Array<string | number | null> = [
+    input.score, input.reason, input.reason_structured ?? null, input.cargo_type ?? null,
+    input.load_port ?? null, input.discharge_port ?? null,
+    input.laycan_start ?? null, input.laycan_end ?? null,
+    input.vessel_dwt ?? null, input.tce_usd_per_day ?? null, input.distance_nm ?? null,
+    input.freight_rate_usd_per_mt ?? null, input.freight_rate_source ?? null,
+    input.vessel_name ?? null, input.cargo_ref ?? null,
+    input.fit_percent ?? null, input.fit_breakdown ?? null,
+    now,
+  ];
+  if (hasWorksheetColumn(db)) {
+    // Null-preserving: worksheet_json's only producers are demo hydrate / seed
+    // regen — the live engine never attaches worksheets, so a null here means
+    // "this writer has no worksheet", never "clear the worksheet" (QA FINDING-001).
+    sets.push('worksheet_json = COALESCE(?, worksheet_json)');
+    args.push(input.worksheet_json ?? null);
+  }
+  if (hasConsumptionEstimatedColumn(db)) { sets.push('consumption_estimated = ?'); args.push(input.consumption_estimated ?? null); }
+  if (hasBallastDistanceColumn(db)) { sets.push('ballast_distance_nm = ?'); args.push(input.ballast_distance_nm ?? null); }
+  if (hasBreakevenColumn(db)) { sets.push('breakeven_tce_usd_per_day = ?'); args.push(input.breakeven_tce_usd_per_day ?? null); }
+  // Item indices are part of the row's identity since migration 051 — never
+  // SET them; the WHERE targets exactly one item row so a refresh for item N
+  // cannot clobber item M of the same email pair (audit C.5).
+  const user_id = input.user_id !== undefined ? input.user_id : null;
+  const withIdx = hasItemIndexColumns(db);
+  args.push(input.cargo_id, input.vessel_id, user_id, user_id);
+  if (withIdx) args.push(input.cargo_item_index ?? 0, input.vessel_item_index ?? 0);
+  db.prepare(
+    `UPDATE matches SET ${sets.join(', ')}
+     WHERE cargo_id = ? AND vessel_id = ?
+       AND ((user_id IS NULL AND ? IS NULL) OR user_id = ?)
+       ${withIdx ? 'AND cargo_item_index = ? AND vessel_item_index = ?' : ''}`,
+  ).run(...args);
 }
 
 export function getMatch(db: Database.Database, id: number): StoredMatch | null {
@@ -411,15 +476,24 @@ export function getMatch(db: Database.Database, id: number): StoredMatch | null 
   return row ?? null;
 }
 
+/** Resolve a slug (cargo_id + vessel_id + user) to a match. Since migration 051
+ *  several item rows may share the pair — return the best by fit, then score
+ *  (deterministic; the slug format predates item-level matches). */
 export function getMatchBySlug(
   db: Database.Database,
   cargoId: string,
   vesselId: string,
   userId: string,
 ): StoredMatch | null {
+  // fit_percent exists since migration 042 — legacy DBs (route tests build
+  // 032-036 schemas) sort by score only, same repository convention as the
+  // hasFitColumns insert branches. Unguarded ORDER BY 500'd the slug route.
+  const orderBy = hasFitColumns(db)
+    ? 'ORDER BY COALESCE(fit_percent, -1) DESC, score DESC, id ASC'
+    : 'ORDER BY score DESC, id ASC';
   const row = db
     .prepare(
-      `SELECT * FROM matches WHERE cargo_id = ? AND vessel_id = ? AND user_id = ? LIMIT 1`,
+      `SELECT * FROM matches WHERE cargo_id = ? AND vessel_id = ? AND user_id = ? ${orderBy} LIMIT 1`,
     )
     .get(cargoId, vesselId, userId) as StoredMatch | undefined;
   return row ?? null;

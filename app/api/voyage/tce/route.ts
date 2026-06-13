@@ -23,6 +23,7 @@ import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { isEuCountry } from '@/lib/validation/sanctions';
 import { routeTransitsBosporus, quoteBosporusSafe, routeTransitsSuez, quoteSuezSafe } from '@/lib/matching/tce-calculator';
+import { NT_DWT_RATIO } from '@/lib/constants';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
@@ -72,7 +73,7 @@ const VoyageInputSchema = z.object({
   route: z.object({
     originPort: z.string(),
     destinationPort: z.string(),
-    distanceNm: z.number().positive('distanceNm must be > 0').optional(),
+    distanceNm: z.number().positive('distanceNm must be > 0').finite().optional(),
     viaSuez: z.boolean().optional(),
     viaCanal: z.string().optional(),
   }),
@@ -82,7 +83,8 @@ const VoyageInputSchema = z.object({
   }),
   bunkerPriceUsdPerMt: z.number().optional(),
   euaPriceEur: z.number().optional(),
-  durationDays: z.number(),
+  // .finite(): JSON.parse('1e999') yields Infinity, which .positive() admits (QA F4).
+  durationDays: z.number().positive('durationDays must be > 0').finite(),
   euLegPercent: z.number().optional(),
   daysInHra: z.number().optional(),
   canalUsd: z.number().optional(),
@@ -105,7 +107,7 @@ function resolveCanalUsd(body: z.infer<typeof VoyageInputSchema>): number {
   // general-cargo for SCNT/dues purposes.
   const rawType = body.vessel.type ?? 'bulker';
   const vesselType = rawType === 'mpp' ? 'general' : rawType;
-  const vesselNt = body.vessel.nt ?? Math.round(body.vessel.dwt * 0.6);
+  const vesselNt = body.vessel.nt ?? Math.round(body.vessel.dwt * NT_DWT_RATIO);
   try {
     if (code === 'suez') {
       const input: SuezInput = {

@@ -1,74 +1,81 @@
-import { Email, Classification, Counterparty, EmailCategory } from './types';
+import type Database from 'better-sqlite3';
+import { Email, Classification, Counterparty, EmailCategory, ParsedVessel } from './types';
 import { isIacs } from './sanctions/iacs-members';
 import { isIgClub } from './sanctions/pi-ig-clubs';
 import { getParisMouClassification } from './sanctions/paris-mou';
-import { assessShadowFleetRisk } from './sanctions/shadow-fleet';
-import { checkVesselSanctions } from './sanctions/opensanctions';
+import { hasInspectionData, getDetentionCount } from './market/psc-repository';
 
+/**
+ * Vessel passport — vetting summary built ONLY from real data:
+ * parsed email fields + local registries (IACS, IG clubs, Paris MoU)
+ * + the PSC detention table. Every field is optional: absent data is
+ * omitted, never replaced with fake defaults (audit D).
+ *
+ * Intentionally NOT resolved here:
+ * - cii: the vessel page already renders CiiRatingBadge via lookupCii
+ *   (avoid a double lookup).
+ * - sanctions: checkVesselSanctions is async + network (OpenSanctions API);
+ *   the page already shows SanctionsBadge from session.blockedMatches.
+ * - shadowFleet: assessShadowFleetRisk needs signals (flag changes, AIS
+ *   blackouts, owner jurisdiction) that have no real data source yet.
+ */
 export interface VesselPassport {
-  imo: string;
-  flag: { country: string; parisMou?: 'white' | 'grey' | 'black' };
-  class: { society: string; isIacs: boolean };
-  pi: { club: string | null; isIg: boolean };
-  sanctions: { sanctioned: boolean; sources: string[] };
-  shadowFleet: { riskLevel: 'none' | 'low' | 'medium' | 'high'; flags: string[] };
+  imo?: string;
+  flag?: { country: string; parisMou?: 'white' | 'grey' | 'black' };
+  class?: { society: string; isIacs: boolean };
+  pi?: { club: string; isIg: boolean };
+  sanctions?: { sanctioned: boolean; sources: string[] };
+  shadowFleet?: { riskLevel: 'none' | 'low' | 'medium' | 'high'; flags: string[] };
   cii?: 'A' | 'B' | 'C' | 'D' | 'E';
   psc?: { detentions3y: number };
   age?: number;
 }
 
-// In-process cache for idempotent calls within the same process
-const passportCache = new Map<string, VesselPassport>();
+/** PSC detention lookback window, in years (matches pair-analyzer vetting). */
+const PSC_LOOKBACK_YEARS = 3;
 
-export async function getVesselPassport(imo: string): Promise<VesselPassport> {
-  const cached = passportCache.get(imo);
-  if (cached) return cached;
+/**
+ * Build a vessel passport from parsed fields + local registries.
+ * Sync, no network/LLM. PSC follows wave-A honest semantics:
+ * no inspection rows → psc undefined (never a fake zero).
+ */
+export function buildVesselPassport(
+  db: Database.Database,
+  vessel: ParsedVessel,
+  refYear: number,
+): VesselPassport {
+  const passport: VesselPassport = {};
 
-  // Placeholder vessel data — in production this would be fetched from Equasis or similar
-  const vesselData = {
-    flag: 'Bahamas',
-    classSociety: 'DNV',
-    piClub: 'Gard',
-    vesselAge: 10,
-    flagChanges12m: 0,
-    classSocietyChanges24m: 0,
-    ownerJurisdiction: 'Norway',
-    aisBlackoutDays: 0,
-    namesLast24m: 1,
-  };
+  if (vessel.imo) passport.imo = vessel.imo;
 
-  const iacsResult = isIacs(vesselData.classSociety);
-  const igResult = isIgClub(vesselData.piClub);
-  const mouCategory = getParisMouClassification(vesselData.flag);
-  const sanctions = await checkVesselSanctions(imo);
-  const shadowFleet = assessShadowFleetRisk({
-    flagChanges12m: vesselData.flagChanges12m,
-    classSocietyChanges24m: vesselData.classSocietyChanges24m,
-    ownerJurisdiction: vesselData.ownerJurisdiction,
-    flag: vesselData.flag,
-    piClub: vesselData.piClub,
-    isPiIgClub: igResult,
-    aisBlackoutDays: vesselData.aisBlackoutDays,
-    vesselAge: vesselData.vesselAge,
-    classSociety: vesselData.classSociety,
-    isIacsClass: iacsResult,
-    namesLast24m: vesselData.namesLast24m,
-  });
+  if (vessel.flag) {
+    const mou = getParisMouClassification(vessel.flag);
+    passport.flag = {
+      country: vessel.flag,
+      ...(mou !== 'unknown' ? { parisMou: mou } : {}),
+    };
+  }
 
-  const passport: VesselPassport = {
-    imo,
-    flag: {
-      country: vesselData.flag,
-      ...(mouCategory !== 'unknown' ? { parisMou: mouCategory } : {}),
-    },
-    class: { society: vesselData.classSociety, isIacs: iacsResult },
-    pi: { club: vesselData.piClub, isIg: igResult },
-    sanctions: { sanctioned: sanctions.sanctioned, sources: sanctions.sources },
-    shadowFleet,
-    age: vesselData.vesselAge,
-  };
+  if (vessel.classSociety) {
+    passport.class = { society: vessel.classSociety, isIacs: isIacs(vessel.classSociety) };
+  }
 
-  passportCache.set(imo, passport);
+  if (vessel.pandi) {
+    passport.pi = { club: vessel.pandi, isIg: isIgClub(vessel.pandi) };
+  }
+
+  // built sanity floor: parser noise like 0 or 2-digit years must not yield age 2000+ (review followup)
+  if (typeof vessel.built === 'number' && Number.isFinite(vessel.built) && vessel.built >= 1900) {
+    const age = refYear - vessel.built;
+    if (age >= 0) passport.age = age;
+  }
+
+  if (vessel.imo && hasInspectionData(db, vessel.imo)) {
+    passport.psc = {
+      detentions3y: getDetentionCount(db, vessel.imo, `${refYear - PSC_LOOKBACK_YEARS}-01-01`),
+    };
+  }
+
   return passport;
 }
 

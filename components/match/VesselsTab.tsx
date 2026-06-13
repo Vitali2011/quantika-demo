@@ -7,10 +7,12 @@ import { safeRender } from '@/lib/ui-render';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
 import { DismissableDemoBadge } from '@/components/ui/DismissableDemoBadge';
 import { checkCompatibility, parseLastCargoes } from '@/lib/cargo/l5c-matrix';
+import { VettingBreakdown } from './VettingBreakdown';
 
 interface VesselsTabProps {
   vessel?: ParsedVessel;
   newCargo?: string;
+  fitBreakdown?: string | null;
 }
 
 const CII_D_E_PATTERN = /\bCII\s+rating\s+([DE])\b/i;
@@ -63,7 +65,7 @@ function RejectedDetails({ vessel }: { vessel: ParsedVessel }) {
   );
 }
 
-export function VesselsTab({ vessel, newCargo }: VesselsTabProps) {
+export function VesselsTab({ vessel, newCargo, fitBreakdown }: VesselsTabProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   const ciiRejectedRating = vessel ? parseCiiDorE(vessel.restrictions) : null;
@@ -179,6 +181,7 @@ export function VesselsTab({ vessel, newCargo }: VesselsTabProps) {
               Extra hold cleaning required
             </p>
           )}
+          <VettingBreakdown fitBreakdown={fitBreakdown} />
         </>
       )}
     </div>

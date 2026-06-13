@@ -39,8 +39,12 @@ function makeCargo(overrides: Partial<ParsedCargo> = {}): ParsedCargo {
     itemIndex: 0,
     originPort: { value: 'Mykolaiv', confidence: 'confirmed' },
     originCountry: 'Ukraine',
-    destinationPort: { value: 'Rotterdam', confidence: 'interpreted' },
-    destinationCountry: 'Netherlands',
+    // Intra-Black-Sea discharge: audit C.1 made Black Sea EXITS pay Bosporus,
+    // which pushed the old Mykolaiv→Rotterdam coaster fixture below its cash
+    // breakeven and out of the main list. These bucket tests probe TIMING
+    // routing, not strait economics — keep the voyage strait-free.
+    destinationPort: { value: 'Constanta', confidence: 'interpreted' },
+    destinationCountry: 'Romania',
     cargoDescription: { value: 'wheat in bulk', confidence: 'confirmed' },
     weightMt: { value: 4000, confidence: 'confirmed' },
     weightMtMin: null,

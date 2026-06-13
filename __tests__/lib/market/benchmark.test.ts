@@ -22,11 +22,41 @@ jest.mock('@/lib/market/toepfer-scraper', () => ({
   fetchToepferTmi: (...args: unknown[]) => mockFetchToepferTmi(...args),
 }));
 
+// ─── Mock session-store so DB fallback sees an empty DB ───────────────────────
+
+import Database from 'better-sqlite3';
+
+const mockGetStore = jest.fn();
+jest.mock('@/lib/session-store', () => ({
+  getStore: (...args: unknown[]) => mockGetStore(...args),
+}));
+
 // ─── Setup ───────────────────────────────────────────────────────────────────
+
+// Empty in-memory DB that has the two tables but no rows — so DB fallback returns null.
+let emptyDb: Database.Database;
 
 beforeEach(() => {
   _clearCacheForTesting();
   jest.clearAllMocks();
+  emptyDb = new Database(':memory:');
+  emptyDb.exec(`
+    CREATE TABLE IF NOT EXISTS market_indices (
+      id TEXT PRIMARY KEY NOT NULL, index_name TEXT NOT NULL, index_date TEXT NOT NULL,
+      value REAL NOT NULL, unit TEXT NOT NULL DEFAULT 'USD/day', source TEXT NOT NULL,
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now')), UNIQUE(index_name, index_date)
+    );
+    CREATE TABLE IF NOT EXISTS baltic_indices (
+      index_code TEXT NOT NULL, value REAL NOT NULL, price_date TEXT NOT NULL,
+      source TEXT NOT NULL, fetched_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(index_code, price_date)
+    );
+  `);
+  mockGetStore.mockReturnValue({ getDatabase: () => emptyDb });
+});
+
+afterEach(() => {
+  emptyDb.close();
 });
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
@@ -50,7 +80,8 @@ describe('getCurrentBenchmark — TOEPFER_TMI (scraper path)', () => {
     expect(result!.indicator).toBe('TOEPFER_TMI');
   });
 
-  it('T-2: returns null when scraper returns null', async () => {
+  it('T-2: returns null when scraper returns null AND no DB data', async () => {
+    // emptyDb has the tables but no rows, so DB fallback returns null too
     mockFetchToepferTmi.mockResolvedValue(null);
     const result = await getCurrentBenchmark('TOEPFER_TMI');
     expect(result).toBeNull();

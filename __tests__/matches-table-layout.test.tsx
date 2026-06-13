@@ -73,8 +73,13 @@ describe('MatchesClient.tsx — table header/body column alignment (#662 regress
     const tableSection = src.slice(src.indexOf('TABLE VIEW'));
     const colCount = (tableSection.match(/<col /g) ?? []).length;
     expect(colCount).toBe(8);
-    expect(tableSection).toMatch(/'FIT %', 'Vessel', 'Route', 'DWT', 'TCE \/ day', 'Cargo', 'Laycan', ''/);
-    expect(tableSection).toMatch(/'FIT %', 'Cargo', 'Route', 'DWT', 'TCE \/ day', 'Vessel', 'Laycan', ''/);
+    // Headers moved from string arrays to headerCols {label, key} config (sorting feature,
+    // audit-wave-A §5) — assert the same 8-column label sequences per mode via extraction.
+    const m = src.match(/const headerCols[\s\S]*?isOwner\s*\?\s*\[([\s\S]*?)\]\s*:\s*\[([\s\S]*?)\];/);
+    expect(m).not.toBeNull();
+    const labels = (s: string) => [...s.matchAll(/label: '([^']*)'/g)].map((x) => x[1]);
+    expect(labels(m![1])).toEqual(['FIT %', 'Cargo', 'Route', 'DWT', 'TCE / day', 'Vessel', 'Laycan', '']);
+    expect(labels(m![2])).toEqual(['FIT %', 'Vessel', 'Route', 'DWT', 'TCE / day', 'Cargo', 'Laycan', '']);
   });
 });
 

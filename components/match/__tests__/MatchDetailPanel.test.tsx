@@ -14,15 +14,11 @@ jest.mock('@/lib/csrf-client', () => ({
   csrfFetch: jest.fn(),
 }));
 
+// audit D: deprecated props removed
 const BASE_PROPS = {
   matchDbId: 1,
   score: 82,
   status: 'open',
-  loadPort: 'Hamburg',
-  dischargePort: 'Rotterdam',
-  cargoType: 'coal',
-  vesselDwt: 75000,
-  laycanDisplay: '28-31 May',
   hasSessionMatch: true,
 };
 
@@ -55,8 +51,9 @@ describe('MatchDetailPanel hydration safety (#616 — DWT moved to Svodka)', () 
     expect(screen.queryByText(/\bMT\b/)).not.toBeInTheDocument();
   });
 
-  it('renders panel without DWT when vesselDwt is null', () => {
-    render(<MatchDetailPanel {...BASE_PROPS} vesselDwt={null} />);
+  it('renders panel without DWT', () => {
+    // audit D: deprecated vesselDwt prop removed
+    render(<MatchDetailPanel {...BASE_PROPS} />);
     expect(screen.queryByText(/MT/)).not.toBeInTheDocument();
     expect(screen.getByTestId('match-detail-panel')).toBeInTheDocument();
   });

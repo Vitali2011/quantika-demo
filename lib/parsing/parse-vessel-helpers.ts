@@ -2,6 +2,7 @@ import { Email, ParsedVessel } from '@/lib/types';
 import { extractNum, toConfidence } from '@/lib/parsing-utils';
 import { validateImo } from '@/lib/validation/imo';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
+import { extractLastCargoesFromBody } from '@/lib/parsing/lastcargoes-fallback';
 
 interface RawVesselItem {
   vessel_name?: unknown;
@@ -295,7 +296,8 @@ export function parseVesselAIResponse(raw: string, emailId: string, subject?: st
       restrictions: Array.isArray(item.restrictions) ? item.restrictions.filter((x) => typeof x === 'string') : [],
       lastCargoes: (() => {
         let lc = item.last_cargoes;
-        if (!lc) return null;
+        // audit D: regex fallback feeds hold-cleanliness + pedigree scoring
+        if (!lc) return emailBody ? extractLastCargoesFromBody(emailBody) : null;
         if (typeof lc === 'object' && 'value' in lc) lc = lc.value;
         if (Array.isArray(lc)) {
           return lc

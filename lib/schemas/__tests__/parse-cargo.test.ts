@@ -54,3 +54,16 @@ describe('PARSE_CARGO_SCHEMA freight_rate_usd field', () => {
     expect(itemProps.freight_rate_usd.nullable).toBe(true);
   });
 });
+
+describe('PARSE_CARGO_SCHEMA charterer_name field (audit A.1)', () => {
+  const itemProps = (PARSE_CARGO_SCHEMA as any).properties.items.items.properties;
+
+  it('includes charterer_name as STRING', () => {
+    expect(itemProps.charterer_name).toBeDefined();
+    expect(itemProps.charterer_name.type).toBe('STRING');
+  });
+
+  it('charterer_name is nullable', () => {
+    expect(itemProps.charterer_name.nullable).toBe(true);
+  });
+});

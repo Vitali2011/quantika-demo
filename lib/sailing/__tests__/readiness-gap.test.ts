@@ -31,6 +31,19 @@ describe('classifyVesselByDwt', () => {
   });
 });
 
+describe('classifyVesselByDwt gap handling (audit C.6)', () => {
+  it.each([
+    [25000, 'handysize'], [45000, 'handysize'], [55000, 'supramax'],
+    [80000, 'panamax'],
+    [95000, 'panamax'],   // the 90–100k hole used to fall through to capesize
+    [99999, 'panamax'],
+    [100000, 'capesize'], [450000, 'capesize'],
+    [null, 'handysize'],
+  ])('%s → %s', (dwt, cls) => {
+    expect(classifyVesselByDwt(dwt as number | null)).toBe(cls);
+  });
+});
+
 describe('calculateReadinessGap — Mustafa case', () => {
   it('Open Karasu 5 Sep → Mykolaiv 15-25 Sep laycan → verdict idle', () => {
     const r = calculateReadinessGap(
@@ -420,6 +433,28 @@ describe('calculateReadinessGap — vague-region UX (Phase C2)', () => {
     expect(r.verdict).toBe('unknown');
     // "Atlantis" is not a sea/coast/country pattern → falls back to generic.
     expect(r.explanation).toBe('Insufficient data to compute readiness (unparseable date or unknown port).');
+  });
+});
+
+describe('back-of-window arrival rates tight (audit C.7)', () => {
+  // classifyVerdict is module-private — drive it through calculateReadinessGap.
+  // Vessel open AT the load port (same port → distance 0) with openDate D arrives ~D.
+  // Laycan 2026-10-01..2026-10-11 (window 10d): arrival 10-03 (depth 2d, front
+  // half) → ideal; arrival 10-09 (depth 8d, back half) → tight; 10-13 → late.
+  const cargo = { laycan: '2026-10-01 .. 2026-10-11', originPort: 'Rotterdam' };
+  const vessel = (open: string) => ({
+    openDate: open, openPosition: 'Rotterdam', speedLaden: '13 kn', dwtSummer: 55000,
+  });
+  const opts = { refYear: 2026, today: new Date('2026-09-01T00:00:00Z') };
+
+  it('front half of window stays ideal', () => {
+    expect(calculateReadinessGap(vessel('2026-10-03'), cargo, opts).verdict).toBe('ideal');
+  });
+  it('back half of window is tight', () => {
+    expect(calculateReadinessGap(vessel('2026-10-09'), cargo, opts).verdict).toBe('tight');
+  });
+  it('past cancelling stays late', () => {
+    expect(calculateReadinessGap(vessel('2026-10-13'), cargo, opts).verdict).toBe('late');
   });
 });
 

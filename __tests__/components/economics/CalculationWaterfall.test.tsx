@@ -19,6 +19,7 @@ function makeBreakdown(overrides?: Partial<TCEBreakdown>): TCEBreakdown {
     war_risk_usd: 0,
     ets_eur: 0,
     ets_usd: 0,
+    fueleu_usd: 0, // audit A.5: new breakdown field
     gross_freight_usd: 200000,
     total_costs_usd: 68000,
     net_voyage_usd: 132000,
@@ -28,7 +29,7 @@ function makeBreakdown(overrides?: Partial<TCEBreakdown>): TCEBreakdown {
     duration_days: 15,
     bunker_consumption_mt_per_day: 14,
     bunker_price_usd_per_mt: 595,
-    applicable: { bunker: true, canal: false, da: true, war_risk: false, ets: false },
+    applicable: { bunker: true, canal: false, da: true, war_risk: false, ets: false, fueleu: false }, // audit A.5: new breakdown field
     ...overrides,
   };
 }
@@ -67,6 +68,14 @@ describe('CalculationWaterfall — DA DataQualityBadge (W6a)', () => {
     render(<CalculationWaterfall breakdown={breakdown} />);
     const badge = screen.getByTestId('war-risk-rate-badge');
     expect(badge).toBeInTheDocument();
+  });
+
+  it('W6a: no war-risk stale badge when war_risk_rate_date is fresh (within 90 days)', () => {
+    // Use a date clearly within 90 days of test execution (2026-04-12 = ~60 days before 2026-06-11)
+    const breakdown = makeBreakdown({ war_risk_usd: 5000, war_risk_rate_date: '2026-04-12' });
+    render(<CalculationWaterfall breakdown={breakdown} />);
+    // tier='live' → badge suppressed (CalculationWaterfall only shows badge when tier !== 'live')
+    expect(screen.queryByTestId('war-risk-rate-badge')).toBeNull();
   });
 });
 

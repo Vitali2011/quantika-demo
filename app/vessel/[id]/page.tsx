@@ -14,6 +14,9 @@ import { toMatchSlug } from '@/lib/matching/match-slug';
 import { CiiRatingBadge } from '@/components/vessel/CiiRatingBadge';
 import { SanctionsBadge } from '@/components/vessel/SanctionsBadge';
 import { PscHistoryLink } from '@/components/vessel/PscHistoryLink';
+import { VesselPassportPanel } from '@/components/vessel/VesselPassportPanel';
+import { buildVesselPassport } from '@/lib/counterparty';
+import { getStore } from '@/lib/session-store';
 
 // Only the three canonical string labels are valid. Guard against numeric
 // confidence scores from the parser reaching the ConfIcon branch — a truthy
@@ -60,6 +63,11 @@ export default async function VesselDetailPage({ params }: Props) {
   );
 
   const ciiResults = await Promise.all(vessels.map(v => lookupCii(v.imo ?? '')));
+
+  // Vessel passport: real data only (parsed fields + local registries + PSC table).
+  const db = getStore().getDatabase();
+  const refYear = new Date().getFullYear();
+  const passports = vessels.map(v => buildVesselPassport(db, v, refYear));
 
   const emailMeta = {
     emailBody: email.body || email.snippet,
@@ -184,6 +192,9 @@ export default async function VesselDetailPage({ params }: Props) {
                 {(vessel.geared === true || safeRender(vessel.geared) === 'Yes') && <Spec label="Crane Capacity" value={vessel.craneCapacity} />}
                 <Spec label="GRT/NRT" value={vessel.grt != null ? `${safeRender(vessel.grt)} / ${safeRender(vessel.nrt) || '?'}` : null} />
               </div>
+
+              {/* Vessel passport (audit D) — renders nothing when no real data */}
+              <VesselPassportPanel passport={passports[idx]} />
 
               {/* Restrictions & features */}
               {vessel.restrictions.length > 0 && (

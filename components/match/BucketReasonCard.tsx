@@ -10,7 +10,7 @@ const BUCKET_LABEL: Record<BucketReason['bucket'], { title: string; cls: string 
 
 export function BucketReasonCard({ bucketReason }: { bucketReason?: BucketReason }) {
   if (!bucketReason) return null;
-  const meta = BUCKET_LABEL[bucketReason.bucket];
+  const meta = BUCKET_LABEL[bucketReason.bucket] ?? { title: bucketReason.bucket, cls: 'text-slate-500' };
   return (
     <Card size="sm" data-testid="bucket-reason-card">
       <CardHeader>

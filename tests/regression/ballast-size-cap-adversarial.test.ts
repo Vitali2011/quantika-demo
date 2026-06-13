@@ -175,12 +175,13 @@ describe('applyBallastSizeCap — numeric edges (lever 3 ballast)', () => {
     expect((out.issues ?? []).some((i) => i.startsWith('BALLAST:'))).toBe(false);
   });
 
-  it('[BEHAVIOR] 95000 DWT (kamsarmax/post-panamax) → classified capesize → LOOSEST 4000nm cap', () => {
-    // CONCERN: classifyVesselByDwt has a gap 90001..99999 that falls through to capesize.
-    // A ~95k DWT vessel gets the 4000nm cap (capesize), so a 3500nm ballast survives as good.
-    // Pre-existing classifier behavior, not introduced by this PR — flagged for awareness.
+  it('[FIXED] 95000 DWT (kamsarmax/post-panamax) → classified panamax → 2500nm cap demotes 3500nm ballast', () => {
+    // audit C.6: the classifier gap 90001..99999 used to fall through to capesize
+    // (loosest 4000nm cap), so a 3500nm ballast survived as 'good'. The gap now
+    // resolves to panamax (2500nm radius) and this pair is demoted.
     const out = applyBallastSizeCap(capInput({ distanceNm: 3500, vesselDwt: 95000 }));
-    expect(out.matchLevel).toBe('good');
+    expect(out.matchLevel).toBe('possible');
+    expect((out.issues ?? []).some((i) => i.startsWith('BALLAST:'))).toBe(true);
   });
 });
 
@@ -256,11 +257,12 @@ describe('applyBallastSizeCap — tier & score invariants', () => {
     expect(out).toBe(m); // returns the SAME object (early return), no copy, no issue
   });
 
-  it('[BEHAVIOR] inconsistent input: score 65 but matchLevel "good" → guard uses SCORE not level, returns as-is', () => {
-    // The cap gate is `match.score < 70`, NOT `matchLevel`. A malformed match with
-    // score 65 but level 'good' is returned untouched — it never gets re-derived to 'possible'.
-    // In the real pipeline the wiring gates on matchLevel==='good' first, so a 65/'good'
-    // mismatch could slip past the wiring filter yet be ignored by the function => no demotion.
+  it('[BEHAVIOR] inconsistent input: score 65 but matchLevel "good" → level-gate processes it, demotes to possible', () => {
+    // Re-pinned after #846: the cap gate is now `matchLevel !== 'good'` (match-scoring.ts:251),
+    // NOT `score < 70` — matchLevel is derived from fitPercent, so level is the source of truth.
+    // A malformed 65/'good' input passes the level gate, both levers fire, and the match IS
+    // demoted: score stays min(65, 69) = 65, matchLevel re-derived from score → 'possible'.
+    // (Pre-#846 behavior — returned untouched via score<70 early-return — no longer holds.)
     const out = applyBallastSizeCap({
       match: mkMatch(65, 'good'),
       distanceNm: 9999,
@@ -269,8 +271,11 @@ describe('applyBallastSizeCap — tier & score invariants', () => {
       cargoWeightMax: 10,
       cargoDescription: null,
     });
-    expect(out.matchLevel).toBe('good'); // unchanged — score<70 early-return
-    expect(out.score).toBe(65);
+    expect(out.matchLevel).toBe('possible'); // demoted — level-gate passed, levers fired
+    expect(out.score).toBe(65); // min(65, GOOD_CAP_SCORE=69) — unchanged numerically
+    const issues = out.issues ?? [];
+    expect(issues.some((i) => i.startsWith('BALLAST:'))).toBe(true);
+    expect(issues.some((i) => i.startsWith('SIZE:'))).toBe(true);
   });
 
   it('both ballast AND size trigger → score capped once to 69, BOTH issues present', () => {

@@ -8,21 +8,12 @@ import { csrfFetch } from '@/lib/csrf-client';
 import { CounterModal } from './CounterModal';
 import { BucketReasonCard } from './BucketReasonCard';
 import type { BucketReason } from '@/lib/matching/bucket-reason';
+import { UtilisationChartererDisclosure } from './UtilisationChartererDisclosure';
 
 export interface MatchDetailPanelProps {
   matchDbId: number;
   score: number;
   status: string;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  loadPort?: string | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  dischargePort?: string | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  cargoType?: string | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  vesselDwt?: number | null;
-  /** @deprecated no longer rendered — kept for test fixture compatibility */
-  laycanDisplay?: string | null;
   cargoEmailId?: string;
   hasSessionMatch: boolean;
   fitPercent?: number | null;
@@ -238,6 +229,9 @@ function PanelContent({
           </Card>
         );
       })()}
+
+      {/* Utilisation & charterer detail */}
+      <UtilisationChartererDisclosure fitBreakdown={fitBreakdown} />
     </div>
   );
 }

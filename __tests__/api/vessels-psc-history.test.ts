@@ -43,7 +43,7 @@ describe('GET /api/vessels/[imo]/psc-history (fixture integration)', () => {
   });
 
   it('returns only records for the requested IMO', async () => {
-    const targetImo = '9322180';
+    const targetImo = '8887296';
     const expectedCount = PSC_FIXTURE.filter((r) => r.imo === targetImo).length;
     expect(expectedCount).toBeGreaterThan(0); // sanity on the fixture
 
@@ -62,7 +62,7 @@ describe('GET /api/vessels/[imo]/psc-history (fixture integration)', () => {
   });
 
   it('returns rows sorted by inspection_date DESC', async () => {
-    const targetImo = '9478999';
+    const targetImo = '9166510';
     const { GET } = await import('@/app/api/vessels/[imo]/psc-history/route');
     const res = await GET(makeReq(`/api/vessels/${targetImo}/psc-history`), {
       params: Promise.resolve({ imo: targetImo }),
@@ -78,8 +78,8 @@ describe('GET /api/vessels/[imo]/psc-history (fixture integration)', () => {
 
   it('returns the canonical PscRecord shape per row', async () => {
     const { GET } = await import('@/app/api/vessels/[imo]/psc-history/route');
-    const res = await GET(makeReq('/api/vessels/9322180/psc-history'), {
-      params: Promise.resolve({ imo: '9322180' }),
+    const res = await GET(makeReq('/api/vessels/8887296/psc-history'), {
+      params: Promise.resolve({ imo: '8887296' }),
     });
 
     expect(res.status).toBe(200);
@@ -89,7 +89,7 @@ describe('GET /api/vessels/[imo]/psc-history (fixture integration)', () => {
     expect(row).toEqual(
       expect.objectContaining({
         id: expect.any(String),
-        imo: '9322180',
+        imo: '8887296',
         inspection_date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
         authority: expect.stringMatching(/^(paris-mou|tokyo-mou|uscg|other)$/),
         deficiencies: expect.any(Number),

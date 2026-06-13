@@ -52,12 +52,20 @@ export function toBucketRows(
     const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
     const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 
-    let tce_usd_per_day: number | null = null;
-    let freight_rate_usd_per_mt: number | null = null;
-    let freight_rate_source: string | null = null;
-    if (distanceResult && distanceResult.nm > 0) {
+    // Canonical engine economics (#819 Phase B(b)): pair-analyzer attaches
+    // m.economics (computeStoredMatchEconomics — live bunker, port-DA, canal,
+    // war-risk-excluded convention) to every pair with a resolvable distance
+    // before bucket partition, so bucket matches already carry the same
+    // one-truth TCE the shortlist stores. Read it here (same economics-first
+    // read as regenerate-matches.ts writeBucket) so bucket tabs and the main
+    // board agree numerically.
+    let tce_usd_per_day: number | null = m.economics?.tceUsdPerDay ?? null;
+    let freight_rate_usd_per_mt: number | null = m.economics?.freightRateUsdPerMt ?? null;
+    let freight_rate_source: string | null = m.economics?.freightRateSource ?? null;
+    // Fallback for matches without engine economics (distance unresolved at
+    // analyze time): legacy flat estimate so the card still shows a number.
+    if (tce_usd_per_day == null && distanceResult && distanceResult.nm > 0) {
       const freightEst = estimateFreightRate(cargoType, distanceResult.nm, vesselDwt);
-      // TODO: wire live bunker price (NLRTM VLSFO) when DB access is available here.
       const tceEst = computeEstimatedTce(
         freightEst, distanceResult.nm, vesselDwt, quantityMt, speedKts, consumptionMt,
         undefined, undefined, undefined, DEFAULT_BUNKER_USD_PER_MT,
@@ -85,6 +93,10 @@ export function toBucketRows(
       id: idStart - i,
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,
+      // Item identity (audit C.5 / QA F1): two items of one email pair are
+      // distinct bucket cards — without these the UI key collapsed to |0|.
+      cargo_item_index: m.cargoItemIndex ?? 0,
+      vessel_item_index: m.vesselItemIndex ?? 0,
       score: Math.max(0, Math.min(100, Math.round(m.score))),
       reason: m.matchReasons[0] ?? '',
       status: 'shortlist',

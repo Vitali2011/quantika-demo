@@ -694,6 +694,19 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
         </div>
       )}
 
+      {/* FuelEU Maritime GHG penalty (audit A.5) — data-driven, no env read */}
+      {voyageBreakdown && voyageBreakdown.fueleu_usd > 0 ? (
+        <div data-testid="fueleu-section" className="rounded border border-emerald-200 bg-emerald-50 p-3 space-y-1">
+          <h3 className="text-xs font-semibold text-emerald-900">FuelEU Maritime — GHG penalty (per voyage)</h3>
+          <div className="flex justify-between text-xs">
+            <span className="text-gray-600">Penalty (€2400/tCO₂eq over target):</span>
+            <span data-testid="fueleu-usd" className="font-semibold text-emerald-900">
+              ${voyageBreakdown.fueleu_usd.toLocaleString('en-US')}
+            </span>
+          </div>
+        </div>
+      ) : null}
+
       {/* Voyage P&L breakdown */}
       <div data-testid="voyage-pnl-section" className="rounded border border-gray-200 bg-gray-50 p-3">
         <h3 className="text-xs font-semibold text-gray-700 mb-2">Voyage P&amp;L</h3>

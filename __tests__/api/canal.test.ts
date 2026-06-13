@@ -69,6 +69,24 @@ describe('GET /api/canal/[canal_code]', () => {
     expect(numericValues.length).toBeGreaterThan(0);
   });
 
+  it('default NT uses canonical NT_DWT_RATIO 0.65 — default-NT quote equals explicit-NT quote (audit C.8)', async () => {
+    // Route previously derived NT as dwt × 0.6 while the matching engine used 0.65.
+    const { GET } = await import('@/app/api/canal/[canal_code]/route');
+    const defaulted = await GET(
+      new NextRequest('http://localhost/api/canal/panama?vessel_dwt=50000&vessel_type=bulker'),
+      { params: Promise.resolve({ canal_code: 'panama' }) },
+    );
+    const explicit = await GET(
+      new NextRequest('http://localhost/api/canal/panama?vessel_dwt=50000&vessel_type=bulker&vessel_nt=32500'),
+      { params: Promise.resolve({ canal_code: 'panama' }) },
+    );
+    expect(defaulted.status).toBe(200);
+    expect(explicit.status).toBe(200);
+    const a = await defaulted.json();
+    const b = await explicit.json();
+    expect(a.totalUsd).toBe(b.totalUsd); // 32500 = 50000 × 0.65
+  });
+
   it('returns 400 for non-numeric vessel_dwt (Class 2: NaN boundary)', async () => {
     const { GET } = await import('@/app/api/canal/[canal_code]/route');
     const req = new NextRequest('http://localhost/api/canal/panama?vessel_dwt=abc&vessel_type=bulker');

@@ -478,6 +478,11 @@ describe('checkImsbc — hard-gate', () => {
     const r = checkImsbc(null, ['no dangerous goods']);
     expect(r.pass).toBe(true);
   });
+
+  it('Group A cargo on a no-concentrates vessel fails the IMSBC hard gate (audit C.3)', () => {
+    const r = checkImsbc('nickel ore', ['no concentrates']);
+    expect(r.pass).toBe(false);
+  });
 });
 
 describe('runHardFilters — IMSBC integration', () => {

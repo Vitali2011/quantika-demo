@@ -10,6 +10,8 @@ import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { deriveBucketReason } from '@/lib/matching/bucket-reason';
+import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 
 /**
  * Compute matches for a session and persist them to the DB.
@@ -99,6 +101,30 @@ export async function computeAndPersistMatches(
     const freight_rate_source = eco.freight_rate_source;
     const consumption_estimated = eco.consumption_estimated ? 1 : null;
 
+    // Write-path parity with persist-session-matches.ts (audit B.2): same
+    // worksheet enrichment + breakeven floor, so a match looks identical
+    // whether stored by this parse-time precompute or by the /matches render.
+    // No patchEconomicsComponent here: m.fitBreakdown was just computed by
+    // analyzePairs with this same db + live bunker price, so its economics
+    // component is already live. No stale-laycan worksheet rebuild either —
+    // the worksheet derives from the same parsed data this call received.
+    // NOTE: m.worksheet is currently absent on engine output (only demo
+    // hydrate/regen attach worksheets), so this block is forward-parity; the
+    // demo-hydrated gap on existing rows is closed by refreshComputed (B.6).
+    const bucketReason = m.worksheet
+      ? deriveBucketReason({
+          verdict: m.worksheet.readiness?.verdict ?? 'unknown',
+          gapDays: m.worksheet.readiness?.gapDays ?? null,
+          matchLevel: m.matchLevel,
+          tceUsdPerDay: tce_usd_per_day,
+          vesselDwt: vesselDwt || null,
+          issues: m.issues ?? [],
+        })
+      : undefined;
+    const worksheetForPersist = m.worksheet
+      ? { ...m.worksheet, hardFilters: m.hardFilters ?? m.worksheet.hardFilters, sanctions: m.sanctions, bucketReason }
+      : null;
+
     createMatch(db, {
       cargo_id: m.cargoEmailId,
       vessel_id: m.vesselEmailId,
@@ -121,6 +147,12 @@ export async function computeAndPersistMatches(
       cargo_ref: cargo ? (cfValue(cargo.cargoDescription) || null) : null,
       consumption_estimated,
       ballast_distance_nm: eco.ballast_distance_nm ?? null,
+      fit_percent: m.fitPercent ?? null,
+      fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
+      cargo_item_index: m.cargoItemIndex,
+      vessel_item_index: m.vesselItemIndex,
+      worksheet_json: worksheetForPersist ? JSON.stringify(worksheetForPersist) : null,
+      breakeven_tce_usd_per_day: vesselDwt ? breakevenTceByDwt(vesselDwt) : null,
     });
   }
 

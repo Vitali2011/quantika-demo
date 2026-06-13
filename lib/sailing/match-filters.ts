@@ -465,9 +465,12 @@ export function checkWarPositionVoyage(input: WarPositionVoyageCheckInput): Filt
 // ────────────────────────────────────────────────────────────────────────────
 
 // ────────────────────────────────────────────────────────────────────────────
-// IMSBC check — hard-gate ONLY when vessel explicitly restricts DG carriage
-//   and cargo is IMSBC Group B (chemical hazard).
-//   Group A/C/unknown → always passes here (caution surfaced separately).
+// IMSBC check — hard-gate ONLY when vessel explicitly restricts the cargo's
+//   hazard class: Group B (chemical hazard) on a DG-restricted vessel, or
+//   Group A (liquefaction risk) on a liquefaction-restricted vessel
+//   ("no concentrates", "no Group A", … — audit C.3).
+//   Group C/unknown, and A/B without a matching restriction → passes here
+//   (caution surfaced separately).
 // ────────────────────────────────────────────────────────────────────────────
 
 export function checkImsbc(

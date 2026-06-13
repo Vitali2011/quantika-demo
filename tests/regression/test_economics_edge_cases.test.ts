@@ -4,6 +4,16 @@
  * DO NOT fix source code — report only.
  */
 
+// War-risk-v2 (#957) loads live JWC rates from data/knowledge/jwc/*.yaml — those
+// change over time by design and would re-break exact premium pins on every rates
+// update. Mock the knowledge layer to null → calculateWarRiskPremium falls back to
+// the hardcoded per-zone constants in war-risk.ts, which these tests pin exactly.
+// The live-rate path has its own coverage: lib/economics/__tests__/war-risk-rates.test.ts.
+jest.mock('@/lib/economics/war-risk-rates', () => ({
+  loadJwcRates: () => null,
+  __resetRateCacheForTest: () => {},
+}));
+
 import { calculateEuEts } from '@/lib/economics/ets';
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
 
@@ -72,8 +82,9 @@ describe('calculateEuEts — adversarial', () => {
       vlsfoBurnMt: 100,
       euaPrice: 87.5,
     });
-    // 100 * 3.114 * 1.0 * 87.5 = 27247.50
-    expect(result.amountEur).toBe(27247.5);
+    // Re-pinned after #739 (fuel-aware Cf): default fuel is VLSFO with Cf=3.151
+    // (3.114 is now the HFO factor). 100 * 3.151 * 1.0 * 87.5 = 27571.25
+    expect(result.amountEur).toBe(27571.25);
     expect(result.applicable).toBe(true);
   });
 

@@ -634,7 +634,11 @@ export async function build(opts: BuildOptions): Promise<void> {
       }
     }
 
-    // Pre-compute matches via simple laycan↔open_date pairing (no real match engine needed)
+    // LEGACY BOOTSTRAP MATCHES (audit B.4/B.5): simple laycan↔open_date pairing
+    // with a base-60 heuristic score and flat-bunker TCE. These rows are
+    // REPLACED by scripts/demo-seed/regenerate-matches.ts (real engine), which
+    // seed-all chains right after build. Do not extend this stage — extend the
+    // regen writer instead.
     const cargoRows = db.prepare(`
       SELECT pr.gmail_message_id AS cargo_id, pr.result_json
       FROM parsed_results pr

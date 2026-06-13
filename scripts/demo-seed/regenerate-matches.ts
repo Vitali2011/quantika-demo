@@ -44,6 +44,8 @@ import { seedPortDa, type BaselinePort } from '../seed-port-da';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
+import { deriveBucketReason } from '@/lib/matching/bucket-reason';
+import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 
 // ── CII hydration helper ──────────────────────────────────────────────────────
 
@@ -447,6 +449,59 @@ function matchToQuarantineInput(m: Match) {
   };
 }
 
+/** Build the worksheet object for a regen match, carrying the full filter passport.
+ *  Mirrors the live path in persist-session-matches.ts: full hardFilters (all gates),
+ *  sanctions, and bucketReason derived at persist-time. */
+export function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel: ParsedVessel | undefined): MatchWorksheet | null {
+  if (!m.readiness) return null;
+  const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? null) : null;
+  const bucketReason = deriveBucketReason({
+    verdict: m.readiness.verdict ?? 'unknown',
+    gapDays: m.readiness.gapDays ?? null,
+    matchLevel: m.matchLevel,
+    tceUsdPerDay: m.economics?.tceUsdPerDay ?? null,
+    vesselDwt,
+    issues: m.issues ?? [],
+  });
+  return {
+    readiness: {
+      ...m.readiness,
+      openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+    },
+    vessel: {
+      draftMax: vessel ? (cfValue(vessel.draftMax) ?? null) : null,
+      grainCapacity: vessel?.grainCapacity ?? null,
+      grainCapacityUnit: vessel?.grainCapacityUnit ?? null,
+      geared: vessel?.geared ?? null,
+      vesselType: vessel?.vesselType ?? null,
+      flag: vessel?.flag ?? null,
+      built: vessel?.built ?? null,
+      pandi: vessel?.pandi ?? null,
+      classSociety: vessel?.classSociety ?? null,
+      lastCargoes: vessel?.lastCargoes ?? null,
+      dwtSummer: vesselDwt,
+      dwcc: vessel ? (cfValue(vessel.dwcc) ?? null) : null,
+    },
+    cargo: {
+      weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,
+      cargoType: cargo ? cargoTypeStr(cargo) : null,
+      loadPort: cargo ? (cfValue(cargo.originPort) ?? null) : null,
+      dischargePort: cargo ? (cfValue(cargo.destinationPort) ?? null) : null,
+    },
+    hardFilters: m.hardFilters ?? {
+      draft: { pass: true },
+      crane: { pass: true },
+      volume: { pass: true },
+      cargoVessel: { pass: true },
+      destDraft: { pass: true },
+      destCrane: { pass: true },
+      cargoWeight: { pass: true },
+    },
+    sanctions: m.sanctions,
+    bucketReason,
+  };
+}
+
 async function main() {
   // --rebuild-worksheet / --dry-rebuild-worksheet: targeted worksheet rebuild mode.
   // Does NOT re-run analyzePairs — only patches worksheet_json for seed matches
@@ -525,8 +580,9 @@ async function main() {
   console.log(`[regen] bunker price: ${bunkerPriceUsdPerMt} USD/mt (${bunkerRow ? 'live' : 'fallback'})`);
   const result = await analyzePairs(cargos, vessels, async () => [], { refYear, today, db, bunkerPriceUsdPerMt });
 
-  // ── 3. Dedup each bucket to one match per (cargo email, vessel email) pair,
-  //        keeping the highest fit (then score). Drop cleanliness blockSend from main.
+  // ── 3. Dedup each bucket: one match per ITEM pair, then collapse cross-email
+  //        content dupes — keeping the highest fit (then score). Drop cleanliness
+  //        blockSend from main.
   const cargoMap = new Map(cargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(vessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
@@ -557,13 +613,19 @@ async function main() {
     }
     return [...best.values()];
   }
-  // Pass 1: one match per (cargo email, vessel email) — REQUIRED by the unique
-  // index (cargo_id, vessel_id, user_id); picks the best item combo per pair.
+  // Pass 1: one match per ITEM pair — the engine already emits unique item
+  // pairs (pair-analyzer dedupes by pairKey), this guards against accidental
+  // dupes only. Since migration 051 the unique index is item-aware, so two
+  // items of the same email legitimately produce two board rows (audit C.5,
+  // founder 2026-06-12 — replaces the old one-per-email-pair collapse).
   // Pass 2: collapse cross-email content dupes (re-circulated vessel/cargo).
-  // Order matters: after pass 1 every survivor has a distinct email pair, so
-  // pass 2 never leaves two rows sharing (cargo_id, vessel_id) → no INSERT clash.
+  // Survivors may share (cargo_id, vessel_id) with distinct item indices —
+  // INSERT OR IGNORE is safe under idx_matches_unique_pair_item.
   function dedup(matches: Match[]): Match[] {
-    return bestBy(bestBy(matches, (m) => `${m.cargoEmailId}|${m.vesselEmailId}`), contentKey);
+    return bestBy(
+      bestBy(matches, (m) => `${m.cargoEmailId}|${m.cargoItemIndex}|${m.vesselEmailId}|${m.vesselItemIndex}`),
+      contentKey,
+    );
   }
 
   // Broker-facing one-line note: tier headline + the weakest 1-2 factors, so the
@@ -617,18 +679,19 @@ async function main() {
 
   const fits = (arr: Match[]) => arr.map((m) => m.fitPercent ?? 0).filter((n) => n > 0).sort((a, b) => a - b);
   const fm = fits(mainClean);
-  console.log(`[regen] BUCKETS (deduped to email-pair · main floor fit>=${MAIN_FIT_FLOOR}):`);
+  console.log(`[regen] BUCKETS (deduped per item-pair + content · main floor fit>=${MAIN_FIT_FLOOR}):`);
   console.log(`  main (NULL):            ${mainClean.length}  · fit min ${fm[0]?.toFixed(0)} med ${fm[Math.floor(fm.length/2)]?.toFixed(0)} max ${fm[fm.length-1]?.toFixed(0)} · ≥80:${fm.filter(x=>x>=80).length} ≥70:${fm.filter(x=>x>=70).length}`);
   console.log(`  review (__demo_review__):       ${review.length}  (engine-low ${dedup(result.lowConfidenceMatches).length} + demoted sub-floor ${demoted.length})`);
   console.log(`  insufficient (__demo_insufficient__): ${insufficient.length}`);
-  console.log(`  (dropped main cleanliness-blocked: ${result.matches.filter((m) => m.confidence?.blockSend === true).length}; engine blocked total: ${result.blockedMatches.length})`);
+  console.log(`  (cleanliness-blocked are engine-demoted to review since audit C.4; blockSend safety-net dropped from main: ${result.matches.filter((m) => m.confidence?.blockSend === true).length}; engine blocked total: ${result.blockedMatches.length})`);
 
   if (DRY) { db.close(); console.log('[regen] DRY — no writes.'); return; }
 
   // ── 4. Write: replace the seed buckets (NULL + sentinels). Orphan per-session
   //        UUID copies are left for the app's deleteOrphanSessionMatches to prune. ──
-  const hasWorksheetCol = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>)
-    .some((c) => c.name === 'worksheet_json');
+  const _matchesCols = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>);
+  const hasWorksheetCol = _matchesCols.some((c) => c.name === 'worksheet_json');
+  const hasBreakevenCol = _matchesCols.some((c) => c.name === 'breakeven_tce_usd_per_day');
 
   const insert = db.prepare(`
     INSERT OR IGNORE INTO matches
@@ -636,44 +699,9 @@ async function main() {
        created_at, updated_at, reason_structured, cargo_type, load_port, discharge_port,
        laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm, vessel_name, cargo_ref,
        fit_percent, fit_breakdown,
-       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''})
-    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''})
+       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''}${hasBreakevenCol ? ', breakeven_tce_usd_per_day' : ''})
+    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''}${hasBreakevenCol ? ', ?' : ''})
   `);
-
-  function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel: ParsedVessel | undefined): MatchWorksheet | null {
-    if (!m.readiness) return null;
-    return {
-      readiness: {
-        ...m.readiness,
-        openPosition: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
-      },
-      vessel: {
-        draftMax: vessel ? (cfValue(vessel.draftMax) ?? null) : null,
-        grainCapacity: vessel?.grainCapacity ?? null,
-        grainCapacityUnit: vessel?.grainCapacityUnit ?? null,
-        geared: vessel?.geared ?? null,
-        vesselType: vessel?.vesselType ?? null,
-        flag: vessel?.flag ?? null,
-        built: vessel?.built ?? null,
-        pandi: vessel?.pandi ?? null,
-        classSociety: vessel?.classSociety ?? null,
-        lastCargoes: vessel?.lastCargoes ?? null,
-        dwtSummer: vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
-        dwcc: vessel ? (cfValue(vessel.dwcc) ?? null) : null,
-      },
-      cargo: {
-        weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,
-        cargoType: cargo ? cargoTypeStr(cargo) : null,
-        loadPort: cargo ? (cfValue(cargo.originPort) ?? null) : null,
-        dischargePort: cargo ? (cfValue(cargo.destinationPort) ?? null) : null,
-      },
-      hardFilters: {
-        draft: m.hardFilters?.draft ?? { pass: true },
-        crane: m.hardFilters?.crane ?? { pass: true },
-        volume: m.hardFilters?.volume ?? { pass: true },
-      },
-    };
-  }
 
   function writeBucket(matches: Match[], userId: string | null): number {
     let n = 0;
@@ -684,6 +712,7 @@ async function main() {
       const dischargePort = cargo ? cfValue(cargo.destinationPort) : null;
       const lay = cargo ? parseLaycan(cargo.laycan, refYear) : null;
       const voyage = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+      const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? null) : null;
       const ws = buildWorksheet(m, cargo, vessel);
       const args: Array<string | number | null> = [
         m.cargoEmailId, m.vesselEmailId, m.cargoItemIndex, m.vesselItemIndex,
@@ -694,7 +723,7 @@ async function main() {
         loadPort, dischargePort,
         lay ? lay.start.getTime() : null,
         lay ? lay.end.getTime() : null,
-        vessel ? (cfValue(vessel.dwtSummer) ?? null) : null,
+        vesselDwt,
         // #819 Phase B(b): stored tce_usd_per_day MUST come from the live
         // voyage-calculator path (buildMatchEconomics via pair-analyzer) so the
         // seed bucket and persistSessionMatches recompute agree numerically.
@@ -712,6 +741,7 @@ async function main() {
         m.economics?.freightRateSource ?? null,
       ];
       if (hasWorksheetCol) args.push(ws ? JSON.stringify(ws) : null);
+      if (hasBreakevenCol) args.push(vesselDwt ? breakevenTceByDwt(vesselDwt) : null);
       insert.run(...args);
       n++;
     }

@@ -109,11 +109,11 @@ describe('calculateWarRiskPremium — Persian Gulf / Strait of Hormuz HRA', () =
     expect(result.zoneIds).toContain('persian-gulf-hra');
   });
 
-  it('premium uses 0.5% rate for $12M vessel', () => {
+  it('premium uses 0.75% rate for $12M vessel (live JWC JWLA-033 persian-gulf rate)', () => {
     const result = calculateWarRiskPremium({
       route: { fromPort: 'Bandar Abbas', toPort: 'Rotterdam' },
       vesselValueUsd: 12_000_000,
     });
-    expect(result.premiumUsd).toBe(60_000); // 12M × 0.5% = 60k
+    expect(result.premiumUsd).toBe(90_000); // 12M × 0.75% = 90k (#war-risk-v2-value-shift)
   });
 });
