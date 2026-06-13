@@ -129,11 +129,15 @@ export default async function MatchesPage() {
   );
 }
 
-/** Keep one row per vessel_name+cargo_ref+load_port+laycan_start key (#787). */
-function dedupMatches(rows: StoredMatch[]): StoredMatch[] {
+/**
+ * Dedup by economic identity: vessel_name|cargo_type|load_port|discharge_port|laycan_start (#787).
+ * Paraphrased cargo_ref text ("max 2 tiers" vs "tier limit 2") no longer creates duplicate rows;
+ * rows differing in discharge_port, cargo_type, laycan_start, or vessel_name are kept distinct.
+ */
+export function dedupMatches(rows: StoredMatch[]): StoredMatch[] {
   const seen = new Map<string, StoredMatch>();
   for (const r of rows) {
-    const k = `${r.vessel_name ?? ''}|${r.cargo_ref ?? r.cargo_id}|${r.load_port ?? ''}|${r.laycan_start ?? ''}`;
+    const k = `${r.vessel_name ?? ''}|${r.cargo_type ?? ''}|${r.load_port ?? ''}|${r.discharge_port ?? ''}|${r.laycan_start ?? ''}`;
     if (!seen.has(k)) seen.set(k, r);
   }
   return [...seen.values()];
