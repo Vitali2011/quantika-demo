@@ -267,32 +267,33 @@ describe('app/matches/page.tsx — content dedup (#787)', () => {
     expect(src).toMatch(/dedupMatches/);
   });
 
-  it('dedup key includes vessel_name, cargo_ref, load_port, laycan_start', () => {
+  it('dedup key uses economic identity: vessel_name, cargo_type, load_port, discharge_port, laycan_start (#787)', () => {
     const src = readSource(pagePath);
     expect(src).toMatch(/vessel_name/);
-    expect(src).toMatch(/cargo_ref/);
+    expect(src).toMatch(/cargo_type/);
     expect(src).toMatch(/load_port/);
+    expect(src).toMatch(/discharge_port/);
     expect(src).toMatch(/laycan_start/);
   });
 
-  it('behavioral: identical vessel+cargo+port+laycan rows collapse to one', () => {
-    type Row = { id: number; vessel_name: string | null; cargo_ref: string | null; cargo_id: string; load_port: string | null; laycan_start: number | null };
-    function dedupMatches(rows: Row[]): Row[] {
+  it('behavioral: identical economic-identity rows collapse to one; differing vessel_name kept distinct', () => {
+    type Row = { id: number; vessel_name: string | null; cargo_type: string | null; load_port: string | null; discharge_port: string | null; laycan_start: number | null };
+    function dedupMatchesLocal(rows: Row[]): Row[] {
       const seen = new Map<string, Row>();
       for (const r of rows) {
-        const k = `${r.vessel_name ?? ''}|${r.cargo_ref ?? r.cargo_id}|${r.load_port ?? ''}|${r.laycan_start ?? ''}`;
+        const k = `${r.vessel_name ?? ''}|${r.cargo_type ?? ''}|${r.load_port ?? ''}|${r.discharge_port ?? ''}|${r.laycan_start ?? ''}`;
         if (!seen.has(k)) seen.set(k, r);
       }
       return [...seen.values()];
     }
 
-    const base = { vessel_name: 'MV ALPHA', cargo_ref: 'GRAIN-001', cargo_id: 'c1', load_port: 'UAODS', laycan_start: 1748908800000 };
+    const base = { vessel_name: 'MV ALPHA', cargo_type: 'grain', load_port: 'UAODS', discharge_port: 'CNSHA', laycan_start: 1748908800000 };
     const rows: Row[] = [
       { ...base, id: 1 },
       { ...base, id: 2 },
       { ...base, id: 3, vessel_name: 'MV BETA' },
     ];
-    const result = dedupMatches(rows);
+    const result = dedupMatchesLocal(rows);
     expect(result.length).toBe(2);
     expect(result[0].id).toBe(1);
     expect(result[1].vessel_name).toBe('MV BETA');

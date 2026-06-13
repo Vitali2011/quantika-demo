@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { isDemoMode } from '@/lib/demo-mode';
 import { getStore } from '@/lib/session-store';
 import { listMatches, type StoredMatch } from '@/lib/matching/matches-repository';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
@@ -23,6 +25,9 @@ export default async function MatchesPage() {
   const session = sessionId ? getSession(sessionId) : null;
 
   if (!session) {
+    if (isDemoMode()) {
+      redirect('/api/demo/rehydrate?next=/matches');
+    }
     return (
       <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center space-y-4">
@@ -124,11 +129,17 @@ export default async function MatchesPage() {
   );
 }
 
-/** Keep one row per vessel_name+cargo_ref+load_port+laycan_start key (#787). */
-function dedupMatches(rows: StoredMatch[]): StoredMatch[] {
+/**
+ * Dedup by economic identity: vessel_name|cargo_type|load_port|discharge_port|laycan_start|laycan_end|fit_percent (#787).
+ * Paraphrased cargo_ref text ("max 2 tiers" vs "tier limit 2") no longer creates duplicate rows;
+ * rows differing in discharge_port, cargo_type, laycan_start, vessel_name, or fit_percent are kept
+ * distinct (fit_percent added to prevent over-collapse of genuinely different matches, prod data
+ * showed 17 rows with identical route/laycan but different fit — they must remain separate).
+ */
+export function dedupMatches(rows: StoredMatch[]): StoredMatch[] {
   const seen = new Map<string, StoredMatch>();
   for (const r of rows) {
-    const k = `${r.vessel_name ?? ''}|${r.cargo_ref ?? r.cargo_id}|${r.load_port ?? ''}|${r.laycan_start ?? ''}`;
+    const k = `${r.vessel_name ?? ''}|${r.cargo_type ?? ''}|${r.load_port ?? ''}|${r.discharge_port ?? ''}|${r.laycan_start ?? ''}|${r.laycan_end ?? ''}|${r.fit_percent ?? ''}`;
     if (!seen.has(k)) seen.set(k, r);
   }
   return [...seen.values()];
