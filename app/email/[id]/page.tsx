@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmailBodyViewer, type Highlight } from '@/components/email-body-viewer';
 import type { ConfidenceField } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
+import { isDemoMode } from '@/lib/demo-mode';
 
 const FIELD_COLORS: Record<string, string> = {
   originPort:         'bg-blue-200',
@@ -66,7 +67,10 @@ export default async function EmailDetailPage({ params }: Props) {
   const sessionId = cookieStore.get('session_id')?.value;
   if (!sessionId) redirect('/');
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) {
+    if (isDemoMode()) redirect(`/api/demo/rehydrate?next=/email/${id}`);
+    redirect('/');
+  }
   const email = session.emails.find(e => e.id === id);
   if (!email) notFound();
 

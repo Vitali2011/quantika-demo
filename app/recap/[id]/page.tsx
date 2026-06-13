@@ -7,6 +7,7 @@ import { RecapSection } from '@/components/recap/recap-section';
 import { RecapActions } from '@/components/recap/recap-actions';
 import { ChevronLeft, Users, Mail } from 'lucide-react';
 import type { NegotiationStatus } from '@/lib/types';
+import { isDemoMode } from '@/lib/demo-mode';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -19,7 +20,10 @@ export default async function RecapPage({ params }: Props) {
   if (!sessionId) redirect('/');
 
   const session = getSession(sessionId);
-  if (!session) redirect('/');
+  if (!session) {
+    if (isDemoMode()) redirect(`/api/demo/rehydrate?next=/recap/${id}`);
+    redirect('/');
+  }
 
   const recap = session.recaps.find(r => r.threadId === id);
   if (!recap) notFound();
