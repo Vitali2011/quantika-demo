@@ -69,6 +69,11 @@ jobs:
       - run: npm test
         env:
           NODE_OPTIONS: --max-old-space-size=6144
+      # Critical regression locks live in tests/regression/ (jest-ignored from the
+      # default run); run them explicitly so they actually gate merges (#691).
+      - run: npm run test:regression
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
 
   # E2E moved to .github/workflows/e2e.yml (manual + weekly cron, 2026-05-15)
   # Reason: e2e had continue-on-error=true, blocked nothing, but added ~15-20 min to every push to main.
