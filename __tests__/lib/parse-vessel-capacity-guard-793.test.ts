@@ -110,4 +110,21 @@ describe('#793 — vessel capacity plausibility guard', () => {
     expect(vessels[0].grainCapacity).toBe(12000);
     expect(vessels[0].baleCapacity).toBe(11500);
   });
+
+  it('nulls implausibly-large grain/bale when dwt_summer is a ConfidenceField (real prod shape) #976', () => {
+    // Prod stores dwt_summer as a ConfidenceField object, not a plain number
+    // (see ParsedVessel.dwtSummer in lib/types.ts). Lock that path: DWT 5007,
+    // grain 220577 cbm (> 2.5 * 5007 = 12517.5) → both nulled.
+    const raw = JSON.stringify({
+      vessel_name: 'MV BBA LARISA CF',
+      imo: '9166511',
+      dwt_summer: { value: 5007, confidence: 'high', source_text: '5007 dwt' },
+      grain_capacity: 220577,
+      bale_capacity: 213000,
+    });
+    const vessels = parseVesselAIResponse(raw, 'test-email');
+    expect(vessels).toHaveLength(1);
+    expect(vessels[0].grainCapacity).toBeNull();
+    expect(vessels[0].baleCapacity).toBeNull();
+  });
 });
