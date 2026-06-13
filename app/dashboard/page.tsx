@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { isDemoMode } from '@/lib/demo-mode';
 import { getStore } from '@/lib/session-store';
 import { filterByCategory } from '@/lib/dashboard-queries';
 import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
@@ -23,6 +25,9 @@ export default async function DashboardPage() {
   const session = sessionId ? getSession(sessionId) : null;
 
   if (!session) {
+    if (isDemoMode()) {
+      redirect('/api/demo/rehydrate?next=/dashboard');
+    }
     return (
       <div className="min-h-screen bg-ds-bg flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center space-y-4">

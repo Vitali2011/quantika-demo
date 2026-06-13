@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { isDemoMode } from '@/lib/demo-mode';
 import { getStore } from '@/lib/session-store';
 import { listMatches, type StoredMatch } from '@/lib/matching/matches-repository';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
@@ -23,6 +25,9 @@ export default async function MatchesPage() {
   const session = sessionId ? getSession(sessionId) : null;
 
   if (!session) {
+    if (isDemoMode()) {
+      redirect('/api/demo/rehydrate?next=/matches');
+    }
     return (
       <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center space-y-4">
