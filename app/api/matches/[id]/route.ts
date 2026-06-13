@@ -15,6 +15,7 @@ import type { ParsedCargo, ParsedVessel, FitBreakdown } from '@/lib/types';
 import type { StoredMatch } from '@/lib/matching/matches-repository';
 import { patchEconomicsComponent } from '@/lib/matching/persist-session-matches';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { attachPortLimits } from '@/lib/matching/attach-port-limits';
 
 export const dynamic = 'force-dynamic';
 
@@ -213,7 +214,7 @@ export async function PATCH(
       const source = (eco.freight_rate_source ?? 'estimated') as FreightRateSource;
       const fit = recomputeFit(existing, eco.tce_usd_per_day ?? null);
       const updated = updateMatchFreightRate(db, id, rate, tce, source, fit);
-      return NextResponse.json(updated, { status: 200 });
+      return NextResponse.json(attachPortLimits([updated])[0], { status: 200 });
     }
 
     // Freight rate override path
@@ -235,7 +236,7 @@ export async function PATCH(
       const tce = eco.tce_usd_per_day ?? existing.tce_usd_per_day ?? 0;
       const fit = recomputeFit(existing, eco.tce_usd_per_day ?? null);
       const updated = updateMatchFreightRate(db, id, rate, tce, 'manual', fit);
-      return NextResponse.json(updated, { status: 200 });
+      return NextResponse.json(attachPortLimits([updated])[0], { status: 200 });
     }
 
     // Status update path
@@ -247,7 +248,7 @@ export async function PATCH(
     }
 
     const updated = updateMatchStatus(db, id, status as MatchStatus);
-    return NextResponse.json(updated, { status: 200 });
+    return NextResponse.json(attachPortLimits([updated])[0], { status: 200 });
   } catch (error) {
     if (error instanceof Error && /Invalid transition/i.test(error.message)) {
       return NextResponse.json(

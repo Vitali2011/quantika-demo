@@ -15,6 +15,7 @@
 import Database from 'better-sqlite3';
 import { NextRequest, NextResponse } from 'next/server';
 import migration032 from '@/lib/migrations/032-matches';
+import migration045 from '@/lib/migrations/045-matches-worksheet';
 import { requireSession } from '@/lib/session';
 import type { MatchStatus } from '@/lib/matching/matches-repository';
 
@@ -414,5 +415,78 @@ describe('PATCH /api/matches/[id] — body validation', () => {
     );
 
     expect(res.status).toBe(400);
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Port limits — PATCH response must include load_port_limit_m / discharge_port_limit_m
+// Regression guard for cold-QA finding on PR #962: attachPortLimits was only
+// applied in GET /api/matches and the RSC page, not in the PATCH handler, so
+// handleAction in MatchesClient received a raw StoredMatch without limits and
+// DraftCalcBreakdown showed "limit unknown" until the next page reload.
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('PATCH /api/matches/[id] — port limits in response (cold-QA #962)', () => {
+  let db: Database.Database;
+  const originalEnv = process.env.MATCHES_ENABLED;
+
+  function seedMatchWithWorksheet(d: Database.Database, status: MatchStatus = 'shortlist'): number {
+    const worksheetJson = JSON.stringify({
+      cargo: { loadPort: 'Rotterdam', dischargePort: 'Constanta' },
+    });
+    const res = d
+      .prepare(
+        `INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, worksheet_json, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+      .run('c1', 'v1', 75, '{}', status, 'test-sid', worksheetJson, Date.now(), Date.now());
+    return res.lastInsertRowid as number;
+  }
+
+  beforeEach(() => {
+    db = new Database(':memory:');
+    migration032.up(db);
+    migration045.up(db);
+    testDb = db;
+    process.env.MATCHES_ENABLED = 'true';
+  });
+
+  afterEach(() => {
+    db.close();
+    process.env.MATCHES_ENABLED = originalEnv;
+  });
+
+  it('PATCH status response includes load_port_limit_m and discharge_port_limit_m', async () => {
+    const id = seedMatchWithWorksheet(db, 'shortlist');
+    const { PATCH } = await import('@/app/api/matches/[id]/route');
+    const res = await PATCH(
+      makeRequest(id, { status: 'saved' }),
+      makeParams(id)
+    );
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    // Both fields must be present in the response (not undefined) — even if null for unknown ports
+    expect('load_port_limit_m' in json).toBe(true);
+    expect('discharge_port_limit_m' in json).toBe(true);
+    // Rotterdam and Constanta are real ports — limits are concrete numbers
+    expect(typeof json.load_port_limit_m).toBe('number');
+    expect(typeof json.discharge_port_limit_m).toBe('number');
+  });
+
+  it('PATCH status response includes null limits for match with no worksheet', async () => {
+    const id = seedMatch(db, 'shortlist'); // no worksheet_json
+    const { PATCH } = await import('@/app/api/matches/[id]/route');
+    const res = await PATCH(
+      makeRequest(id, { status: 'saved' }),
+      makeParams(id)
+    );
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect('load_port_limit_m' in json).toBe(true);
+    expect('discharge_port_limit_m' in json).toBe(true);
+    expect(json.load_port_limit_m).toBeNull();
+    expect(json.discharge_port_limit_m).toBeNull();
   });
 });
