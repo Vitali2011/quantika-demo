@@ -5,7 +5,7 @@
 set -euo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 ARM="${1:?arm}"; MODEL="${2:?model}"; EFFORT="${3:?effort}"; RUN="${4:?run}"; BUDGET="${5:-8}"
-BRIEF="${ROOT}/bench/war-risk/brief.md"
+BRIEF="${BENCH_BRIEF:-${ROOT}/bench/war-risk/brief.md}"
 OUT="${ROOT}/bench/war-risk/results/${ARM}/r${RUN}"
 mkdir -p "$OUT"
 
@@ -14,12 +14,21 @@ WT="$(bash "${ROOT}/scripts/bench/new-run-worktree.sh" "$ARM" "$RUN")"
 # Isolated claude config — the ambient skill ecosystem (superpowers/orchestrator)
 # hijacks the agent into writing a PLAN instead of code. Clean dir carries ONLY auth
 # creds + minimal settings: no skills, no plugins, no hooks. (Validity fix 2026-06-13.)
-CLEAN="${ROOT}/bench/war-risk/.clean-claude"
+#
+# PER-RUN, not shared: concurrent runs sharing one CLAUDE_CONFIG_DIR corrupt each
+# other's session/permission state. Each run gets its own dir under its result dir.
+#
+# Permission mode MUST be a real edit-granting mode. "auto" is NOT a valid mode —
+# it silently falls back to "default", which in non-interactive --print auto-DENIES
+# every Edit/Write → agent reads code but writes nothing → empty diff. acceptEdits
+# auto-approves file edits (the thing we measure). (Validity fix #2, 2026-06-13.)
+CLEAN="${OUT}/.cfg"
 mkdir -p "$CLEAN"
-[ -f "$CLEAN/.credentials.json" ] || cp "$HOME/.claude/.credentials.json" "$CLEAN/.credentials.json" 2>/dev/null || true
-printf '{"defaultMode":"auto"}\n' > "$CLEAN/settings.json"
+cp "$HOME/.claude/.credentials.json" "$CLEAN/.credentials.json" 2>/dev/null || true
+PERM="${BENCH_PERM:-acceptEdits}"
+printf '{"defaultMode":"%s"}\n' "$PERM" > "$CLEAN/settings.json"
 
-CMD=(claude --print --output-format json --model "$MODEL" --effort "$EFFORT" --max-budget-usd "$BUDGET")
+CMD=(claude --print --output-format json --permission-mode "$PERM" --model "$MODEL" --effort "$EFFORT" --max-budget-usd "$BUDGET")
 if [ "${DRYRUN:-0}" = "1" ]; then
   printf 'DRYRUN cwd=%s cmd=CLAUDE_CONFIG_DIR=%s %s < %s\n' "$WT" "$CLEAN" "${CMD[*]}" "$BRIEF"
   git worktree remove --force "$WT"; exit 0
