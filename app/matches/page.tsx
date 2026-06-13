@@ -8,6 +8,7 @@ import { listMatches, type StoredMatch } from '@/lib/matching/matches-repository
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
 import { countQualifyingMatches } from '@/lib/matching/count-qualifying';
 import { toBucketRows } from '@/lib/matching/session-buckets';
+import { attachPortLimits } from '@/lib/matching/attach-port-limits';
 import MatchesClient from './MatchesClient';
 import { resolveLaycanDisplay } from '@/lib/utils/laycan-display';
 import PageSkeleton from '@/components/ui/PageSkeleton';
@@ -75,6 +76,10 @@ export default async function MatchesPage() {
     };
   });
 
+  // Resolve live port-master draft limits server-side and attach as plain numbers,
+  // so MatchesClient (a client component) never imports the 225 KB port corpus (qa-956).
+  const matchesWithLimits = attachPortLimits(matchesWithDisplay);
+
   // Computing only when BOTH cargo and vessel are present — matches require both sides.
   const hasCargo = session.parsedCargos.length > 0;
   const hasVessel = session.parsedVessels.length > 0;
@@ -107,7 +112,7 @@ export default async function MatchesPage() {
       <div className="max-w-[1280px] mx-auto space-y-6">
         <h1 className="text-2xl font-bold">Matches {qualifyingCount} results</h1>
         <Suspense fallback={<PageSkeleton />}>
-          <MatchesClient initialMatches={matchesWithDisplay} isComputing={isComputing}
+          <MatchesClient initialMatches={matchesWithLimits} isComputing={isComputing}
             cargoEmailIds={cargoEmailIds}
             vesselEmailIds={vesselEmailIds}
             lowConfidenceMatches={lowConfidenceMatches}

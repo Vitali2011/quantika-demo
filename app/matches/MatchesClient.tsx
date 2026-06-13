@@ -17,11 +17,19 @@ import { useDemoNow } from '@/lib/clock-client';
 import { fitDisplay } from '@/lib/matching/fit-display';
 import { effectiveScore } from '@/lib/utils/effective-score';
 import { DraftCalcBreakdown } from '@/components/match/DraftCalcBreakdown';
-import { getPortMaster } from '@/lib/sailing/port-master';
 import type { MatchWorksheet } from '@/lib/types';
 
+// Port-master draft limits (load/discharge) are resolved server-side and threaded
+// in as plain numbers — see lib/matching/attach-port-limits.ts. This keeps the
+// 225 KB port-master.json corpus out of the /matches client bundle (qa-956).
+type MatchRow = StoredMatch & {
+  laycan_display?: string | null;
+  load_port_limit_m?: number | null;
+  discharge_port_limit_m?: number | null;
+};
+
 interface Props {
-  initialMatches: (StoredMatch & { laycan_display?: string | null })[];
+  initialMatches: MatchRow[];
   isComputing?: boolean;
   cargoEmailIds?: string[];
   vesselEmailIds?: string[];
@@ -148,7 +156,7 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
   const toast = useToast();
 
   // Core state
-  const [matches, setMatches] = useState<(StoredMatch & { laycan_display?: string | null })[]>(initialMatches);
+  const [matches, setMatches] = useState<MatchRow[]>(initialMatches);
 
   // Live SSE state (additive — does not touch cached-list flow)
   const { jobs, latestMatch, dismissMatch } = useLiveJobs();
@@ -958,8 +966,8 @@ export default function MatchesClient({ initialMatches, isComputing = false, car
                                     dwtSummer={ws.vessel.dwtSummer}
                                     weightMt={ws.cargo.weightMtEffective ?? ws.cargo.weightMt}
                                     statedMaxDraftM={ws.vessel.draftMax}
-                                    loadPortLimit={getPortMaster(ws.cargo.loadPort)?.maxDraftM ?? null}
-                                    dischargePortLimit={getPortMaster(ws.cargo.dischargePort)?.maxDraftM ?? null}
+                                    loadPortLimit={match.load_port_limit_m ?? null}
+                                    dischargePortLimit={match.discharge_port_limit_m ?? null}
                                   />
                                 )}
                               </div>
