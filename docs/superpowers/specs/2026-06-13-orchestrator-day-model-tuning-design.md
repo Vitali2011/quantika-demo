@@ -41,7 +41,7 @@ Edits in `~/.claude/skills/orchestrator-day/`:
 
 1. **SKILL.md matrix:**
    - `Исполнение M/L`: `Sonnet 4.6 : max` → **`Opus 4.8 : high`**.
-   - `Тяжёлое исполнение`: `Opus 4.8 : medium` → **`Opus 4.8 : max`** (interim; Part 2 tunes it).
+   - `Тяжёлое исполнение`: `Opus 4.8 : medium` → **`Opus 4.8 : max`** (final — founder call 2026-06-13: max, no bench).
    - `Тривиальная правка`: **unchanged** (`Sonnet 4.6 : high`).
    - `Разведка`, `План`: **unchanged** (handled later / by Part 3).
    - Update the prose on the same lines (l.42, l.48) that say "Исполнение (Sonnet …)".
@@ -70,16 +70,15 @@ post-deploy fix-loop (R1 Sonnet / R2 Opus already escalates).
 confirms no M/L execution path still hardcodes Sonnet. This is a config/doc change backed by the
 benchmark — not a RED-GREEN behavioral-rule change.
 
-## Part 2 — Hard-task benchmark (parallel; tunes escalation)
+## Part 2 — Hard-task benchmark — CANCELLED (founder call 2026-06-13)
 
-- **Task:** one large, cross-cutting, under-specified, **code-only** (no runtime LLM — dev-LLM is
-  down) merged PR of this repo with an oracle (#970-class, ~2000 LOC). **Selection shown to the
-  founder before any spend.**
-- **Configs:** `opus-med`, `opus-high`, `opus-max`, `dynamic-wf` × n=3 (12 runs, ≈$150–200).
-- **Rig:** identical to war-risk (isolated `--print` per run at the pre-PR SHA, `acceptEdits`,
-  per-run config dir). Grading: blind solo judge + objective hidden-test oracle + pairwise on contested.
-- **Output:** confirms whether `opus-high` holds as the base on a hard task, and sets the
-  `Тяжёлое исполнение` escalation target (high vs max vs orchestration).
+Founder decision: skip the hard-task benchmark; set `Тяжёлое исполнение` = **Opus 4.8 : max**
+directly. Rationale: max is the ceiling for the rare heavy/escalation tier anyway, and a $150–200
+benchmark to choose between high and max for a low-frequency role does not pay for itself. The
+escalation target is finalized at max **without** measurement.
+
+_(Original plan, kept for the record: one large under-specified code-only #970-class PR ×
+`opus-{med,high,max}` + `dynamic-wf` × n=3, same war-risk rig + grading.)_
 
 ## Part 3 — Analysis + Plan evals (future, sketched only)
 
@@ -98,7 +97,8 @@ Deferred to a separate spec. Recorded here only to fix the intended approach.
 
 - Execution cost rises (~+71%/run on the highest-volume role); accepted because Sonnet is proven too
   weak there. Trivial/routines stay cheap to bound the increase.
-- Easy-task evidence may not fully transfer to hard tasks → Part 2 validates before the escalation
-  rule is finalized.
+- Easy-task evidence may not fully transfer to hard tasks. Accepted: the heavy/escalation tier is
+  set to **max** (the ceiling) without a hard benchmark — founder call 2026-06-13, since max bounds
+  the worst case for a rare, low-frequency role.
 - orchestrator-day skill repo is separate (and per memory often uncommitted) — implementation must
   commit the skill change there, not only in quantika-demo.
