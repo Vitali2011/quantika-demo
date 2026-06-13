@@ -130,14 +130,16 @@ export default async function MatchesPage() {
 }
 
 /**
- * Dedup by economic identity: vessel_name|cargo_type|load_port|discharge_port|laycan_start (#787).
+ * Dedup by economic identity: vessel_name|cargo_type|load_port|discharge_port|laycan_start|laycan_end|fit_percent (#787).
  * Paraphrased cargo_ref text ("max 2 tiers" vs "tier limit 2") no longer creates duplicate rows;
- * rows differing in discharge_port, cargo_type, laycan_start, or vessel_name are kept distinct.
+ * rows differing in discharge_port, cargo_type, laycan_start, vessel_name, or fit_percent are kept
+ * distinct (fit_percent added to prevent over-collapse of genuinely different matches, prod data
+ * showed 17 rows with identical route/laycan but different fit — they must remain separate).
  */
 export function dedupMatches(rows: StoredMatch[]): StoredMatch[] {
   const seen = new Map<string, StoredMatch>();
   for (const r of rows) {
-    const k = `${r.vessel_name ?? ''}|${r.cargo_type ?? ''}|${r.load_port ?? ''}|${r.discharge_port ?? ''}|${r.laycan_start ?? ''}`;
+    const k = `${r.vessel_name ?? ''}|${r.cargo_type ?? ''}|${r.load_port ?? ''}|${r.discharge_port ?? ''}|${r.laycan_start ?? ''}|${r.laycan_end ?? ''}|${r.fit_percent ?? ''}`;
     if (!seen.has(k)) seen.set(k, r);
   }
   return [...seen.values()];

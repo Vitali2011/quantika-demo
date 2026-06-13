@@ -1,10 +1,12 @@
 /**
  * #787 — dedupMatches: dedup by economic identity, not paraphrased cargo_ref.
  *
- * Two rows with the same vessel+cargo_type+load_port+discharge_port+laycan_start
+ * Two rows with the same vessel+cargo_type+load_port+discharge_port+laycan_start+laycan_end+fit_percent
  * but different cargo_ref text must collapse to one.
  * Rows differing in any discriminator (discharge_port, cargo_type, laycan_start,
- * vessel_name) must NOT collapse (no over-collapse regression).
+ * vessel_name, fit_percent) must NOT collapse (no over-collapse regression).
+ * fit_percent added after prod-data analysis showed 17 same-route rows with different
+ * fit values (genuinely distinct matches) were being wrongly merged.
  */
 
 import { dedupMatches } from '../app/matches/page';
@@ -29,7 +31,7 @@ function makeRow(overrides: Partial<StoredMatch> & { id: number }): StoredMatch 
     load_port: overrides.load_port ?? 'UAODS',
     discharge_port: overrides.discharge_port ?? 'CNSHA',
     laycan_start: overrides.laycan_start ?? 1748908800000,
-    laycan_end: null,
+    laycan_end: overrides.laycan_end ?? null,
     cargo_ref: overrides.cargo_ref ?? null,
     vessel_dwt: null,
     freight_rate_usd_per_mt: null,
@@ -37,7 +39,7 @@ function makeRow(overrides: Partial<StoredMatch> & { id: number }): StoredMatch 
     distance_nm: null,
     tce_usd_per_day: null,
     consumption_estimated: null,
-    fit_percent: null,
+    fit_percent: overrides.fit_percent ?? null,
     fit_breakdown: null,
     worksheet_json: null,
     breakeven_tce_usd_per_day: null,
@@ -107,5 +109,27 @@ describe('dedupMatches — economic identity key (#787)', () => {
     ];
     const result = dedupMatches(rows);
     expect(result).toHaveLength(2);
+  });
+
+  it('keeps rows identical except for different fit_percent (no over-collapse)', () => {
+    // Prod data: 17 rows with same vessel/cargo_type/route/laycan but different fit_percent —
+    // these are genuinely distinct matches and must not be merged.
+    const rows = [
+      makeRow({ id: 1, vessel_name: 'SEAGULL', cargo_type: 'grain', load_port: 'UAODS', discharge_port: 'CNSHA', laycan_start: 1748908800000, laycan_end: 1749081600000, fit_percent: 61.2 }),
+      makeRow({ id: 2, vessel_name: 'SEAGULL', cargo_type: 'grain', load_port: 'UAODS', discharge_port: 'CNSHA', laycan_start: 1748908800000, laycan_end: 1749081600000, fit_percent: 74.5 }),
+    ];
+    const result = dedupMatches(rows);
+    expect(result).toHaveLength(2);
+  });
+
+  it('collapses rows with same route/laycan AND same fit_percent (true re-circulated dup)', () => {
+    // e.g. SEAGULL 60 appearing twice with same fit_percent 61.2 — these ARE true dups
+    const rows = [
+      makeRow({ id: 1, cargo_ref: 'grain shipment A', vessel_name: 'SEAGULL', fit_percent: 61.2, laycan_end: 1749081600000 }),
+      makeRow({ id: 2, cargo_ref: 'grain shipment B', vessel_name: 'SEAGULL', fit_percent: 61.2, laycan_end: 1749081600000 }),
+    ];
+    const result = dedupMatches(rows);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe(1);
   });
 });

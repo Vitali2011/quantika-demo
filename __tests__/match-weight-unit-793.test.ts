@@ -1,37 +1,66 @@
 /**
  * #793 — cargo weight SourceAttributionSection must show unit "mt".
  *
- * Static source analysis: the Weight field passed to SourceAttributionSection
- * must include the unit (e.g. `${cargo.weightMt} mt`) instead of a bare number.
+ * Runtime assertion: spreading cargo.weightMt with a formatted .value must
+ * produce a ConfidenceField<string> with:
+ *   - .value = "<number> mt"  (not "[object Object] mt")
+ *   - .confidence preserved from the original field
+ *   - .sourceText preserved from the original field
  */
 
-import fs from 'fs';
-import path from 'path';
+import type { ConfidenceField } from '@/lib/types';
 
-const ROOT = path.resolve(__dirname, '..');
-const pagePath = path.join(ROOT, 'app/match/[id]/page.tsx');
+/** Mirrors the spread expression in app/match/[id]/page.tsx */
+function buildWeightField(
+  weightMt: ConfidenceField<number>,
+): ConfidenceField<string> {
+  return { ...weightMt, value: `${weightMt.value} mt` };
+}
 
 describe('#793 — weight unit in SourceAttributionSection', () => {
-  it('Weight field includes "mt" unit in the displayed value', () => {
-    const src = fs.readFileSync(pagePath, 'utf-8');
-    // The template literal must include " mt" unit suffix
-    expect(src).toMatch(/weightMt.*mt|`\$\{.*weightMt.*\}\s*mt/);
+  const sample: ConfidenceField<number> = {
+    value: 55000,
+    confidence: 'interpreted',
+    sourceText: '55,000 mt grain',
+  };
+
+  it('renders a real number + " mt", not "[object Object] mt"', () => {
+    const field = buildWeightField(sample);
+    expect(field.value).toBe('55000 mt');
+    expect(field.value).not.toContain('[object Object]');
   });
 
-  it('Weight label exists with mt unit string in SourceAttributionSection fields', () => {
-    const src = fs.readFileSync(pagePath, 'utf-8');
-    // Must have the string "mt" near the Weight label
-    const weightIdx = src.indexOf("'Weight'");
-    expect(weightIdx).toBeGreaterThan(-1);
-    // Look at the surrounding 200 chars for "mt"
-    const surrounding = src.substring(weightIdx, weightIdx + 200);
-    expect(surrounding).toMatch(/mt/);
+  it('preserves original confidence (does not hardcode "confirmed")', () => {
+    const field = buildWeightField(sample);
+    expect(field.confidence).toBe('interpreted');
   });
 
-  it('Weight value is wrapped in a ConfidenceField-compatible object (not a bare number)', () => {
-    const src = fs.readFileSync(pagePath, 'utf-8');
-    // The value must use a ConfidenceField shape { value: ..., confidence: ... }
-    // to satisfy SourceAttributionSection type requirements
-    expect(src).toMatch(/Weight.*confidence|confidence.*Weight/);
+  it('preserves sourceText so SourceAttributionSection shows the row', () => {
+    const field = buildWeightField(sample);
+    expect(field.sourceText).toBe('55,000 mt grain');
+  });
+
+  it('works when sourceText is absent', () => {
+    const noSource: ConfidenceField<number> = { value: 12000, confidence: 'confirmed' };
+    const field = buildWeightField(noSource);
+    expect(field.value).toBe('12000 mt');
+    expect(field.sourceText).toBeUndefined();
+  });
+
+  it('page.tsx uses the spread pattern (source guard)', () => {
+    // Belt-and-suspenders: verify the page source uses the spread, not a bare template literal
+     
+    const fs = require('fs') as typeof import('fs');
+     
+    const path = require('path') as typeof import('path');
+    const src = fs.readFileSync(
+      path.resolve(__dirname, '../app/match/[id]/page.tsx'),
+      'utf-8',
+    );
+    // Must use spread: { ...cargo.weightMt, value: `${cargo.weightMt.value} mt` }
+    expect(src).toMatch(/\.\.\.\s*cargo\.weightMt/);
+    expect(src).toMatch(/cargo\.weightMt\.value.*mt/);
+    // Must NOT interpolate the raw ConfidenceField object as a whole
+    expect(src).not.toMatch(/`\$\{cargo\.weightMt\}\s*mt`/);
   });
 });
