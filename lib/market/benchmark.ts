@@ -1,5 +1,7 @@
 import type { MarketBenchmark, MarketIndicator } from '@/lib/types';
 import { fetchToepferTmi } from './toepfer-scraper';
+import { getTmiBenchmarkFromDb } from './tmi-benchmark-fallback';
+import { getStore } from '@/lib/session-store';
 
 /** TTL for cached market benchmark entries: 7 days in milliseconds. */
 const BENCHMARK_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -41,6 +43,18 @@ export async function getCurrentBenchmark(
   // Return stale cache if available rather than null
   if (cached) {
     return cached.benchmark;
+  }
+
+  // For TOEPFER_TMI: fall back to DB value when scraper is unavailable
+  if (indicator === 'TOEPFER_TMI') {
+    try {
+      const dbFallback = getTmiBenchmarkFromDb(getStore().getDatabase());
+      if (dbFallback) {
+        return dbFallback;
+      }
+    } catch {
+      // DB unavailable — continue to null
+    }
   }
 
   return null;
