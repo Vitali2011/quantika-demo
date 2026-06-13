@@ -8,8 +8,8 @@
 set -uo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 ARM="${1:?arm}"; RUN="${2:?run}"; REF="${3:-a8e2e3ef}"
-SOL="${ROOT}/bench/war-risk/results/${ARM}/r${RUN}/solution.diff"
-OUT="${ROOT}/bench/war-risk/grades/${ARM}/r${RUN}"; mkdir -p "$OUT"
+SOL="${ROOT}/bench/${BENCH_DIR:-war-risk}/results/${ARM}/r${RUN}/solution.diff"
+OUT="${ROOT}/bench/${BENCH_DIR:-war-risk}/grades/${ARM}/r${RUN}"; mkdir -p "$OUT"
 [ -s "$SOL" ] || { echo "Tests: 0 (no diff)" > "${OUT}/h957.summary"; exit 0; }
 
 WT="$(bash "${ROOT}/scripts/bench/new-run-worktree.sh" "g957-${ARM}" "$RUN")"

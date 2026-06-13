@@ -6,7 +6,7 @@ set -euo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 ARM="${1:?arm}"; MODEL="${2:?model}"; EFFORT="${3:?effort}"; RUN="${4:?run}"; BUDGET="${5:-8}"
 BRIEF="${BENCH_BRIEF:-${ROOT}/bench/war-risk/brief.md}"
-OUT="${ROOT}/bench/war-risk/results/${ARM}/r${RUN}"
+OUT="${ROOT}/bench/${BENCH_DIR:-war-risk}/results/${ARM}/r${RUN}"
 mkdir -p "$OUT"
 
 WT="$(bash "${ROOT}/scripts/bench/new-run-worktree.sh" "$ARM" "$RUN")"
