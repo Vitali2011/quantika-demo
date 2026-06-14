@@ -38,6 +38,7 @@ import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
 import { cfValue, type ParsedCargo, type ParsedVessel, type Match, type MatchWorksheet } from '@/lib/types';
+import { normalizeVesselCapacityToCbm } from '@/lib/parsing/vessel-capacity-units';
 import { seedCharterersWithDb } from '../knowledge/seeds/seed-charterers';
 import { seedPscHistoryWithDb } from '../knowledge/seeds/seed-psc-history';
 import { seedPortDa, type BaselinePort } from '../seed-port-da';
@@ -570,6 +571,20 @@ async function main() {
     if (changed && !DRY) { updateParsed.run(JSON.stringify(items), r.id, r.parse_type); normalizedRows++; }
   }
   console.log(`[regen] frozen=${frozen} refYear=${refYear} · cargos=${cargos.length} vessels=${vessels.length} · normalized parsed rows=${normalizedRows}`);
+
+  // CBFT→CBM at ENGINE INTAKE (#984 follow-up): seeded parsed_results store the
+  // RAW cbft value + grainCapacityUnit='cbft'. analyzePairs' volume readers
+  // (checkVolume/scoreVolume) read grainCapacity as m³, so without this the
+  // engine scored the 8 cbft vessels with ~35x inflated volume capacity and the
+  // volume gate never bound. Same single-owner util as parse-time + hydrate, so
+  // all three readers agree. In-memory only — the raw cbft stays in parsed_results
+  // (read-time conversion is the contract, mirroring #984); this normalises the
+  // in-memory vessels used for BOTH analyzePairs AND the downstream worksheet.
+  const cbftVesselCount = vessels.filter(
+    (v) => v.grainCapacityUnit && String(v.grainCapacityUnit).toLowerCase() === 'cbft',
+  ).length;
+  for (const v of vessels) normalizeVesselCapacityToCbm(v);
+  console.log(`[regen] cbft→cbm engine-intake conversion applied to ${cbftVesselCount} vessel(s)`);
 
   await hydrateCiiRatings(vessels);
   console.log(`[regen] CII hydrated for ${vessels.filter((v) => v.ciiRating != null).length}/${vessels.length} vessels`);

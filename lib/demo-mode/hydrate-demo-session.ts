@@ -7,6 +7,7 @@ import { deleteOrphanSessionMatches } from '@/lib/matching/matches-repository';
 import { logger } from '@/lib/logger';
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
+import { normalizeVesselCapacityToCbm } from '@/lib/parsing/vessel-capacity-units';
 import type {
   Email, Classification, ParsedCargo, ParsedVessel, ParsedFixtureRecap, Match, ScoreBreakdown, SessionData,
 } from '@/lib/types';
@@ -17,10 +18,6 @@ type DemoBlob = Pick<
   | 'parsedFixtureRecaps' | 'processedEmails' | 'matches' | 'isSampleData' | 'accountId'
   | 'lowConfidenceMatches' | 'insufficientData'
 >;
-
-// cbft→cbm: 1 cbft = 0.0283168 m³, i.e. divide by 35.314667. Single conversion
-// constant shared with lib/parsing/parse-vessel-helpers.ts (CBFT_TO_CBM_PROD).
-const CBFT_TO_CBM = 35.314667;
 
 interface EmailRow {
   gmail_message_id: string; thread_id: string; from_addr: string; from_name: string | null;
@@ -112,23 +109,14 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   const dedupedVessels = dedupByKey(parsedVessels);
   const dedupedCargos  = dedupByKey(parsedCargos);
   for (const v of dedupedVessels) {
-    // CBFT→CBM: code is the single owner of the conversion (mirrors
-    // preNormalizeRawVessel). Seeded parsed_results store the RAW cbft value +
-    // grainCapacityUnit='cbft' (LLM does NOT pre-convert). Convert the VALUE here
-    // BEFORE relabelling and BEFORE the capacity clamp below — else a legit
-    // ~6247 cbm hidden as a raw ~220577 cbft trips the >2.5x DWT clamp and the
-    // volume constraint is silently dropped. Read-time only — no prod write.
-    if (v.grainCapacityUnit && v.grainCapacityUnit.toLowerCase() === 'cbft') {
-      if (typeof v.grainCapacity === 'number' && v.grainCapacity > 0) {
-        v.grainCapacity = Math.round(v.grainCapacity / CBFT_TO_CBM);
-      }
-      if (typeof v.baleCapacity === 'number' && v.baleCapacity > 0) {
-        v.baleCapacity = Math.round(v.baleCapacity / CBFT_TO_CBM);
-      }
-      v.grainCapacityUnit = 'cbm';
-    } else if (v.grainCapacityUnit && v.grainCapacityUnit !== 'cbm') {
-      v.grainCapacityUnit = 'cbm';
-    }
+    // CBFT→CBM: code is the single owner of the conversion — shared util, the
+    // SAME one the engine/regen intake calls (#984 follow-up), so all readers
+    // agree. Seeded parsed_results store the RAW cbft value + grainCapacityUnit=
+    // 'cbft' (LLM does NOT pre-convert). The util converts the VALUE BEFORE the
+    // capacity clamp below — else a legit ~6247 cbm hidden as a raw ~220577 cbft
+    // trips the >2.5x DWT clamp and the volume constraint is silently dropped.
+    // Read-time only — no prod write.
+    normalizeVesselCapacityToCbm(v);
     // CAPACITY_PLAUSIBILITY upper bound: same rule as preNormalizeRawVessel (#976).
     // Fixes already-persisted CBFT-as-CBM values in demo-seed.db.
     const dwtVal = typeof v.dwtSummer === 'object' && v.dwtSummer !== null
