@@ -30,8 +30,10 @@ export function extractLastCargoesFromBody(body: string): string | null {
       raw = raw.replace(/[.;]+$/, '').trim();
       // Collapse horizontal whitespace only; preserve newlines so parseLastCargoes can split on them
       raw = raw.replace(/[^\S\n]+/g, ' ');
-      // Skip if too short (likely false positive) or too long (likely grabbed too much)
-      if (raw.length < 3 || raw.length > 500) continue;
+      // Skip if too short (likely false positive)
+      if (raw.length < 3) continue;
+      // Cap at 200 chars to guard against runaway multi-line captures
+      if (raw.length > 200) raw = raw.slice(0, 200).trimEnd();
       // Skip if it looks like a number-only match (not cargo names)
       if (/^\d+[\d,.\s]*$/.test(raw)) continue;
       return raw;
