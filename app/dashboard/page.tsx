@@ -6,8 +6,6 @@ import { isDemoMode } from '@/lib/demo-mode';
 import { getStore } from '@/lib/session-store';
 import { filterByCategory } from '@/lib/dashboard-queries';
 import { countAwaitingApproval } from '@/lib/auto-prequote/queue';
-import { classifyPriority } from '@/lib/sailing/priority-classifier';
-import type { PriorityLevel } from '@/lib/sailing/priority-classifier';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
 import { DashboardKpiStrip } from '@/components/dashboard/DashboardKpiStrip';
 import { DashboardTodoSection } from '@/components/dashboard/DashboardTodoSection';
@@ -15,9 +13,7 @@ import { DashboardFreshMatches } from '@/components/dashboard/DashboardFreshMatc
 import { MorningHeader } from '@/components/dashboard/MorningHeader';
 import { Badge } from '@/design-system/primitives';
 import { persistSessionMatches } from '@/lib/matching/persist-session-matches';
-import { listMatches } from '@/lib/matching/matches-repository';
-import { countQualifyingMatches } from '@/lib/matching/count-qualifying';
-const PRIORITY_ORDER: Record<PriorityLevel, number> = { urgent: 0, attention: 1, ok: 2 };
+import { deriveDashboardSurfaces } from '@/lib/matching/dashboard-surfaces';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -76,48 +72,19 @@ export default async function DashboardPage() {
 
   const cargoRows = filterByCategory(emails, processedEmails, 'CARGO_INQUIRY');
 
-  const goodMatches = matches.filter(
-    (m) => m.matchLevel === 'good' || m.matchLevel === 'possible',
-  );
-
   const db = getStore().getDatabase();
   if (matches.length > 0) {
     persistSessionMatches(db, sessionId!, matches, session.parsedCargos, session.parsedVessels);
   }
-  const storedMatches = listMatches(db, { user_id: sessionId!, sortBy: 'score', sortDir: 'desc' });
-  // Item-aware key (audit C.5, migration 051): two items of the same email pair
-  // are distinct rows — a 2-part (cargo_id, vessel_id) key would collapse them.
-  // ?? 0 covers StoredMatch's optional item columns (pre-044 rows).
-  const storedKey = (cargoId: string, cargoIdx: number | null | undefined, vesselId: string, vesselIdx: number | null | undefined) =>
-    `${cargoId}|${cargoIdx ?? 0}|${vesselId}|${vesselIdx ?? 0}`;
-  const matchIdMap = new Map(storedMatches.map((sm) => [storedKey(sm.cargo_id, sm.cargo_item_index, sm.vessel_id, sm.vessel_item_index), sm.id]));
-  const storedByKey = new Map(storedMatches.map((sm) => [storedKey(sm.cargo_id, sm.cargo_item_index, sm.vessel_id, sm.vessel_item_index), sm]));
-  const openMatchCount = countQualifyingMatches(db, { user_id: sessionId! });
-
-  const priorityCards = goodMatches
-    .map((match, i) => {
-      const readinessGap =
-        match.readiness?.gapDays !== null && match.readiness?.gapDays !== undefined
-          ? match.readiness.gapDays * 24
-          : undefined;
-      const priority = classifyPriority({ confidence: match.confidence, readinessGap });
-      const matchSummary = match.matchReasons[0] || `Match #${i + 1}`;
-      const keyInsight = match.readiness?.explanation || `Level: ${match.matchLevel}`;
-      const dbId = matchIdMap.get(storedKey(match.cargoEmailId, match.cargoItemIndex, match.vesselEmailId, match.vesselItemIndex));
-      const href = dbId != null ? `/match/${dbId}` : '/matches';
-      return { priority, matchSummary, keyInsight, href };
-    })
-    .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
-
-  const freshMatchesData = goodMatches
-    .filter((m) => matchIdMap.get(storedKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex)) != null)
-    .map((m) => ({
-      id: matchIdMap.get(storedKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex))!,
-      score: m.score,
-      fit_percent: storedByKey.get(storedKey(m.cargoEmailId, m.cargoItemIndex, m.vesselEmailId, m.vesselItemIndex))?.fit_percent ?? null,
-      matchLevel: m.matchLevel,
-      matchReasons: m.matchReasons,
-    }));
+  // Single source of truth: KPI count AND both lists derive from the same deduped,
+  // fit>=60 DB rows. Guarantees the headline count === rendered list length even
+  // when a session "possible" match re-patches below 60 or a duplicate row exists
+  // (see dashboard-surfaces.ts). Session matches only enrich rows (confidence).
+  const { openMatchCount, priorityCards, freshMatchesData } = deriveDashboardSurfaces(
+    db,
+    matches,
+    sessionId!,
+  );
 
   const rawName = session.accountId?.split('@')[0] ?? '';
   const userName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : '';
