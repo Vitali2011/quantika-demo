@@ -14,6 +14,8 @@ make_cfg() {
   printf '{"defaultMode":"acceptEdits"}' > "$dir/settings.json"
   # copy creds only (NOT settings/skills) so superpowers can't hijack into a plan
   cp "$SRC_CFG/.credentials.json" "$dir/.credentials.json" 2>/dev/null || true
+  # symlink daemon dir so subprocess can refresh expired OAuth tokens via running daemon
+  ln -sfn "$SRC_CFG/daemon" "$dir/daemon" 2>/dev/null || true
 }
 
 # worktree_at <sha> <dir>: detached worktree at a fixed SHA.

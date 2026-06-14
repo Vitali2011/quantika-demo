@@ -4,6 +4,8 @@
 set -euo pipefail
 source "$(dirname "$0")/lib.sh"; source "$(dirname "$0")/arms.sh"
 task="$1" arm="$2" rep="$3" sha="$4" goal="$5"
+# resolve goal to absolute (manifest paths are relative to $BASE)
+[[ "$goal" = /* ]] || goal="$BASE/$goal"
 cell="$RUNS/$task/$arm/r$rep"; rm -rf "$cell"; mkdir -p "$cell"
 wt="$cell/wt"; cfg="$cell/.cfg"
 worktree_at "$sha" "$wt"
