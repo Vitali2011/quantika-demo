@@ -66,9 +66,18 @@ export default async function MatchDetailPage({ params }: Props) {
     if (!storedMatch || storedMatch.user_id !== sessionId) notFound();
   }
 
-  // Enrich with in-session data if still available (session may have expired/reloaded)
+  // Enrich with in-session data if still available (session may have expired/reloaded).
+  // Item-aware (migration 051): a single (cargo_id, vessel_id) pair can yield multiple
+  // matches distinguished by item index, so the 2-part key alone returns the FIRST item
+  // and desyncs tabs/worksheet/economics from the hero. Match the full 4-part key —
+  // mirroring dashboard/page.tsx and persist-session-matches.ts. Legacy rows have null
+  // index columns → coalesce to 0 (the default written for item-0 matches).
   const sessionMatch = session.matches.find(
-    (m) => m.cargoEmailId === storedMatch.cargo_id && m.vesselEmailId === storedMatch.vessel_id,
+    (m) =>
+      m.cargoEmailId === storedMatch.cargo_id &&
+      m.vesselEmailId === storedMatch.vessel_id &&
+      m.cargoItemIndex === (storedMatch.cargo_item_index ?? 0) &&
+      m.vesselItemIndex === (storedMatch.vessel_item_index ?? 0),
   );
   const cargo = sessionMatch
     ? session.parsedCargos.find(
