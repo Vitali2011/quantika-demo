@@ -3,6 +3,7 @@ import { extractNum, toConfidence } from '@/lib/parsing-utils';
 import { validateImo } from '@/lib/validation/imo';
 import { calibrateAll } from '@/lib/validation/confidence-calibration';
 import { extractLastCargoesFromBody } from '@/lib/parsing/lastcargoes-fallback';
+import { CBFT_TO_CBM } from '@/lib/parsing/vessel-capacity-units';
 
 interface RawVesselItem {
   vessel_name?: unknown;
@@ -74,7 +75,8 @@ const SQM_OR_CM_PROD_RE = /sqm|sq\.?m\b|\bcm\b|cbm/i;
 const SPEED_UNIT_PROD_RE = /\bknts?\b|\bknots?\b|\bkts?\b/i;
 const THREE_DIM_PROD_RE = /\d+\s*[Xx×]\s*\d+\s*[Xx×]\s*\d+/;
 const CBFT_PROD_RE = /\bcbft\b|\bcuft\b|ft³|ft3/i;
-const CBFT_TO_CBM_PROD = 35.314667;
+// Single-owner conversion factor (shared with hydrate + engine/regen intake).
+const CBFT_TO_CBM_PROD = CBFT_TO_CBM;
 
 function nullIfSqmOrCmDimension(v: unknown): unknown {
   if (!isConfField(v)) return v;
