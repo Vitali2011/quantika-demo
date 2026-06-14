@@ -66,6 +66,7 @@ const TOTAL_WEIGHT = Object.values(FIT_WEIGHTS).reduce((a, b) => a + b, 0);
 // Charterer credit-tier penalty (founder-calibrated; DEFAULT). Counterparty-side,
 // kept OUT of vessel vetting. weak → soft fit hit; second/blue-chip → none.
 // STRONGER: { weak: 8, second: 3 }. SOFTER: { weak: 2, second: 0 }.
+// DEFAULT: { weak: 4, second: 0 }
 export const CHARTERER_TIER_PENALTY: Record<'blue-chip' | 'second' | 'weak', number> = {
   'blue-chip': 0,
   second: 0,
@@ -215,7 +216,7 @@ export function scoreBallast(
   if (distanceNm == null || !Number.isFinite(distanceNm)) {
     return unknown('ballast', 'Ballast distance', 'Distance to load port unknown — vessel position or port not mapped, scored conservatively.');
   }
-  if (vesselDwt == null || !Number.isFinite(vesselDwt)) {
+  if (vesselDwt == null || !Number.isFinite(vesselDwt) || vesselDwt <= 0) {
     return unknown('ballast', 'Ballast distance', 'Vessel DWT not stated — cannot determine class range, scored conservatively.');
   }
   const cls = classifyVesselByDwt(vesselDwt);
