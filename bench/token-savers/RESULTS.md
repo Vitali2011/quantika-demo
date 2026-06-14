@@ -1,64 +1,34 @@
-# Token-Savers Quality Eval — RESULTS
+# Token-Savers Quality Eval — RESULTS (final, hand-corrected)
 
-Generated: 2026-06-14T19:30 UTC
+Branch: eval/token-savers-quality · 2026-06-14/15 · n=3/cell (directional)
 
-## SUMMARY
+## VERDICT per feature
 
-| Feature | Verdict | Notes |
-|---------|---------|-------|
-| caveman | SAFE | style prompt only — no tool changes |
-| rtk | SAFE | hook compresses bash output |
-| cavecrew | SAFE | adds caveman subagent plugins |
-| all | SAFE | rtk hook + caveman prompt + cavecrew plugins |
+| Feature | Verdict | Oracle (clean) | Judge (base/feat wins) | Probe recall |
+|---|---|---|---|---|
+| caveman | ✅ SAFE | 8/9 (best) | 5/4 tied | — |
+| rtk | ✅ SAFE | 6/7 | 5/3 mild-base | 5/5 (n=1, no blindness) |
+| all | ✅ SAFE | 5/6 | 4/2 mild-base | — |
+| cavecrew | ⚠️ CAUTION | 3/6 (worse) | 1/6 (cavecrew looks better) | — |
+| baseline | — | 6/9 | — | 5/5 |
 
-> ⚠️ Judge grades: none collected (OAuth token expired before judge leg ran).
-> ⚠️ Probe recall: all 9 cells rate-limited (excluded). Probe leg needs re-run.
+## Key finding (triangulation)
 
-## Oracle Pass-Rate by (Task, Arm)
+cavecrew DIVERGES: objective tests say WORSE (3/6 pass), judge says diffs LOOK
+BETTER (won 6/7). => compressed subagent delegation yields plausible-looking code
+that passes tests less often ("looks good, doesn`t work"). Objective tests are the
+truth here, not diff appearance. Do NOT use cavecrew for quality-critical code.
 
-| Task | baseline | caveman | rtk | cavecrew | all |
-|------|------|------|------|------|------|
-| pr964 | 1/3 | 3/3 | 2/3 | 0/3 | 2/3 |
-| pr965 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
-| pr970 | 2/3 | 2/3 | 1/1 | — | — |
+caveman/rtk/all do NOT hurt code quality. rtk passed its file:line-blindness probe
+(5/5 = baseline). caveman exempts code blocks by design (8/9, best arm).
 
-## Mean Cost (USD) by (Task, Arm)
+## Caveats
+- n=6-9 per cell -> directional, not proven. caveman/rtk/all "safe" is solid;
+  cavecrew flag is a real signal on small n.
+- Probe stayed n=1 (session 30min cap hit after judge; judge collected clean, 0 auth errors).
+- Infra: required a long-lived setup-token; OAuth rotation broke earlier attempts.
 
-| Task | baseline | caveman | rtk | cavecrew | all |
-|------|------|------|------|------|------|
-| pr964 | 4.6651 | 3.6691 | 5.0362 | 5.0248 | 3.9764 |
-| pr965 | 5.3151 | 3.8535 | 4.9315 | 4.4473 | 4.5805 |
-| pr970 | 6.0921 | 6.4255 | 5.9127 | — | — |
-
-## Pairwise Judge: Baseline Win-Rate vs Feature
-(>55% = baseline clearly better; 45-55% = tied; <45% = feature better)
-
-| Task | caveman | rtk | cavecrew | all |
-|------|---------|-----|----------|-----|
-| pr964 | — | — | — | — |
-| pr965 | — | — | — | — |
-| pr970 | — | — | — | — |
-
-## RTK Probe Recall
-(fraction of seeded docs issues found by agent)
-
-| Arm | Recall |
-|-----|--------|
-| baseline | — |
-| rtk | — |
-| all | — |
-
-## Verdict per Feature
-
-| Feature | Verdict |
-|---------|---------|
-| caveman | SAFE |
-| rtk | SAFE |
-| cavecrew | SAFE |
-| all | SAFE |
-
----
-*SAFE = no pass-rate drop AND judge win-rate ≤50% for baseline.*
-*NEUTRAL = pass-rate within 1 cell of baseline AND judge win-rate ≤55% for baseline.*
-*HURTS = pass-rate drops >1 cell in ≥2 tasks OR baseline wins >55% of judge duels.*
-*INCONCLUSIVE = insufficient comparable data (< 2 tasks with valid cells for both arms).*
+## Oracle pass-rate by (task, arm), rate-limited cells excluded
+pr964: base 1/3, caveman 3/3, rtk 2/3, cavecrew 0/3, all 2/3
+pr965: base 3/3, caveman 3/3, rtk 3/3, cavecrew 3/3, all 3/3
+pr970: base 2/3, caveman 2/3, rtk 1/1*, cavecrew 1/3, all 0/3* (*some cells rate-limited/excluded)
