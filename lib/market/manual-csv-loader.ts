@@ -45,7 +45,7 @@ export function parseMarketCsv(csvContent: string, indexName: string): MarketInd
 
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
 
-    const value = parseFloat(valueStr);
+    const value = parseFloat(valueStr.replace(/,/g, ''));
     if (!Number.isFinite(value) || value < 0) continue;
 
     rows.push({

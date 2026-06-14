@@ -35,8 +35,24 @@ describe('extractLastCargoesFromBody', () => {
       .toBe('fertilizer, grain');
   });
 
-  it('stops at newline', () => {
+  it('stops at field header on next line (DWT:)', () => {
     expect(extractLastCargoesFromBody('L/C: steel, coal\nDWT: 5000'))
       .toBe('steel, coal');
+  });
+
+  it('captures multi-line cargo list (stop at blank line)', () => {
+    const body = 'L/C: Coal\nGrain\nSteel\n\nOpen: Karasu';
+    const raw = extractLastCargoesFromBody(body);
+    expect(raw).toContain('Coal');
+    expect(raw).toContain('Grain');
+    expect(raw).toContain('Steel');
+  });
+
+  it('multi-line list with no blank line terminator captured to end-of-string', () => {
+    const body = 'Last cargoes: Wheat\nFertilizer\nPetcoke';
+    const raw = extractLastCargoesFromBody(body);
+    expect(raw).toContain('Wheat');
+    expect(raw).toContain('Fertilizer');
+    expect(raw).toContain('Petcoke');
   });
 });

@@ -9,7 +9,7 @@
  *
  * Known pairs (matrix has an entry) keep their previous behavior unchanged.
  */
-import { checkCompatibility } from '../l5c-matrix';
+import { checkCompatibility, parseLastCargoes } from '../l5c-matrix';
 
 describe('L5C fail-closed for unknown pairs (spec-betafix-02)', () => {
   it('coal → "wheat in bags": contamination check still applies (wave-γ-2 REGRESSION-01 fix)', () => {
@@ -70,5 +70,31 @@ describe('L5C fail-closed for unknown pairs (spec-betafix-02)', () => {
     expect(r.requires_manual_review).toBe(true);
     expect(r.blocking_pairs).toHaveLength(2);
     expect(r.warnings.some((w) => /no l5c data/i.test(w))).toBe(true);
+  });
+});
+
+describe('parseLastCargoes – multi-separator', () => {
+  it("'Coal & Grain' → ['Coal', 'Grain']", () => {
+    expect(parseLastCargoes('Coal & Grain')).toEqual(['Coal', 'Grain']);
+  });
+
+  it("' and ' separator: 'Coal and Grain' → ['Coal', 'Grain']", () => {
+    expect(parseLastCargoes('Coal and Grain')).toEqual(['Coal', 'Grain']);
+  });
+
+  it('comma separator still works', () => {
+    expect(parseLastCargoes('coal, grain, scrap')).toEqual(['coal', 'grain', 'scrap']);
+  });
+
+  it('newline separator splits cargoes', () => {
+    expect(parseLastCargoes('Coal\nGrain\nSteel')).toEqual(['Coal', 'Grain', 'Steel']);
+  });
+
+  it('null input returns empty array', () => {
+    expect(parseLastCargoes(null)).toEqual([]);
+  });
+
+  it('mixed separators (comma + ampersand)', () => {
+    expect(parseLastCargoes('Coal, Grain & Scrap')).toEqual(['Coal', 'Grain', 'Scrap']);
   });
 });
