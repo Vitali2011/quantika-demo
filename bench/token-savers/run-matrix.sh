@@ -26,6 +26,16 @@ log "Feature tasks: ${FEATURE_TASKS[*]}, arms: ${ARMS[*]}, reps: 1 2 3"
 log "Probe arms: baseline rtk all, reps: 1 2 3"
 log "Total cells: 54"
 
+# Protect global credentials from cell corruption (cells write back to ~/.claude even with CLAUDE_CONFIG_DIR).
+# Make read-only so write-back fails silently; the copied cfg credentials still work.
+CREDS_PATH="$SRC_CFG/.credentials.json"
+CREDS_PERM=$(stat -c "%a" "$CREDS_PATH" 2>/dev/null || echo "600")
+chmod 444 "$CREDS_PATH" 2>/dev/null || true
+log "Global credentials protected (read-only)"
+
+cleanup_creds() { chmod "$CREDS_PERM" "$CREDS_PATH" 2>/dev/null || true; log "Global credentials restored"; }
+trap cleanup_creds EXIT
+
 # Feature tasks: all 5 arms × 3 reps
 for t in "${FEATURE_TASKS[@]}"; do
   for a in "${ARMS[@]}"; do
