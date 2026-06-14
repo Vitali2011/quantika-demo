@@ -165,5 +165,5 @@ function calculateMinutesInDay(
   }
 
   const minutes = (effectiveEnd.getTime() - effectiveStart.getTime()) / (1000 * 60);
-  return Math.max(0, minutes);
+  return Math.max(0, Math.round(minutes));
 }
