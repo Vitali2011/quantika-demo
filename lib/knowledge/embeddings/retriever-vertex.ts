@@ -16,6 +16,7 @@
 import { SearchServiceClient } from "@google-cloud/discoveryengine";
 import type { RetrievedChunk, ChunkMetadata } from "@/lib/knowledge/embeddings/chunks";
 import type { RetrieveOptions } from "@/lib/knowledge/embeddings/retriever-sqlite";
+import { isRagEnabled } from "@/lib/knowledge/flags";
 
 const ALLOWED_VEC_TABLES = ["imsbc_vec", "igc_vec", "jwc_vec", "bimco_vec"] as const;
 
@@ -45,6 +46,11 @@ export async function retrieve(
   query: string,
   opts: RetrieveOptions
 ): Promise<RetrievedChunk[]> {
+  // Guard: RAG master switch — mirrors SQLite contract
+  if (!isRagEnabled()) {
+    throw new Error("RAG is not enabled");
+  }
+
   // Guard: empty/null/undefined query (identical to sqlite version)
   if (!query || query.trim().length === 0) {
     return [];

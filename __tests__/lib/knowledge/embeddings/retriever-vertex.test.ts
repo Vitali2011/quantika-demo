@@ -13,6 +13,10 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from "@jest/globals";
 import { SearchServiceClient } from "@google-cloud/discoveryengine";
 
+// Ensure RAG is enabled for all tests that verify retriever behavior (not the gate test).
+// TC-VX-GATE tests temporarily override this.
+process.env.KNOWLEDGE_RAG_ENABLED = "true";
+
 // Replace prototype.search with a controllable mock — jest.mock factory
 // doesn't reliably apply for this package under next/jest + ts-jest stack.
 let _mockSearch: jest.Mock<(...args: unknown[]) => Promise<unknown[]>> = jest.fn(async () => []);
@@ -485,5 +489,62 @@ describe("retriever-vertex engine mapping", () => {
     });
 
     expect(_mockSearch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("retriever-vertex RAG master-switch gate (TC-VX-GATE)", () => {
+  const ORIG = process.env.KNOWLEDGE_RAG_ENABLED;
+
+  beforeEach(() => {
+    _mockSearch = jest.fn();
+  });
+
+  afterEach(() => {
+    if (ORIG === undefined) {
+      delete process.env.KNOWLEDGE_RAG_ENABLED;
+    } else {
+      process.env.KNOWLEDGE_RAG_ENABLED = ORIG;
+    }
+  });
+
+  it("TC-VX-GATE-01: KNOWLEDGE_RAG_ENABLED unset → retrieve() throws 'RAG is not enabled', zero Vertex calls", async () => {
+    delete process.env.KNOWLEDGE_RAG_ENABLED;
+
+    await expect(
+      retrieve("bulk carrier cargo", {
+        vectorTable: "imsbc_vec",
+        ftsTable: "imsbc_fts",
+        topN: 5,
+      })
+    ).rejects.toThrow("RAG is not enabled");
+
+    expect(_mockSearch).not.toHaveBeenCalled();
+  });
+
+  it("TC-VX-GATE-02: KNOWLEDGE_RAG_ENABLED=false → retrieve() throws 'RAG is not enabled', zero Vertex calls", async () => {
+    process.env.KNOWLEDGE_RAG_ENABLED = "false";
+
+    await expect(
+      retrieve("dangerous goods stowage", {
+        vectorTable: "igc_vec",
+        ftsTable: "igc_fts",
+        topN: 3,
+      })
+    ).rejects.toThrow("RAG is not enabled");
+
+    expect(_mockSearch).not.toHaveBeenCalled();
+  });
+
+  it("TC-VX-GATE-03: KNOWLEDGE_RAG_ENABLED=true → retrieve() proceeds (no gate throw)", async () => {
+    process.env.KNOWLEDGE_RAG_ENABLED = "true";
+    _mockSearch.mockResolvedValue([]);
+
+    await expect(
+      retrieve("test query", {
+        vectorTable: "imsbc_vec",
+        ftsTable: "imsbc_fts",
+        topN: 1,
+      })
+    ).resolves.toEqual([]);
   });
 });
