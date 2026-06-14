@@ -9,7 +9,10 @@ MAX_PAR="${MAX_PAR:-3}"; MIN_AVAIL_MB="${MIN_AVAIL_MB:-2000}"; REPS="${REPS:-3}"
 TASKS=( "recon-976:27b7ef4f" "recon-975:d7fa1f9a" )
 # arm:model:effort
 ARMS=(
+  "sonnet-low:claude-sonnet-4-6:low"
+  "sonnet-med:claude-sonnet-4-6:medium"
   "sonnet-high:claude-sonnet-4-6:high"
+  "sonnet-max:claude-sonnet-4-6:max"
   "opus-low:claude-opus-4-8:low"
   "opus-med:claude-opus-4-8:medium"
   "opus-high:claude-opus-4-8:high"

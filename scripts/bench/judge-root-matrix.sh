@@ -5,7 +5,7 @@ set -uo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 MAX_PAR="${MAX_PAR:-6}"
 TASKS=(recon-976 recon-975)
-ARMS=(sonnet-high opus-low opus-med opus-high)
+ARMS=(sonnet-low sonnet-med sonnet-high sonnet-max opus-low opus-med opus-high)
 running(){ pgrep -fc 'scripts/bench/judge-root.sh' 2>/dev/null || echo 0; }
 log(){ echo "[$(date +%H:%M:%S)] $*"; }
 
