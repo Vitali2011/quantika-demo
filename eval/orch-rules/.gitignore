@@ -1,0 +1,3 @@
+# raw eval runs hold copied credentials in .cfg + bulky transcripts — never commit
+results/
+grades/
