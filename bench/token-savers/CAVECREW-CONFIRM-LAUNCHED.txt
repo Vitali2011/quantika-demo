@@ -1,0 +1,8 @@
+LAUNCHED: 2026-06-15T00:36:26
+CELLS: pr964/baseline r4-r6, pr964/cavecrew r4-r6, pr970/baseline r4-r6, pr970/cavecrew r4-r6
+TOTAL: 12 cells
+PIDS: 2423936 2424150 2424492 2425197 2425410 2425770 2426103 2426375 2426624 2426897 2427178 2427480
+LOGS: bench/token-savers/runs/<task>-<arm>-r<rep>-confirm.log
+RESCORE: apply agent.diff at pre-SHA + checkout merge-SHA test file + run jest (rescore.sh logic)
+ORACLE: runs/<task>/<arm>/r<rep>/oracle.txt (PASS/FAIL from in-cell TEST_CMD)
+RESCORE_SCRIPT: bench/token-savers/rescore.sh (for post-hoc validation of new cells)
