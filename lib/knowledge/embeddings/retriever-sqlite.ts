@@ -9,8 +9,8 @@
  * - Empty query ("") → returns [] without API call
  * - null/undefined query → returns [] (runtime guard)
  * - Empty vectorTable/ftsTable → throws TypeError
- * - Negative topK → clamp to 1
- * - topK > 1000 → clamp to 1000
+ * - Negative topK → clamp to 1 (retrieve only)
+ * - topK > 1000 → clamp to 1000 (retrieve() only; searchVec0 throws RangeError at >4096)
  * - topN = 0 → returns []
  * - NaN/Infinity/0 in rrfK → use default 60
  * - FTS5 syntax in query → escaped with double quotes (phrase match)
@@ -34,7 +34,7 @@ const ALLOWED_FTS_TABLES = ['imsbc_fts', 'igc_fts', 'jwc_fts', 'bimco_fts'] as c
  * Input Contract:
  * - embedding: Float32Array[768] required → throws RangeError if not 768-dimensional
  * - tableName: string required → SQLite throws if nonexistent
- * - topK: number optional (default 5) → throws RangeError if NaN/Infinity/negative, returns [] if 0
+ * - topK: number optional (default 5) → throws RangeError if NaN/Infinity/negative/> 4096, returns [] if 0
  * - db: Database optional → defaults to getDb()
  * - Feature flag: throws Error if KNOWLEDGE_RAG_ENABLED !== "true"
  *

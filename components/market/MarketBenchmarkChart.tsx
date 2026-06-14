@@ -26,6 +26,13 @@ interface Props {
   unit?: string;
 }
 
+function formatVal(v: number, unit: string | undefined): string {
+  // Index-point series (pts, points, index) → integer with thousands separator
+  // Monetary series (USD/*, €/*) → two decimal places
+  if (unit && /USD|€/.test(unit)) return v.toFixed(2);
+  return Math.round(v).toLocaleString('en-US');
+}
+
 export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }: Props) {
   // Feature flag check
   if (process.env.NEXT_PUBLIC_MARKET_BENCHMARK_FULL_ENABLED !== 'true') {
@@ -87,15 +94,15 @@ export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }
       <div className="mb-4 flex gap-4 text-sm">
         <div>
           <span className="text-gray-500">Current: </span>
-          <strong>{validData[0].value.toFixed(2)}</strong>
+          <strong>{formatVal(validData[0].value, unit)}</strong>
         </div>
         <div>
           <span className="text-gray-500">Min: </span>
-          <strong>{minValue.toFixed(2)}</strong>
+          <strong>{formatVal(minValue, unit)}</strong>
         </div>
         <div>
           <span className="text-gray-500">Max: </span>
-          <strong>{maxValue.toFixed(2)}</strong>
+          <strong>{formatVal(maxValue, unit)}</strong>
         </div>
       </div>
 
@@ -119,7 +126,7 @@ export function MarketBenchmarkChart({ indexName, data, asOfDate, source, unit }
                   <tr key={idx} className="border-t border-gray-100">
                     <td className="px-2 py-1 text-gray-600">{item.date}</td>
                     <td className="px-2 py-1 text-right font-mono">
-                      {item.value.toFixed(2)}
+                      {formatVal(item.value, unit)}
                       {isOutlier && (
                         <span
                           className="ml-1 text-amber-500"
