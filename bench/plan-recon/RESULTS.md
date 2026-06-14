@@ -3,8 +3,8 @@
 Spec: `docs/superpowers/specs/2026-06-13-orchestrator-day-plan-recon-eval-design.md`
 Plan: `docs/superpowers/plans/2026-06-13-plan-recon-eval.md`
 Rig: war-risk bench, generalized with `BENCH_DIR`/`BENCH_SHA` (`scripts/bench/`). n=2 (founder call).
-Account: Marychenka (dev-VPS). Total spend ≈ **$55** (recon ~$14 + plan ~$32 + ~$7 discarded race
-runs + ~$1.6 judging) — under the n=2 estimate.
+Account: Marychenka (dev-VPS). Total spend ≈ **$61** (recon ~$20 incl. the Sonnet-effort sweep +
+plan ~$32 + ~$7 discarded race runs + ~$2 judging) — under the n=2 estimate.
 
 ## TL;DR — decisions
 
@@ -73,8 +73,8 @@ worth it? → no"), not a published law.
 
 ## Validity sweep (per spec guards)
 
-- ✅ Recon: 16/16 `recon.txt` non-empty; 0 hit the worktree-deletion race (read-only single-worktree
-  runs are not exposed to it).
+- ✅ Recon: 28/28 `recon.txt` non-empty (incl. Sonnet low/med/max sweep); 0 hit the worktree-deletion
+  race (read-only single-worktree runs are not exposed to it).
 - ✅ Plan: all 6 runs produced a non-empty Stage-2 diff and a graded #957 summary.
 - ✅ Executor held constant: every plan Stage-2 ran `claude-opus-4-8 --effort high` by construction.
 - ✅ Judge calibration spot-checked by hand (Opus:low + Sonnet:high #976) — 2/2 earned.
