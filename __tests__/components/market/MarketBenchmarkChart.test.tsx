@@ -76,9 +76,9 @@ describe('MarketBenchmarkChart — #402 Current value = newest (DESC data from A
 
     const currentLabel = screen.getByText('Current:');
     const currentRow = currentLabel.closest('div')!;
-    // 851 is the newest; 327 is the oldest — component must display 851.00
-    expect(within(currentRow).getByText('851.00')).toBeInTheDocument();
-    expect(within(currentRow).queryByText('327.00')).not.toBeInTheDocument();
+    // 851 is the newest; 327 is the oldest — index-unit shows whole numbers, no .00 decimals
+    expect(within(currentRow).getByText('851')).toBeInTheDocument();
+    expect(within(currentRow).queryByText('327')).not.toBeInTheDocument();
   });
 });
 
