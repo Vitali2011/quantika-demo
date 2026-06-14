@@ -8,37 +8,48 @@ runs + ~$1.6 judging) — under the n=2 estimate.
 
 ## TL;DR — decisions
 
-| Role                 | Was               | Verdict                                             | Move                 |
-| -------------------- | ----------------- | --------------------------------------------------- | -------------------- |
-| **Разведка (recon)** | Sonnet 4.6 : high | No weakness — Sonnet:high tied Opus on root-finding | **KEEP Sonnet:high** |
-| **План (plan)**      | Opus 4.8 : medium | medium drops tests; high = max at lower cost        | **medium → high**    |
+| Role                 | Was               | Verdict                                                          | Move                 |
+| -------------------- | ----------------- | ---------------------------------------------------------------- | -------------------- |
+| **Разведка (recon)** | Sonnet 4.6 : high | Sonnet:high = floor: ties Opus, but Sonnet low/med drop the root | **KEEP Sonnet:high** |
+| **План (plan)**      | Opus 4.8 : medium | medium drops tests; high = max at lower cost                     | **medium → high**    |
 
 `max` for plan is **rejected**: same test outcome as high, but ~30% dearer and ~40% slower per run.
 
 ## Part A — Recon (judge-against-known-root, root /2 + location /1)
 
-2 tasks (#976 capacity unit-misread, #975 deeplink stale-id), 4 configs × n=2 = 16 read-only runs.
+2 tasks (#976 capacity unit-misread, #975 deeplink stale-id). Run in two passes: first 4 configs
+(Sonnet:high + Opus low/med/high), then — after Sonnet:high tied Opus at the cheapest price — the
+**full Sonnet effort curve** (low/med/max) to find the floor. 7 configs × 2 tasks × n=2 = 28
+read-only runs.
 
-| Config            | root (mean /2) | location (/1) | $/run (avg) |
-| ----------------- | -------------- | ------------- | ----------- |
-| Sonnet 4.6 : high | **2.00**       | 1.00          | **$0.59**   |
-| Opus 4.8 : low    | 2.00           | 1.00          | $0.70       |
-| Opus 4.8 : medium | 2.00           | 1.00          | $0.67       |
-| Opus 4.8 : high   | 2.00           | 1.00          | $1.56       |
+| Config                | root (mean /2) | location (/1) | $/run (avg) |
+| --------------------- | -------------- | ------------- | ----------- |
+| Sonnet 4.6 : low      | 1.50           | 1.00          | $0.29       |
+| Sonnet 4.6 : med      | 1.75           | 1.00          | $0.37       |
+| **Sonnet 4.6 : high** | **2.00**       | 1.00          | **$0.59**   |
+| Sonnet 4.6 : max      | 2.00           | 1.00          | $0.77       |
+| Opus 4.8 : low        | 2.00           | 1.00          | $0.70       |
+| Opus 4.8 : medium     | 2.00           | 1.00          | $0.67       |
+| Opus 4.8 : high       | 2.00           | 1.00          | $1.56       |
 
-**Every config found the exact root on both tasks.** Calibration verified by hand: even Opus:low's
-#976 analysis named the precise mechanism (cbft read as cbm, ~35.3× factor, why only the cbft-sourced
-~17 vessels, and that the existing plausibility guard only nulls _small_ values — i.e. it derived the
-actual shipped fix). The judge's 2/2 is earned, not a rubber-stamp.
+**The Sonnet effort curve broke the ceiling — downward.** Every Opus config and Sonnet:high/max scored
+a perfect 2.00, but **Sonnet:low (1.50) and Sonnet:med (1.75) start missing the root cause**. So
+Sonnet:high is not an arbitrary pick — it's the **floor** for clean root-finding on these tasks: the
+cheapest effort that still nails the root every time. Below it, quality degrades; above it (max, and
+all of Opus), zero gain. Calibration verified by hand: even Opus:low's #976 analysis named the precise
+mechanism (cbft read as cbm, ~35.3× factor, why only the cbft-sourced ~17 vessels, and that the
+existing plausibility guard only nulls _small_ values — i.e. it derived the actual shipped fix). The
+2/2 is earned, not a rubber-stamp.
 
-**Read:** no evidence Sonnet:high is weak at code-analysis/root-finding — it tied every Opus config
-at the cheapest price. The founder's worry ("maybe Sonnet is weak for analysis too") is **not
-supported**. Keep Sonnet:high for recon.
+**Read:** Sonnet:high is the sweet spot for recon, confirmed on two fronts — (1) it is **not weak**
+(ties every Opus config), refuting the founder's worry; (2) it is the **cheapest effort that holds**
+(low/med drop the root, max/Opus add nothing). Keep Sonnet:high; do not downgrade to med/low, do not
+spend Opus money. $0.59/run × 3 read-only recon passes/orchestrator-day.
 
-**Caveat (ceiling effect):** both tasks were within every model's capability → the test has zero
-discriminating power at the top (all 2.00). It proves Sonnet is _not weak_ here; it does NOT prove
-Opus is no better on genuinely harder root-finding. A future harder recon set could separate them.
-For now there is no reason to spend Opus money on recon.
+**Caveat (ceiling at the top):** the 2.00 cluster (Sonnet:high/max + all Opus) still can't be
+separated — these two tasks don't prove Opus is no better on _genuinely harder_ root-finding. What the
+curve now _does_ prove (which the first pass could not) is the lower bound: high is the floor, not
+overkill. A harder recon set could test the top; no reason to spend on that for now.
 
 ## Part B — Plan (downstream: plan → fixed Opus:high executor → #957 jest oracle, /4)
 
