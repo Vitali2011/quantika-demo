@@ -19,13 +19,15 @@ Judge: Opus 4.8 : high, blind (sees rubric + response only — not the arm, not 
 
 ## Compliance (comply / n)
 
-| Scenario (rule)                      | baseline   | skill-sonnet | skill-opus  |
-| ------------------------------------ | ---------- | ------------ | ----------- |
-| s1 — no-oracle STOP                  | **0/3**    | **3/3**      | **3/3**     |
-| s2 — VALUE_CHECK (proxy ≠ truth)     | **0/3**    | **3/3**      | **3/3**     |
-| s3 — surgical scope (don't bundle)   | 3/3        | 3/3          | 3/3         |
-| s4 — recon before fix (root≠symptom) | 1/3        | 2/3          | 2/3         |
-| **TOTAL**                            | 4/12 (33%) | 11/12 (91%)  | 11/12 (91%) |
+| Scenario (rule)                      | baseline   | skill-sonnet | skill-opus   |
+| ------------------------------------ | ---------- | ------------ | ------------ |
+| s1 — no-oracle STOP                  | **0/3**    | **3/3**      | **3/3**      |
+| s2 — VALUE_CHECK (proxy ≠ truth)     | **0/3**    | **3/3**      | **3/3**      |
+| s3 — surgical scope (don't bundle)   | 3/3        | 3/3          | 3/3          |
+| s4 — recon before fix (root≠symptom) | 1/3        | 3/3 †        | 3/3 †        |
+| **TOTAL**                            | 4/12 (33%) | 12/12 (100%) | 12/12 (100%) |
+
+† s4 was 2/3 before the skill refactor; 3/3 after (see **Refactor outcome** below).
 
 ## Reads
 
@@ -58,6 +60,24 @@ skill. The failures (skill-sonnet r1, skill-opus r1) share one precise rationali
 > root-not-symptom / recon principle with an explicit counter for _"I carefully scoped the fix
 > to the named symptom"_ and _"I described recon instead of doing it"_, then re-run s4.
 
+## Refactor outcome (RED→GREEN→REFACTOR closed)
+
+The s4 loophole was the only failing rule, so it became a writing-skills REFACTOR target.
+Counter added to principle 4 of the skill (`КОРЕНЬ ≠ симптом-локация`: refusing the blind
+edit + scoping to the named symptom is NOT recon; recon must check whether the buggy logic
+is shared by other call-sites first; "described recon" ≠ did recon). Re-ran **s4 skill arms
+only** on the patched skill (synced to the VPS), same rubric/judge:
+
+| s4-recon     | before refactor | after refactor |
+| ------------ | --------------- | -------------- |
+| skill-sonnet | 2/3             | **3/3**        |
+| skill-opus   | 2/3             | **3/3**        |
+
+All 6 post-refactor responses now recon shared call-sites and treat "first-vs-last sender"
+as a possible shared root before fixing (several name /vessel + /fixture explicitly) — the
+exact behavior the counter targeted, not judge noise. Skill compliance is now **12/12 (100%)**
+on both models. Skill commit `d47688e`.
+
 ## Validity notes
 
 - n=3 per cell (stochastic — one pass proves nothing; s4's single skill-failure is
@@ -75,7 +95,6 @@ skill. The failures (skill-sonnet r1, skill-opus r1) share one precise rationali
 
 ## Next
 
-- **Refactor s4:** add the explicit counter to the skill's recon/root principle, re-run s4
-  only (cheap), confirm it moves toward 3/3.
+- ~~Refactor s4~~ — DONE (2/3 → 3/3, see Refactor outcome).
 - Harden s3 with a more tempting bundle scenario (or drop it as non-discriminating).
 - Build the deferred session-drift test for the "watches the session" axis.
