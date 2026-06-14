@@ -1,0 +1,5 @@
+docs/SEED_A.md:1
+docs/SEED_B.md:1
+docs/SEED_C.md:1
+docs/SEED_D.md:1
+docs/SEED_E.md:1
