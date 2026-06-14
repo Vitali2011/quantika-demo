@@ -127,14 +127,20 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
   // SPEED_AS_DRAFT: draft_max from speed source (e.g. "13 knts") → null
   if ('draft_max' in out) out['draft_max'] = nullIfSpeedAsDraft(out['draft_max']);
 
-  // CBFT→CBM: grain/bale capacity unit conversion from source_text.
+  // CBFT→CBM: grain/bale capacity unit conversion from source_text. Track which
+  // keys this pass converts so the explicit-unit pass below does NOT re-fire on
+  // them (single owner PER FIELD). Grain additionally relabels the shared unit→cbm,
+  // but bale has no such relabel, so without this set a bale ConfidenceField with
+  // cbft source_text would convert here AND again in the unit pass → ÷35² ≈ 168.
+  const cbftConvertedKeys = new Set<string>();
   for (const k of ['grain_capacity', 'bale_capacity']) {
     if (k in out) {
       const before = out[k];
       out[k] = convertCbftToCbm(out[k]);
-      // If ConfidenceField was converted, the value is now CBM → relabel unit defensively
-      if (k === 'grain_capacity' && out[k] !== before && isConfField(out[k])) {
-        out['grain_capacity_unit'] = 'cbm';
+      if (out[k] !== before && isConfField(out[k])) {
+        cbftConvertedKeys.add(k);
+        // If ConfidenceField was converted, the value is now CBM → relabel unit defensively
+        if (k === 'grain_capacity') out['grain_capacity_unit'] = 'cbm';
       }
     }
   }
@@ -152,6 +158,7 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
     : (typeof unitRaw === 'string' ? unitRaw : '')).toLowerCase();
   if (unitStr === 'cbft') {
     for (const k of ['grain_capacity', 'bale_capacity']) {
+      if (cbftConvertedKeys.has(k)) continue; // already converted by source_text pass — single owner
       const cf = out[k];
       if (isConfField(cf) && typeof cf.value === 'number' && cf.value > 0) {
         out[k] = { ...cf, value: Math.round(cf.value / CBFT_TO_CBM_PROD), confidence: 'interpreted' };

@@ -66,4 +66,37 @@ describe('CBFT explicit-unit conversion — code is the single owner', () => {
     expect(v.grainCapacity).toBe(6247);
     expect(v.grainCapacityUnit).toBe('cbm');
   });
+
+  // ── cold-QA #984 R2 breaker: BALE double-convert ──────────────────────────
+  // The source_text pass (convertCbftToCbm) converts a bale ConfidenceField whose
+  // source_text contains "cbft". Unlike grain, that pass did NOT relabel the shared
+  // grain_capacity_unit, so when grain is absent / not source_text-converted the
+  // unit stays 'cbft' and the explicit-unit pass RE-CONVERTS bale → ÷35.314667²
+  // ≈ 168 (or null after the clamp). CODE must be the single owner per field.
+  it('ConfidenceField bale (cbft source_text) + grain absent: converts ONCE → ~5947, NOT double → 168', () => {
+    // No dwt_summer → no plausibility clamp, so a double-convert leaves a visible 168.
+    const raw = rawVessel({
+      bale_capacity: { value: 210000, confidence: 'confirmed', source_text: 'BALE 210000 CBFT' },
+      grain_capacity_unit: 'cbft',
+    });
+    const [v] = parseVesselAIResponse(raw, 'e5');
+    // 210000 / 35.314667 ≈ 5947 (single). Double-convert ≈ 168.
+    expect(v.baleCapacity).toBeGreaterThanOrEqual(5940);
+    expect(v.baleCapacity).toBeLessThanOrEqual(5955);
+    expect(v.baleCapacity).not.toBe(168);
+  });
+
+  it('mixed shape: grain via explicit unit + bale ConfidenceField via source_text each convert ONCE', () => {
+    const raw = rawVessel({
+      grain_capacity: 220577, // plain number → converts via the explicit-unit pass
+      bale_capacity: { value: 210000, confidence: 'confirmed', source_text: 'BALE 210000 CBFT' }, // → source_text pass
+      grain_capacity_unit: 'cbft',
+      dwt_summer: { value: 8000, confidence: 'confirmed', source_text: 'DWT 8000' },
+    });
+    const [v] = parseVesselAIResponse(raw, 'e6');
+    expect(v.grainCapacity).toBeGreaterThanOrEqual(6240);
+    expect(v.grainCapacity).toBeLessThanOrEqual(6250);
+    expect(v.baleCapacity).toBeGreaterThanOrEqual(5940);
+    expect(v.baleCapacity).toBeLessThanOrEqual(5955);
+  });
 });
