@@ -20,6 +20,11 @@ function readJson(p) {
   try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return null; }
 }
 
+// Rate-limit exclusion: cells with is_error=true and "limit" in result are excluded (not FAIL).
+function isRateLimited(j) {
+  return j?.is_error === true && String(j?.result || "").toLowerCase().includes("limit");
+}
+
 // --- Oracle pass-rate per (task, arm) ---
 const passRate = {};   // passRate[task][arm] = {pass, total}
 const costMean = {};   // costMean[task][arm] = mean total_cost_usd
@@ -31,9 +36,10 @@ for (const task of FEATURE_TASKS) {
     let pass = 0, total = 0, costSum = 0, costCount = 0;
     for (const r of REPS) {
       const cell = path.join(RUNS, task, arm, `r${r}`);
+      const j = readJson(path.join(cell, "result.json"));
+      if (isRateLimited(j)) continue;  // exclude rate-limited cells
       const oracle = readFile(path.join(cell, "oracle.txt"));
       if (oracle !== null) { total++; if (oracle === "PASS") pass++; }
-      const j = readJson(path.join(cell, "result.json"));
       if (j?.total_cost_usd) { costSum += j.total_cost_usd; costCount++; }
     }
     passRate[task][arm] = { pass, total };
@@ -70,7 +76,7 @@ for (const arm of ["baseline", "rtk", "all"]) {
   for (const r of REPS) {
     const cell = path.join(RUNS, "probe", arm, `r${r}`);
     const j = readJson(path.join(cell, "result.json"));
-    if (!j) continue;
+    if (!j || j.is_error) continue;  // exclude all error cells (rate-limited, auth failures, etc.)
     const agentOut = (j.result || "").toLowerCase();
     const found = oracleLines.filter(loc => {
       const key = loc.split("—")[0].trim().toLowerCase();
@@ -84,13 +90,16 @@ for (const arm of ["baseline", "rtk", "all"]) {
 
 // --- Verdict per feature ---
 // HURTS if pass-rate across tasks drops >1 cell below baseline OR judge win-rate for baseline >55%
+// INCONCLUSIVE if not enough data (< 2 tasks with both baseline and feat cells)
 function verdict(feat) {
   let passDrops = 0;
   let judgeBaselineAdv = 0, judgeDuels = 0;
+  let comparableTasks = 0;
   for (const task of FEATURE_TASKS) {
     const bl = passRate[task].baseline;
     const ft = passRate[task][feat];
     if (bl.total > 0 && ft.total > 0) {
+      comparableTasks++;
       const blRate = bl.pass / bl.total;
       const ftRate = ft.pass / ft.total;
       if (blRate - ftRate > 1 / 3) passDrops++;  // >1 cell drop
@@ -101,8 +110,10 @@ function verdict(feat) {
       judgeDuels += j.total;
     }
   }
+  if (comparableTasks < 2 && judgeDuels === 0) return "INCONCLUSIVE";
   const judgeBaselineRate = judgeDuels ? judgeBaselineAdv / judgeDuels : 0.5;
   if (passDrops >= 2 || judgeBaselineRate > 0.55) return "**HURTS**";
+  if (passDrops === 0 && judgeBaselineRate <= 0.5) return "SAFE";
   return "NEUTRAL";
 }
 
@@ -111,6 +122,26 @@ const lines = [];
 lines.push("# Token-Savers Quality Eval — RESULTS");
 lines.push("");
 lines.push(`Generated: ${new Date().toISOString().slice(0,16)} UTC`);
+lines.push("");
+lines.push("## SUMMARY");
+lines.push("");
+lines.push("| Feature | Verdict | Notes |");
+lines.push("|---------|---------|-------|");
+const verdictNotes = {
+  caveman: "style prompt only — no tool changes",
+  rtk: "hook compresses bash output",
+  cavecrew: "adds caveman subagent plugins",
+  all: "rtk hook + caveman prompt + cavecrew plugins",
+};
+for (const feat of ["caveman", "rtk", "cavecrew", "all"]) {
+  const v = verdict(feat);
+  lines.push(`| ${feat} | ${v} | ${verdictNotes[feat]} |`);
+}
+lines.push("");
+const judgeTotal = Object.values(judgeWin).flatMap(t => Object.values(t)).reduce((s,j) => s + j.total, 0);
+const probeTotal = Object.values(probeRecall).filter(v => v !== "—").length;
+if (judgeTotal === 0) lines.push("> ⚠️ Judge grades: none collected (OAuth token expired before judge leg ran).");
+if (probeTotal === 0) lines.push("> ⚠️ Probe recall: all 9 cells rate-limited (excluded). Probe leg needs re-run.");
 lines.push("");
 lines.push("## Oracle Pass-Rate by (Task, Arm)");
 lines.push("");
@@ -165,7 +196,9 @@ for (const feat of ["caveman","rtk","cavecrew","all"]) {
 }
 lines.push("");
 lines.push("---");
+lines.push("*SAFE = no pass-rate drop AND judge win-rate ≤50% for baseline.*");
 lines.push("*NEUTRAL = pass-rate within 1 cell of baseline AND judge win-rate ≤55% for baseline.*");
 lines.push("*HURTS = pass-rate drops >1 cell in ≥2 tasks OR baseline wins >55% of judge duels.*");
+lines.push("*INCONCLUSIVE = insufficient comparable data (< 2 tasks with valid cells for both arms).*");
 
 process.stdout.write(lines.join("\n") + "\n");
