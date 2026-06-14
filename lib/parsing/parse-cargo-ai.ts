@@ -94,6 +94,15 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
   const parsed: ParsedCargo[] = [];
 
   items.forEach((item, idx) => {
+    const rawWMin = extractNum(item.weight_mt_min);
+    const rawWMax = extractNum(item.weight_mt_max);
+    // Swap if the LLM returned a reversed range (e.g. "25/30000" → min=30000, max=25000).
+    // resolveCargoWeight uses weightMtMax as the hard-overload upper bound, so a swapped
+    // range would either miss a real overload or fabricate a false one.
+    const wSwapped = rawWMin !== null && rawWMax !== null && rawWMin > rawWMax;
+    const normWMin = wSwapped ? rawWMax : rawWMin;
+    const normWMax = wSwapped ? rawWMin : rawWMax;
+
     parsed.push(calibrateAll({
       emailId,
       itemIndex: idx,
@@ -103,8 +112,8 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
       destinationCountry: extractStr(item.destination_country),
       cargoDescription: toConfidence<string>(item.cargo_description),
       weightMt: toConfidence<number>(item.weight_mt),
-      weightMtMin: extractNum(item.weight_mt_min),
-      weightMtMax: extractNum(item.weight_mt_max),
+      weightMtMin: normWMin,
+      weightMtMax: normWMax,
       // extractNum is NaN-safe and preserves a legitimate zero (unlike `x || null`,
       // which nullifies 0). Prior commit introduced a 0-commission bug by using the
       // antipattern — see ROADMAP_MVP.md W1.8.
@@ -118,10 +127,8 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
       })(),
       containerType: extractStr(item.container_type),
       quantity: (() => {
-        const wMin = extractNum(item.weight_mt_min);
-        const wMax = extractNum(item.weight_mt_max);
-        if (wMin !== null && wMax !== null && wMin !== wMax) {
-          return { min: wMin, max: wMax } as Range<number>;
+        if (normWMin !== null && normWMax !== null && normWMin !== normWMax) {
+          return { min: normWMin, max: normWMax } as Range<number>;
         }
         return extractNum(item.quantity);
       })(),
