@@ -27,7 +27,6 @@ import migration026 from './026-charterers';
 import migration027 from './027-market-indices';
 import migration028 from './028-psc-history';
 import migration029 from './029-bimco-rag';
-import migration030 from './030-roi-metrics';
 import migration031 from './031-email-cache';
 import migration032 from './032-matches';
 import migration033 from './033-matches-score-breakdown';
@@ -51,4 +50,4 @@ import migration050 from './050-matches-breakeven';
 import migration051 from './051-matches-item-unique';
 import type { Migration } from './types';
 
-export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration020, migration021, migration022, migration023, migration024, migration025, migration026, migration027, migration028, migration029, migration030, migration031, migration032, migration033, migration034, migration035, migration036, migration037, migration038, migration039, migration040, migration041, migration042, migration043, migration044, migration045, migration046, migration047, migration048, migration049, migration050, migration051];
+export const allMigrations: Migration[] = [migration001, migration002, migration003, migration004, migration005, migration006, migration007, migration008, migration009, migration010, migration011, migration012, migration013, migration014, migration015, migration016, migration017, migration018, migration019, migration020, migration021, migration022, migration023, migration024, migration025, migration026, migration027, migration028, migration029, migration031, migration032, migration033, migration034, migration035, migration036, migration037, migration038, migration039, migration040, migration041, migration042, migration043, migration044, migration045, migration046, migration047, migration048, migration049, migration050, migration051];
