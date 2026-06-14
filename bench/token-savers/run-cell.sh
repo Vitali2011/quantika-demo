@@ -12,7 +12,13 @@ worktree_at "$sha" "$wt"
 [ "$task" = "probe" ] && bash "$(dirname "$0")/tasks/probe/seed.sh" "$wt" > "$cell/seed-oracle.txt"
 make_cfg "$arm" "$cfg"; arm_apply "$arm" "$cfg"
 sys_args=(); [ -n "${ARM_SYSPROMPT:-}" ] && sys_args=(--append-system-prompt "$ARM_SYSPROMPT")
-( cd "$wt" && CLAUDE_CONFIG_DIR="$cfg" claude --print \
+# Isolate per-cell HOME so OAuth write-backs never touch global ~/.claude/.credentials.json.
+# CLAUDE_CONFIG_DIR does not isolate credentials (HOME-based); per-cell HOME does.
+KNOWN_CREDS="${KNOWN_CREDS:-$BASE/runs/smoke/baseline/r1/.cfg/.credentials.json}"
+[ ! -f "$KNOWN_CREDS" ] && KNOWN_CREDS="$SRC_CFG/.credentials.json"
+mkdir -p "$cell/home/.claude"
+cp "$KNOWN_CREDS" "$cell/home/.claude/.credentials.json"
+( cd "$wt" && HOME="$cell/home" CLAUDE_CONFIG_DIR="$cfg" claude --print \
     --model claude-sonnet-4-6 --permission-mode acceptEdits \
     --output-format json "${sys_args[@]}" \
     "$(cat "$goal")" > "$cell/result.json" 2> "$cell/out.log" ) || true

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Shared helpers for the token-savers eval rig.
 set -euo pipefail
-REPO="${REPO:-/root/work/quantika-demo}"
-BASE="$REPO/bench/token-savers"
+# Auto-detect BASE from this file's actual location (works in both main repo and worktrees).
+_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO="${REPO:-$(git -C "$_LIB_DIR" rev-parse --show-toplevel 2>/dev/null || echo "/root/work/quantika-demo")}"
+BASE="$_LIB_DIR"
 RUNS="$BASE/runs"
 SRC_CFG="${SRC_CFG:-$HOME/.claude}"   # source of credentials
 
