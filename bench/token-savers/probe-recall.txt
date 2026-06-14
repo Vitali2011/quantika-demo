@@ -1,0 +1,10 @@
+# probe recall (arm rep recall/5)
+baseline r1 5
+baseline r2 5
+baseline r3 5
+rtk r1 5
+rtk r2 5
+rtk r3 5
+all r1 5
+all r2 5
+all r3 5
