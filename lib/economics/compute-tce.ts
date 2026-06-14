@@ -202,7 +202,7 @@ export function computeTce(inputs: TceInputs): TceResult {
     vesselValueUsd: valueUsd,
     daysInHra,
   });
-  // Intentional spec change: war-risk.ts:128 designates breakdown.totalPremiumUsd as the full
+  // Intentional spec change: war-risk.ts:124 designates breakdown.totalPremiumUsd as the full
   // per-voyage cost (hull + crew bonus + P&I). premiumUsd is hull-only, kept for backward compat.
   // REVERSIBLE: change back to warResult.premiumUsd to revert to hull-only convention.
   const warRiskUsd = Math.round(warResult.breakdown?.totalPremiumUsd ?? warResult.premiumUsd);
