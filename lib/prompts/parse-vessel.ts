@@ -256,14 +256,14 @@ CARGO / BAG DIMENSIONS:
   ✗ loa=1.1 from "ABT 110X110X65 CM" (centimeters divided by 100) → correct: loa=null, beam=null
 
 GRAIN/BALE CAPACITY UNITS:
-  grain_capacity and bale_capacity are ALWAYS in cubic meters (CBM/cbm).
-  When source says "cbft", "CBFT", "cuft", "ft³" → it is in cubic feet — convert to CBM: divide by 35.315.
-  ✗ grain_capacity=140000 from "GRAIN 140,000CBFT" (wrong — not converted)
-  ✓ grain_capacity=3963 from "GRAIN 140,000CBFT" (140000 ÷ 35.315 ≈ 3963 cbm), confidence='interpreted', source_text="GRAIN 140,000CBFT"
-  When source says "CBM" or "cbm" → use the number directly.
-  "GRAIN/BALE 3000/2950 CBM" → grain_capacity=3000, bale_capacity=2950
-  ALWAYS set grain_capacity_unit="cbm" — the value you output is already in CBM regardless of source unit.
-  NEVER set grain_capacity_unit="cbft" — conversion to CBM must happen before output.
+  Output grain_capacity and bale_capacity as the RAW number written in the email — do NOT convert.
+  Set grain_capacity_unit to the unit exactly as the source states it:
+    - source says "CBM"/"cbm" → grain_capacity_unit="cbm"
+    - source says "cbft"/"CBFT"/"cuft"/"ft³" → grain_capacity_unit="cbft"
+  Conversion from cubic feet to CBM (÷ 35.315) is done in CODE after parsing — code is the single
+  owner of the conversion. Never pre-convert here; just report the number and its unit faithfully.
+  ✓ grain_capacity=140000, grain_capacity_unit="cbft" from "GRAIN 140,000CBFT" (code converts → ~3963 cbm)
+  ✓ grain_capacity=3000, bale_capacity=2950, grain_capacity_unit="cbm" from "GRAIN/BALE 3000/2950 CBM"
 
 GRAIN CAPACITY ANTI-FABRICATION:
   Extract grain_capacity ONLY from text explicitly labeled "grain", "grain cap", "grain cubic", "GKC", or "GRAIN/BALE X/Y" format.
@@ -273,7 +273,7 @@ GRAIN CAPACITY ANTI-FABRICATION:
   ✓ grain_capacity=null when only bale capacity is present in the email
   ✓ grain_capacity=3000, bale_capacity=2950 from "GRAIN/BALE 3000/2950 CBM"
   EXCEPTION — COMBINED GRAIN/BALE FORMAT: When source says "grain/bale X" (single figure for both), grain = bale = X. Both MUST be populated.
-  ✓ grain_capacity=2851, bale_capacity=2851 from "hold cap. grain/bale abt 100682 cbft" (100682 ÷ 35.315 ≈ 2851 cbm)
+  ✓ grain_capacity=100682, bale_capacity=100682, grain_capacity_unit="cbft" from "hold cap. grain/bale abt 100682 cbft" (raw cbft; code converts → ~2851 cbm)
   ✗ grain_capacity=null from "hold cap. grain/bale abt 100682 cbft" → WRONG (combined notation = both equal)
 
 For numeric fields (DWT, DWCC, LOA, beam, draft, built-year, grain capacity, etc.):

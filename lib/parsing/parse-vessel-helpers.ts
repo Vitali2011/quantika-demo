@@ -127,7 +127,7 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
   // SPEED_AS_DRAFT: draft_max from speed source (e.g. "13 knts") → null
   if ('draft_max' in out) out['draft_max'] = nullIfSpeedAsDraft(out['draft_max']);
 
-  // CBFT→CBM: grain/bale capacity unit conversion
+  // CBFT→CBM: grain/bale capacity unit conversion from source_text.
   for (const k of ['grain_capacity', 'bale_capacity']) {
     if (k in out) {
       const before = out[k];
@@ -137,6 +137,29 @@ function preNormalizeRawVessel(item: RawVesselItem): RawVesselItem {
         out['grain_capacity_unit'] = 'cbm';
       }
     }
+  }
+
+  // CBFT→CBM via the EXPLICIT grain_capacity_unit field — CODE is the single
+  // owner of the conversion. Prod LLM emits the RAW cbft number + unit='cbft'
+  // (it does NOT pre-convert), so convert the VALUE here and relabel unit→cbm.
+  // The single unit governs both grain and bale. Runs AFTER the source_text
+  // pass (so an already-relabelled 'cbm' is skipped — no double-convert) and
+  // BEFORE the CAPACITY_PLAUSIBILITY clamp below, which otherwise nulls a legit
+  // ~6247 cbm hidden as a raw ~220577 cbft (reads as >2.5x DWT).
+  const unitRaw = out['grain_capacity_unit'];
+  const unitStr = (isConfField(unitRaw)
+    ? (typeof unitRaw.value === 'string' ? unitRaw.value : '')
+    : (typeof unitRaw === 'string' ? unitRaw : '')).toLowerCase();
+  if (unitStr === 'cbft') {
+    for (const k of ['grain_capacity', 'bale_capacity']) {
+      const cf = out[k];
+      if (isConfField(cf) && typeof cf.value === 'number' && cf.value > 0) {
+        out[k] = { ...cf, value: Math.round(cf.value / CBFT_TO_CBM_PROD), confidence: 'interpreted' };
+      } else if (typeof cf === 'number' && cf > 0) {
+        out[k] = Math.round(cf / CBFT_TO_CBM_PROD);
+      }
+    }
+    out['grain_capacity_unit'] = 'cbm';
   }
 
   // CAPACITY_PLAUSIBILITY: null grain/bale capacity outside 0.5x-2.5x DWT range (#793/#976).
