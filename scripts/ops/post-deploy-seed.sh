@@ -8,7 +8,6 @@
 #   bash /root/scripts/ops/post-deploy-seed.sh
 #
 # Tables guarded:
-#   roi_metrics   — required for ROI guarantee feature (ROI_GUARANTEE_ENABLED)
 #   fx_rates      — required for multi-currency display (MULTI_CURRENCY_V2_ENABLED)
 #
 # Idempotency contract: each check queries COUNT(*) — seeds only if 0 rows.
@@ -42,7 +41,6 @@ seed_if_empty() {
 
 log "Starting post-deploy seed guard (db: ${DB_PATH})"
 
-seed_if_empty "roi_metrics" "scripts/seed-roi-metrics.ts"
 seed_if_empty "fx_rates"    "scripts/seed-fx-rates.ts"
 
 log "Post-deploy seed guard complete."
