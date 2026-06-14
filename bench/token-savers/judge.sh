@@ -9,18 +9,23 @@ make_cfg judge "$BASE/grades/.jcfg"
 
 duel() {
   local a="$1" b="$2" slot="$3"
-  local prompt
+  local prompt jhome
   prompt="You are a strict code reviewer. Two diffs (A, B) solve the SAME task. Which is higher quality (correctness, completeness, no broken cross-file refs)? Reply with exactly one token: A or B.
 === DIFF A ===
 $(cat "$a")
 === DIFF B ===
 $(cat "$b")"
+  # Per-call HOME isolation: prevent claude OAuth refresh from touching global ~/.claude/.credentials.json
+  jhome="$(mktemp -d /tmp/judge-home-XXXXXX)"
+  mkdir -p "$jhome/.claude"
+  cp "$HOME/.claude/.credentials.json" "$jhome/.claude/.credentials.json" 2>/dev/null || true
   printf '%s' "$prompt" \
-    | CLAUDE_CONFIG_DIR="$BASE/grades/.jcfg" claude --print \
+    | HOME="$jhome" CLAUDE_CONFIG_DIR="$BASE/grades/.jcfg" claude --print \
         --model claude-sonnet-4-6 \
         --output-format json 2>/dev/null \
     | node -e 'process.stdout.write((JSON.parse(require("fs").readFileSync(0,"utf8")).result||"").trim())' \
     > "$out/$slot.raw"
+  rm -rf "$jhome"
 }
 
 for r in 1 2 3; do
