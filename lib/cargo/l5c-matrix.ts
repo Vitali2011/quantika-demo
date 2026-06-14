@@ -296,7 +296,7 @@ export function checkCompatibility(
 export function parseLastCargoes(raw: string | null): string[] {
   if (!raw) return [];
   return raw
-    .split(/[,;\/]/)
+    .split(/[,;\/\n&]+|\s+and\s+/i)
     .map((s) => s.trim())
     .filter(Boolean);
 }
