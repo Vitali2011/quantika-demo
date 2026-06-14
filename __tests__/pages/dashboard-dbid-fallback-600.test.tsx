@@ -8,11 +8,21 @@
  * dbId is undefined → `?? 0` produces id=0 → DashboardFreshMatches renders
  * href="/match/0" → re-introduces original /match/0 bug from #588.
  *
- * Fix: filter out goodMatches where dbId is null before building freshMatchesData.
+ * Original fix: filter out goodMatches where dbId is null before building
+ * freshMatchesData.
+ *
+ * Superseded by the single-source refactor (fix-dashboard-divergence): both the
+ * KPI count and the lists now derive from deriveDashboardSurfaces ->
+ * listQualifyingMatches, mapping over real StoredMatch DB rows. Every row carries
+ * a real `sm.id`, so a missing/`0` id is structurally impossible — the #600
+ * guarantee is stronger than the old `.filter(dbId != null)` and no longer lives
+ * as a literal in page.tsx.
  *
  * Tests:
- * 1. Static: page.tsx freshMatchesData section must NOT have `?? 0` fallback.
- * 2. Static: page.tsx freshMatchesData section MUST filter matches before map.
+ * 1. Static: the id assigned to each fresh-match row is the row's real DB id
+ *    (sm.id), never a `?? 0` fallback.
+ * 2. Static: fresh-match rows are sourced from the deduped qualifying DB rows
+ *    (listQualifyingMatches), not from an id-map lookup that can miss.
  * 3. Behavioral: DashboardFreshMatches never renders /match/0 when given valid ids.
  */
 
@@ -36,17 +46,22 @@ jest.mock('next/link', () => {
 describe('app/dashboard/page.tsx — issue #600 fallback guard', () => {
   let src: string;
   beforeAll(() => {
-    src = fs.readFileSync(path.join(ROOT, 'app/dashboard/page.tsx'), 'utf8');
+    // The fresh-match id now comes from the single-source helper, not page.tsx.
+    src = fs.readFileSync(path.join(ROOT, 'lib/matching/dashboard-surfaces.ts'), 'utf8');
   });
 
-  it('freshMatchesData section does NOT use `?? 0` fallback for dbId', () => {
-    const freshSection = src.match(/freshMatchesData[\s\S]{0,400}/)?.[0] ?? '';
-    expect(freshSection).not.toMatch(/\?\?\s*0/);
+  it('fresh-match id is the row real DB id, not a `?? 0` fallback', () => {
+    const block = src.match(/const freshMatchesData[\s\S]{0,400}/)?.[0] ?? '';
+    expect(block).toMatch(/id:\s*sm\.id/);
+    // no `id: <x> ?? 0` style fallback for the rendered id
+    expect(block).not.toMatch(/id:[^\n]*\?\?\s*0/);
   });
 
-  it('freshMatchesData section filters out matches with missing dbId before map', () => {
-    const freshSection = src.match(/freshMatchesData[\s\S]{0,400}/)?.[0] ?? '';
-    expect(freshSection).toMatch(/\.filter\(/);
+  it('fresh-match rows are sourced from the deduped qualifying DB rows', () => {
+    // qualifying = listQualifyingMatches(...) — no id-map lookup that can miss.
+    expect(src).toMatch(/listQualifyingMatches/);
+    const block = src.match(/const freshMatchesData[\s\S]{0,200}/)?.[0] ?? '';
+    expect(block).toMatch(/qualifying\.map/);
   });
 });
 

@@ -7,8 +7,15 @@
  *
  * These tests ensure:
  * 1. DashboardFreshMatches uses match.id (DB id) not match.index in href.
- * 2. dashboard/page.tsx builds a matchIdMap via persistSessionMatches + listMatches.
- * 3. No hardcoded /match/0 or /match/${i} (loop index) in either file.
+ * 2. The dashboard list rows resolve their href from a real DB id.
+ * 3. No hardcoded /match/0 or /match/${i} (loop index) anywhere.
+ *
+ * Single-source refactor (fix-dashboard-divergence): the id-resolution mechanism
+ * moved from page.tsx (matchIdMap + listMatches lookup, which could MISS and fall
+ * back to /matches) into lib/matching/dashboard-surfaces.ts, which maps over real
+ * StoredMatch rows — `id: sm.id` is always a real DB id, so /match/0 is now
+ * structurally impossible. The page.tsx-source assertions below were re-pointed to
+ * that helper; the DashboardFreshMatches.tsx component guards are unchanged.
  */
 
 import * as fs from 'fs';
@@ -18,6 +25,7 @@ const ROOT = process.cwd();
 
 const freshMatchesPath = path.join(ROOT, 'components/dashboard/DashboardFreshMatches.tsx');
 const dashboardPagePath = path.join(ROOT, 'app/dashboard/page.tsx');
+const surfacesPath = path.join(ROOT, 'lib/matching/dashboard-surfaces.ts');
 
 describe('Dashboard match href — issue #588 regression', () => {
   describe('DashboardFreshMatches.tsx', () => {
@@ -52,23 +60,31 @@ describe('Dashboard match href — issue #588 regression', () => {
       expect(src).toMatch(/import.*persistSessionMatches.*from/);
     });
 
-    it('imports listMatches to retrieve stored matches with DB ids', () => {
-      expect(src).toMatch(/import.*listMatches.*from/);
+    it('derives its list surfaces from the single-source helper', () => {
+      expect(src).toMatch(/deriveDashboardSurfaces/);
     });
 
-    it('builds matchIdMap to resolve session match → DB id', () => {
-      expect(src).toMatch(/matchIdMap/);
-    });
-
-    it('priorityCards href falls back to /matches (not /match/0) when DB id missing', () => {
-      expect(src).toMatch(/\/matches/);
+    it('does not hardcode /match/0 or a loop-index href', () => {
+      expect(src).not.toMatch(/\/match\/0/);
       expect(src).not.toMatch(/href:\s*`\/match\/\$\{i\}`/);
     });
+  });
 
-    it('freshMatchesData uses id field not index', () => {
-      const freshSection = src.match(/freshMatchesData[\s\S]{0,300}/)?.[0] ?? '';
-      expect(freshSection).toMatch(/\bid\b/);
-      expect(freshSection).not.toMatch(/\bindex\s*:/);
+  describe('lib/matching/dashboard-surfaces.ts (id-resolution home)', () => {
+    let src: string;
+    beforeAll(() => {
+      src = fs.readFileSync(surfacesPath, 'utf8');
+    });
+
+    it('resolves list rows from the deduped qualifying DB rows', () => {
+      expect(src).toMatch(/listQualifyingMatches/);
+    });
+
+    it('hrefs and ids use the real DB id (sm.id), never /match/0 or a loop index', () => {
+      expect(src).toMatch(/href:\s*`\/match\/\$\{sm\.id\}`/);
+      expect(src).toMatch(/id:\s*sm\.id/);
+      expect(src).not.toMatch(/\/match\/0/);
+      expect(src).not.toMatch(/`\/match\/\$\{i\}`/);
     });
   });
 });
