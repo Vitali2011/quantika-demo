@@ -7,10 +7,10 @@ Branch: eval/token-savers-quality · 2026-06-14/15 · n=3/cell (directional)
 | Feature | Verdict | Oracle (clean) | Judge (base/feat wins) | Probe recall |
 |---|---|---|---|---|
 | caveman | ✅ SAFE | 8/9 (best) | 5/4 tied | — |
-| rtk | ✅ SAFE | 6/7 | 5/3 mild-base | 5/5 (n=1, no blindness) |
-| all | ✅ SAFE | 5/6 | 4/2 mild-base | — |
+| rtk | ✅ SAFE | 6/7 | 5/3 mild-base | 5/5 (n=3, no blindness) |
+| all | ✅ SAFE | 5/6 | 4/2 mild-base | 5/5 (n=3, no blindness) |
 | cavecrew | ⚠️ CAUTION | 3/6 (worse) | 1/6 (cavecrew looks better) | — |
-| baseline | — | 6/9 | — | 5/5 |
+| baseline | — | 6/9 | — | 5/5 (n=3) |
 
 ## Key finding (triangulation)
 
@@ -19,14 +19,17 @@ BETTER (won 6/7). => compressed subagent delegation yields plausible-looking cod
 that passes tests less often ("looks good, doesn`t work"). Objective tests are the
 truth here, not diff appearance. Do NOT use cavecrew for quality-critical code.
 
-caveman/rtk/all do NOT hurt code quality. rtk passed its file:line-blindness probe
-(5/5 = baseline). caveman exempts code blocks by design (8/9, best arm).
+caveman/rtk/all do NOT hurt code quality. rtk and all passed the file:line-blindness
+probe (5/5 = baseline, confirmed n=3). caveman exempts code blocks by design (8/9, best arm).
 
 ## Caveats
 - n=6-9 per cell -> directional, not proven. caveman/rtk/all "safe" is solid;
   cavecrew flag is a real signal on small n.
-- Probe stayed n=1 (session 30min cap hit after judge; judge collected clean, 0 auth errors).
+- Probe now n=3 (all 9 cells green, 5/5 recall for baseline/rtk/all). No blindness detected.
 - Infra: required a long-lived setup-token; OAuth rotation broke earlier attempts.
+- cavecrew confirmation (r4-r6 on pr964+pr970): launched detached 2026-06-15T00:36:26,
+  results pending rescore (see CAVECREW-CONFIRM-LAUNCHED.txt). CAUTION verdict holds
+  until those reps clearly change the signal.
 
 ## Oracle pass-rate by (task, arm), rate-limited cells excluded
 pr964: base 1/3, caveman 3/3, rtk 2/3, cavecrew 0/3, all 2/3

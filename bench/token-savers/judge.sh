@@ -25,7 +25,7 @@ $(cat "$b")"
         --output-format json 2>/dev/null \
     | node -e 'process.stdout.write((JSON.parse(require("fs").readFileSync(0,"utf8")).result||"").trim())' \
     > "$out/$slot.raw"
-  rm -rf "$jhome"
+  rm -rf "$jhome" 2>/dev/null || true
 }
 
 for r in 1 2 3; do
