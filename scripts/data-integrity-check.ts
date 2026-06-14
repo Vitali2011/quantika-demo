@@ -81,7 +81,6 @@ const TABLES: TableSpec[] = [
   { table: 'war_risk_zones',       label: 'JWC war risk zones',     category: 'compliance',  freshnessCol: 'created_at',  critical: false },
   { table: 'psc_detention_history',label: 'PSC detention history',  category: 'analytics',   freshnessCol: 'fetched_at',  critical: false },
   // Analytics
-  { table: 'roi_metrics',          label: 'ROI metrics',            category: 'analytics',   freshnessCol: 'created_at',  critical: false },
   // Knowledge layer governance
   { table: 'knowledge_sources',    label: 'Knowledge sources',      category: 'reference',   freshnessCol: 'updated_at',  critical: false },
 ];

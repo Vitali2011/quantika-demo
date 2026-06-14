@@ -244,13 +244,6 @@ else
 fi
 
 # Post-deploy seed guards (idempotent — safe on every deploy)
-log "seed guard: roi_metrics..."
-if cd "$REPO_DIR" && npx tsx --env-file=.env.local scripts/seed-roi-metrics.ts 2>&1 | tail -3; then
-  log "seed guard OK"
-else
-  log "WARN: seed guard failed (non-critical — app healthy)"
-fi
-
 log "seed guard: fx_rates..."
 if cd "$REPO_DIR" && npx tsx --env-file=.env.local scripts/seed-fx-rates.ts 2>&1 | tail -3; then
   log "fx_rates seed OK"

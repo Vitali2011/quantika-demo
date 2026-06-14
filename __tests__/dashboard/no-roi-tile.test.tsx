@@ -11,8 +11,4 @@ describe('dashboard: ROI tile fully removed', () => {
     expect(fs.existsSync(path.join(process.cwd(), 'components/dashboard/RoiSummaryTile.tsx'))).toBe(false);
     expect(fs.existsSync(path.join(process.cwd(), 'app/api/analytics/roi/route.ts'))).toBe(false);
   });
-  it('underlying data layer survives', () => {
-    expect(fs.existsSync(path.join(process.cwd(), 'lib/analytics/roi-metrics.ts'))).toBe(true);
-    expect(fs.existsSync(path.join(process.cwd(), 'lib/migrations/030-roi-metrics.ts'))).toBe(true);
-  });
 });

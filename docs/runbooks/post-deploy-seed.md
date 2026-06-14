@@ -7,7 +7,6 @@ deploy. It checks `COUNT(*)` for each required table and seeds it only if empty.
 
 Tables guarded:
 
-- `roi_metrics` — required for ROI guarantee feature (`ROI_GUARANTEE_ENABLED`)
 - `fx_rates` — required for multi-currency display (`MULTI_CURRENCY_V2_ENABLED`)
 
 Re-runs are safe: existing rows are never overwritten.
@@ -44,7 +43,7 @@ ssh -i ~/.ssh/your_admin_key root@185.249.225.169 \
 
 ## VPS integration
 
-The deploy script already runs idempotent seed guards (roi_metrics, fx_rates)
+The deploy script already runs idempotent seed guards (fx_rates)
 and the served-DB migration after every successful deploy — no manual wiring
 needed.
 
@@ -57,8 +56,8 @@ overwritten by the next deploy. Change it via PR instead.
 ## When to run manually
 
 - After first deploy to a fresh VPS instance
-- After a database reset or migration that drops `roi_metrics` or `fx_rates`
-- When the ROI guarantee or multi-currency features show "no data" errors
+- After a database reset or migration that drops `fx_rates`
+- When the multi-currency feature shows "no data" errors
 
 For deeper post-deploy DB/env checks (schema version, fx_rates rows, required
 env vars, health endpoints) run `bash scripts/ops/verify-deploy.sh` on the VPS.
