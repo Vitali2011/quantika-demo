@@ -36,11 +36,13 @@ function makeDb(): Database.Database {
     VALUES ('demo',?,?,?,?,?,'me@demo.local','Vessel YUCATAN','2026-05-20','body','snip','["INBOX"]',0)`)
     .run(EMAIL_ID, `t-${EMAIL_ID}`, `Sender <sender@demo.local>`, 'Sender', 'sender@demo.local');
 
-  // Three duplicate rows for the same emailId|itemIndex: first has correct cbft value that maps
-  // to 3994 cbm; second and third carry a previously-double-converted 113 cbm value.
+  // Three duplicate rows for the same emailId|itemIndex: first carries the RAW cbft value
+  // (141050) the LLM emits with unit='cbft' — code is the single owner of the cbft→cbm
+  // conversion, so hydrate converts it to 3994 cbm (141050 ÷ 35.314667). Second and third
+  // carry a previously-double-converted 113 cbm value (already-cbm dupes, dropped by dedup).
   const row1 = JSON.stringify([{
     emailId: EMAIL_ID, itemIndex: ITEM_INDEX,
-    vesselName: 'YUCATAN', grainCapacity: 3994, grainCapacityUnit: 'cbft',
+    vesselName: 'YUCATAN', grainCapacity: 141050, grainCapacityUnit: 'cbft',
     dwt: 3176,
   }]);
   const row2 = JSON.stringify([{
