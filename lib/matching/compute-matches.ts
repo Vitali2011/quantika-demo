@@ -9,6 +9,8 @@ import { endpointLlmTimeout } from '@/lib/openai-helpers';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
+import { parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { deriveBucketReason } from '@/lib/matching/bucket-reason';
 import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
@@ -147,6 +149,10 @@ export async function computeAndPersistMatches(
       cargo_ref: cargo ? (cfValue(cargo.cargoDescription) || null) : null,
       consumption_estimated,
       ballast_distance_nm: eco.ballast_distance_nm ?? null,
+      vessel_open_position: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+      vessel_speed_kts: vessel ? (parseLeadingNumber(vessel.speedLaden) || null) : null,
+      vessel_consumption_mt_per_day: vessel ? (parseConsumption(vessel.consumption, 0) || null) : null,
+      cargo_quantity_mt: cargo ? (resolveCargoWeight(cargo) ?? null) : null,
       fit_percent: m.fitPercent ?? null,
       fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
       cargo_item_index: m.cargoItemIndex,
