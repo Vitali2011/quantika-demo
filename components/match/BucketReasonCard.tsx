@@ -2,7 +2,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import type { BucketReason } from '@/lib/matching/bucket-reason';
 
 const BUCKET_LABEL: Record<BucketReason['bucket'], { title: string; cls: string }> = {
-  main:             { title: 'Main match',      cls: 'text-emerald-600' },
+  main:             { title: 'Main list',       cls: 'text-emerald-600' },
   lowConfidence:    { title: 'Manual review',   cls: 'text-amber-600' },
   insufficientData: { title: 'Not enough data', cls: 'text-slate-500' },
   blocked:          { title: 'Blocked',          cls: 'text-red-500' },

@@ -19,6 +19,7 @@ import { MatchWorksheet } from '@/components/match/MatchWorksheet';
 import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { getPortDistance } from '@/lib/sailing/port-distances';
+import { demotionReason } from '@/lib/sailing/match-scoring';
 import { getBalticDayRate } from '@/lib/market/baltic-freight';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 
@@ -98,6 +99,17 @@ export default async function MatchDetailPage({ params }: Props) {
 
   const badgeCfg = sessionMatch
     ? (MATCH_LEVEL_BADGE[sessionMatch.matchLevel] ?? MATCH_LEVEL_BADGE.possible)
+    : null;
+
+  // Why does an 87%-fit match read as "Possible"? The ballast/size cap can demote a
+  // high-fit match below its fit-implied tier (#1003). Surface that reason so the
+  // pill, the fit-%, and the bucket label stop reading as a contradiction.
+  const demotionNote = sessionMatch
+    ? demotionReason(
+        sessionMatch.fitPercent ?? storedMatch.fit_percent ?? null,
+        sessionMatch.matchLevel,
+        sessionMatch.issues ?? [],
+      )
     : null;
 
   let worksheet: MatchWorksheetType | null = null;
@@ -219,11 +231,19 @@ export default async function MatchDetailPage({ params }: Props) {
                   {storedMatch.vessel_name ?? 'TBN'}
                 </h1>
                 {badgeCfg && (
-                  <Badge className="bg-ds-accent-soft text-ds-accent-soft-fg border-0 text-xs">
+                  <Badge
+                    className="bg-ds-accent-soft text-ds-accent-soft-fg border-0 text-xs"
+                    title={demotionNote ?? undefined}
+                  >
                     {badgeCfg.label}
                   </Badge>
                 )}
               </div>
+              {demotionNote && (
+                <p className="text-xs text-amber-300/90 mt-0.5 truncate" title={demotionNote}>
+                  Capped: {demotionNote}
+                </p>
+              )}
               {routeMeta && (
                 <p className="text-sm text-slate-300 truncate">{routeMeta}</p>
               )}

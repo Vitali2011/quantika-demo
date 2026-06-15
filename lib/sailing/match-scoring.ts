@@ -171,6 +171,28 @@ export function deriveMatchLevelFromFit(fit: number): MatchLevel {
   return 'weak';
 }
 
+const MATCH_LEVEL_RANK: Record<MatchLevel, number> = { good: 3, possible: 2, weak: 1 };
+
+/**
+ * Broker-facing explanation of why a match sits below the tier its fit-% implies.
+ * A high fit-% can still be demoted to 'possible'/'weak' by the ballast/size cap
+ * (applyBallastSizeCap) — e.g. 87% fit but "Possible Match". This conflict reads as
+ * a contradiction (#1003) unless the cap reason is surfaced. Returns the cap issue
+ * text (BALLAST:/SIZE:, tag stripped) when a demotion happened, else null.
+ */
+export function demotionReason(
+  fitPercent: number | null | undefined,
+  matchLevel: MatchLevel,
+  issues: string[],
+): string | null {
+  if (fitPercent == null) return null;
+  const impliedRank = MATCH_LEVEL_RANK[deriveMatchLevelFromFit(fitPercent)];
+  if (impliedRank <= MATCH_LEVEL_RANK[matchLevel]) return null; // not demoted
+  const capIssue = (issues ?? []).find((i) => i.startsWith('BALLAST:') || i.startsWith('SIZE:'));
+  if (!capIssue) return null;
+  return capIssue.slice(capIssue.indexOf(':') + 1).trim();
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // Ballast + size realism cap (Wave C — levers 3 + 4, handover 2026-05-30)
 //
