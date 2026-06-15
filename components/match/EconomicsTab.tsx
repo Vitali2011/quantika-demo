@@ -45,6 +45,10 @@ interface EconomicsTabProps {
   balticRateAsOf?: string | null;
   /** DWT-tiered breakeven TCE floor (persisted, migration 050). */
   storedBreakevenTce?: number | null;
+  /** Route-aware bunker port (matches.bunker_port, migration 053, #1002). Seeds the
+   *  headline bunker selector so detail TCE uses the same port as the stored list TCE.
+   *  Null (old rows / non-Med routes) → 'NLRTM' baseline (no disruption). */
+  initialBunkerPort?: string | null;
 }
 
 function parseLeadingNumber(s: string | null | undefined): number {
@@ -78,7 +82,7 @@ function portLabel(locode: string): string {
   return PORT_NAMES[locode] ?? locode;
 }
 
-export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, storedBreakevenTce }: EconomicsTabProps) {
+export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, storedBreakevenTce, initialBunkerPort }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
@@ -88,7 +92,10 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
   const [currentRate, setCurrentRate] = useState<number | null>(storedFreightRate ?? null);
   const [currentSource, setCurrentSource] = useState<string | null>(freightRateSource ?? null);
   const [resetting, setResetting] = useState(false);
-  const [bunkerPort, setBunkerPort] = useState<BunkerPort | null>('NLRTM');
+  // Seed from the stored route-aware port (#1002) so the headline TCE uses the
+  // same bunker port as the stored LIST TCE → list == detail. Null/old rows →
+  // 'NLRTM' baseline (the prior behaviour).
+  const [bunkerPort, setBunkerPort] = useState<BunkerPort | null>(initialBunkerPort ?? 'NLRTM');
   const [bunkerGrade, setBunkerGrade] = useState<BunkerGrade>('VLSFO');
   const [bunkerReco, setBunkerReco] = useState<{ port: string; priceUsdPerMt: number; recommendation: string } | null>(null);
   const [bunkerFallback, setBunkerFallback] = useState<string | null>(null);
@@ -166,14 +173,15 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 }
               : null,
           );
-          // NOTE: We do NOT auto-set bunkerPort to the recommended on-route port here.
-          // The headline voyage TCE stays on baseline NLRTM/VLSFO so it matches the stored
-          // LIST/fit TCE, which is computed at live NLRTM/VLSFO spot (DEFAULT_BUNKER_USD_PER_MT=600
-          // is only the empty-table fallback). Auto-switching the headline port would make
-          // DETAIL TCE diverge from LIST TCE on every Med/Black-Sea route — regressing epic #1004
-          // AC-E1 ("one number"). The route-aware recommendation is surfaced as savings + the
-          // comparison table (advisory). Issue #1002 wants this in the headline; the correct fix
-          // makes the STORED path route-aware too (both paths same port) — tracked as a follow-up.
+          // NOTE: The headline bunkerPort is SEEDED from the stored route-aware port
+          // (initialBunkerPort = matches.bunker_port) at init — NOT overridden here from
+          // the live reco. Both the stored LIST TCE and this DETAIL TCE use that same
+          // on-route port, so they agree on every Med/Black-Sea route ("one number",
+          // epic #1004 / #1009). This client-side reco merely CONFIRMS the engine's
+          // choice and surfaces the savings + comparison table (advisory). If the reco
+          // returns a different port (e.g. prices moved since creation) the broker can
+          // switch manually; we deliberately do not auto-override the seeded headline so
+          // the detail TCE keeps matching the stored list TCE (#1002).
         }
       })
       .catch(() => {});
@@ -517,10 +525,15 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
             aria-label="Bunker port"
             className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
           >
-            {(bunkerCandidates.length > 0
-              ? Array.from(new Set(['NLRTM', ...Array.from(new Map(bunkerCandidates.map(c => [c.port, c])).values()).map(c => c.port)]))
-              : BUNKER_PORTS.map(p => p.value)
-            ).map((code) => (
+            {(() => {
+              const base = bunkerCandidates.length > 0
+                ? ['NLRTM', ...Array.from(new Map(bunkerCandidates.map(c => [c.port, c])).values()).map(c => c.port)]
+                : BUNKER_PORTS.map(p => p.value);
+              // Always include the selected (stored route-aware) port so it renders even
+              // before the reco fetch resolves (#1002 — seeded headline must be visible).
+              const withSelected = bunkerPort && !base.includes(bunkerPort) ? [bunkerPort, ...base] : base;
+              return Array.from(new Set(withSelected));
+            })().map((code) => (
               <option key={code} value={code}>
                 {portLabel(code)}
               </option>

@@ -10,7 +10,8 @@ import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { deriveBucketReason } from '@/lib/matching/bucket-reason';
 import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
-import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { resolveRecommendedBunkerPort } from '@/lib/economics/bunker-routing';
+import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { scoreEconomics } from '@/lib/sailing/fit-breakdown';
 
 /**
@@ -49,16 +50,6 @@ export function persistSessionMatches(
   const cargoMap = new Map(parsedCargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselMap = new Map(parsedVessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
-  // Live bunker price (NLRTM/VLSFO) so the stored list TCE matches the detail page,
-  // which auto-resolves the same baseline. Resilient to a missing bunker_prices table
-  // (e.g. minimal test DBs) — falls through to the helper's default rather than throwing.
-  let bunkerPriceUsdPerMt: number | undefined;
-  try {
-    bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
-  } catch {
-    bunkerPriceUsdPerMt = undefined;
-  }
-
   // Engine matches arrive sorted by fitPercent DESC. Guard against duplicate
   // ITEM pairs only — keep the first (best). Since migration 051 uniqueness is
   // item-aware: different items of the same email are distinct matches and all
@@ -87,10 +78,24 @@ export function persistSessionMatches(
           : cargo.cargoType as string)
       : null;
 
+    // Route-aware bunker port (#1002): same selection algorithm + same inputs as
+    // the detail-page EconomicsTab, so the stored bunker_port == the recommended
+    // port and the detail TCE (seeded from bunker_port) matches this list TCE.
+    // NLRTM fallback for non-Med routes preserves prior behaviour. Resilient to a
+    // missing bunker_prices table — falls through to the constant default.
+    const recoSpeed = vessel ? (parseLeadingNumber(vessel.speedLaden) || 0) : 0;
+    const reco = resolveRecommendedBunkerPort(db, loadPort, dischargePort, 'VLSFO', {
+      dwt: vesselDwt,
+      speedKn: recoSpeed,
+      consMtPerDay: vessel ? parseConsumption(vessel.consumption, 0) : 0,
+      voyageDays: estimateVoyageDays(distanceResult?.nm ?? null, recoSpeed),
+    });
+
     // Economics via shared helper — includes port-DA, canal, and war-risk convention
-    // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
+    // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page. Uses
+    // the route-aware bunker price (reco.priceUsdPerMt); the column persists reco.port.
     const eco = cargo && vessel
-      ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt })
+      ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt: reco.priceUsdPerMt })
       : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null, consumption_estimated: false, ballast_distance_nm: null };
     const tce_usd_per_day = eco.tce_usd_per_day;
     const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
@@ -196,6 +201,7 @@ export function persistSessionMatches(
       vessel_speed_kts: vessel ? (parseLeadingNumber(vessel.speedLaden) || null) : null,
       vessel_consumption_mt_per_day: vessel ? (parseConsumption(vessel.consumption, 0) || null) : null,
       cargo_quantity_mt: cargo ? (resolveCargoWeight(cargo) ?? null) : null,
+      bunker_port: reco.port,
       breakeven_tce_usd_per_day: vesselDwt ? breakevenTceByDwt(vesselDwt) : null,
       // Refresh stale per-session rows on every render: economics drift with
       // the live bunker price and re-parses; without this the first insert
