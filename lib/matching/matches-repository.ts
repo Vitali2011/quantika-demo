@@ -34,6 +34,10 @@ export interface StoredMatch {
   consumption_estimated?: number | null;
   ballast_distance_nm?: number | null;
   breakeven_tce_usd_per_day?: number | null;
+  vessel_open_position?: string | null;
+  vessel_speed_kts?: number | null;
+  vessel_consumption_mt_per_day?: number | null;
+  cargo_quantity_mt?: number | null;
   /** Per-cargo rank by fit_percent desc (present only when listMatches called with topPerCargo). */
   cargo_rank?: number;
 }
@@ -66,6 +70,10 @@ export interface CreateMatchInput {
   consumption_estimated?: number | null;
   ballast_distance_nm?: number | null;
   breakeven_tce_usd_per_day?: number | null;
+  vessel_open_position?: string | null;
+  vessel_speed_kts?: number | null;
+  vessel_consumption_mt_per_day?: number | null;
+  cargo_quantity_mt?: number | null;
   /**
    * When the (cargo_id, vessel_id, user_id) row already exists, refresh the
    * engine-computed columns in place instead of silently keeping the stale
@@ -151,6 +159,11 @@ function hasBreakevenColumn(db: Database.Database): boolean {
   return cols.some((c) => c.name === 'breakeven_tce_usd_per_day');
 }
 
+function hasVesselCargoInputColumns(db: Database.Database): boolean {
+  const cols = db.prepare(`PRAGMA table_info(matches)`).all() as Array<{ name: string }>;
+  return cols.some((c) => c.name === 'vessel_open_position');
+}
+
 export function createMatch(db: Database.Database, input: CreateMatchInput): StoredMatch {
   const now = Date.now();
   const status: MatchStatus = input.status ?? 'shortlist';
@@ -191,6 +204,12 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     // Breakeven floor column (migration 050) — conditional for same reason.
     const withBreakeven = hasBreakevenColumn(db);
     const breakeven_tce_usd_per_day = input.breakeven_tce_usd_per_day ?? null;
+    // Vessel/cargo TCE input columns (migration 052) — conditional for same reason.
+    const withVCInputs = hasVesselCargoInputColumns(db);
+    const vessel_open_position = input.vessel_open_position ?? null;
+    const vessel_speed_kts = input.vessel_speed_kts ?? null;
+    const vessel_consumption_mt_per_day = input.vessel_consumption_mt_per_day ?? null;
+    const cargo_quantity_mt = input.cargo_quantity_mt ?? null;
 
     const stmt = db.prepare(
       `INSERT OR IGNORE INTO matches
@@ -198,8 +217,8 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
           reason_structured, cargo_type, load_port, discharge_port,
           laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm,
           freight_rate_usd_per_mt, freight_rate_source, vessel_name, cargo_ref,
-          fit_percent, fit_breakdown${withIdx ? ', cargo_item_index, vessel_item_index' : ''}${withWorksheet ? ', worksheet_json' : ''}${withConsEst ? ', consumption_estimated' : ''}${withBallast ? ', ballast_distance_nm' : ''}${withBreakeven ? ', breakeven_tce_usd_per_day' : ''})
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${withIdx ? ', ?, ?' : ''}${withWorksheet ? ', ?' : ''}${withConsEst ? ', ?' : ''}${withBallast ? ', ?' : ''}${withBreakeven ? ', ?' : ''})`
+          fit_percent, fit_breakdown${withIdx ? ', cargo_item_index, vessel_item_index' : ''}${withWorksheet ? ', worksheet_json' : ''}${withConsEst ? ', consumption_estimated' : ''}${withBallast ? ', ballast_distance_nm' : ''}${withBreakeven ? ', breakeven_tce_usd_per_day' : ''}${withVCInputs ? ', vessel_open_position, vessel_speed_kts, vessel_consumption_mt_per_day, cargo_quantity_mt' : ''})
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${withIdx ? ', ?, ?' : ''}${withWorksheet ? ', ?' : ''}${withConsEst ? ', ?' : ''}${withBallast ? ', ?' : ''}${withBreakeven ? ', ?' : ''}${withVCInputs ? ', ?, ?, ?, ?' : ''})`
     );
     const args: Array<string | number | null> = [
       input.cargo_id,
@@ -231,6 +250,7 @@ export function createMatch(db: Database.Database, input: CreateMatchInput): Sto
     if (withConsEst) args.push(consumption_estimated);
     if (withBallast) args.push(ballast_distance_nm);
     if (withBreakeven) args.push(breakeven_tce_usd_per_day);
+    if (withVCInputs) args.push(vessel_open_position, vessel_speed_kts, vessel_consumption_mt_per_day, cargo_quantity_mt);
     result = stmt.run(...args);
     if (result.changes === 0 && input.refreshComputed) {
       // Duplicate ignored — refresh computed columns in place so the
@@ -456,6 +476,10 @@ function refreshComputedColumns(
   if (hasConsumptionEstimatedColumn(db)) { sets.push('consumption_estimated = ?'); args.push(input.consumption_estimated ?? null); }
   if (hasBallastDistanceColumn(db)) { sets.push('ballast_distance_nm = ?'); args.push(input.ballast_distance_nm ?? null); }
   if (hasBreakevenColumn(db)) { sets.push('breakeven_tce_usd_per_day = ?'); args.push(input.breakeven_tce_usd_per_day ?? null); }
+  if (hasVesselCargoInputColumns(db)) {
+    sets.push('vessel_open_position = ?', 'vessel_speed_kts = ?', 'vessel_consumption_mt_per_day = ?', 'cargo_quantity_mt = ?');
+    args.push(input.vessel_open_position ?? null, input.vessel_speed_kts ?? null, input.vessel_consumption_mt_per_day ?? null, input.cargo_quantity_mt ?? null);
+  }
   // Item indices are part of the row's identity since migration 051 — never
   // SET them; the WHERE targets exactly one item row so a refresh for item N
   // cannot clobber item M of the same email pair (audit C.5).
