@@ -45,6 +45,7 @@ import { seedPortDa, type BaselinePort } from '../seed-port-da';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
+import { parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { deriveBucketReason } from '@/lib/matching/bucket-reason';
 import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 
@@ -707,6 +708,7 @@ async function main() {
   const _matchesCols = (db.prepare(`PRAGMA table_info(matches)`).all() as Array<{name:string}>);
   const hasWorksheetCol = _matchesCols.some((c) => c.name === 'worksheet_json');
   const hasBreakevenCol = _matchesCols.some((c) => c.name === 'breakeven_tce_usd_per_day');
+  const hasVCInputsCol = _matchesCols.some((c) => c.name === 'vessel_open_position');
 
   const insert = db.prepare(`
     INSERT OR IGNORE INTO matches
@@ -714,8 +716,8 @@ async function main() {
        created_at, updated_at, reason_structured, cargo_type, load_port, discharge_port,
        laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm, vessel_name, cargo_ref,
        fit_percent, fit_breakdown,
-       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''}${hasBreakevenCol ? ', breakeven_tce_usd_per_day' : ''})
-    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''}${hasBreakevenCol ? ', ?' : ''})
+       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''}${hasBreakevenCol ? ', breakeven_tce_usd_per_day' : ''}${hasVCInputsCol ? ', vessel_open_position, vessel_speed_kts, vessel_consumption_mt_per_day, cargo_quantity_mt' : ''})
+    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''}${hasBreakevenCol ? ', ?' : ''}${hasVCInputsCol ? ', ?, ?, ?, ?' : ''})
   `);
 
   function writeBucket(matches: Match[], userId: string | null): number {
@@ -757,6 +759,12 @@ async function main() {
       ];
       if (hasWorksheetCol) args.push(ws ? JSON.stringify(ws) : null);
       if (hasBreakevenCol) args.push(vesselDwt ? breakevenTceByDwt(vesselDwt) : null);
+      if (hasVCInputsCol) args.push(
+        vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+        vessel ? (parseLeadingNumber(vessel.speedLaden) || null) : null,
+        vessel ? (parseConsumption(vessel.consumption, 0) || null) : null,
+        cargo ? (resolveCargoWeight(cargo) ?? null) : null,
+      );
       insert.run(...args);
       n++;
     }
