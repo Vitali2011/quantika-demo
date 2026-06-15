@@ -39,9 +39,9 @@ describe('migration 045 — worksheet_json column', () => {
     expect(m46?.name).toBe('matches-consumption-estimated');
     const m47 = allMigrations.find((m) => m.version === 47);
     expect(m47?.name).toBe('matches-ballast-distance');
-    // updated from 50→51: branch adds migration 051-matches-item-unique (audit C.5)
+    // updated from 51→52: branch adds migration 052-matches-vessel-cargo-inputs
     const last = allMigrations[allMigrations.length - 1];
-    expect(last.version).toBe(51);
-    expect(last.name).toBe('matches-item-unique');
+    expect(last.version).toBe(52);
+    expect(last.name).toBe('matches-vessel-cargo-inputs');
   });
 });
