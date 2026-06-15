@@ -40,14 +40,7 @@ export function PublicLanding() {
           >
             Connect Gmail →
           </Link>
-          <form method="POST" action="/api/sample">
-            <button
-              type="submit"
-              className="w-full px-8 py-3 bg-ds-surface border border-ds-border text-ds-text font-medium rounded-ds-lg hover:bg-ds-surface-muted transition-colors text-sm"
-            >
-              Try with sample data
-            </button>
-          </form>
+          <Link href="/login" className="inline-block px-8 py-3 bg-ds-surface border border-ds-border text-ds-text font-medium rounded-ds-lg hover:bg-ds-surface-muted transition-colors text-sm">View demo →</Link>
         </div>
       </section>
 
