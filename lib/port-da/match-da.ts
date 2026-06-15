@@ -1,6 +1,7 @@
 import type Database from 'better-sqlite3';
 import { getPortDa } from './repository';
 import { resolvePort } from '@/lib/ports/resolve';
+import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import type { PortDaBreakdown } from './types';
 
 /** Confidence ordering for min-aggregation: lower index = lower confidence */
@@ -55,7 +56,10 @@ export function sumMatchPortDaUsd(
   for (const name of portNames) {
     if (!name) continue;
     try {
-      const resolved = resolvePort(name);
+      // Exact match first; fall back to vague-descriptor resolution (ARA, "European
+      // Continent", etc.) exactly as resolvePortOrPassthrough does in the detail route,
+      // so the LIST path no longer silently drops discharge DA for range descriptors.
+      const resolved = resolvePort(name) ?? resolveVaguePort(name);
       if (!resolved) continue;
       // Pass cargoType=undefined → getPortDa resolves to 'general' (the only seed
       // cargo type).  This mirrors resolveDaUsd in the detail route and guarantees

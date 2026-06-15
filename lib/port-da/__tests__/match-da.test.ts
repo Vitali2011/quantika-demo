@@ -28,6 +28,10 @@ function makeDb(opts?: { altConfidence?: string }): Database.Database {
   ins.run('ROCND', 0, 100000, 10000, 5000, 3000, 2, 'general', opts?.altConfidence ?? 'verified', 'seed');
   // Marmara (TRMAR): 8k + 4k + 2k = 14k fixed
   ins.run('TRMAR', 0, 100000, 8000, 4000, 2000, 2, 'general', 'verified', 'seed');
+  // Rotterdam (NLRTM): 9k + 6k + 4k = 19k fixed. ARA / "European Continent" vague
+  // descriptors resolve to NLRTM via resolveVaguePort — the discharge DA the LIST
+  // path used to silently drop (only resolvePort, no vague fallback).
+  ins.run('NLRTM', 0, 100000, 9000, 6000, 4000, 2, 'general', 'verified', 'seed');
   return db;
 }
 
@@ -38,6 +42,24 @@ describe('sumMatchPortDaUsd', () => {
     // against 'general' rows regardless, matching the detail-route behaviour.
     const result = sumMatchPortDaUsd(['constanta', 'marmara'], 30000, 'bulk', db);
     expect(result.totalUsd).toBe(18000 + 14000);
+    db.close();
+  });
+
+  // #1004 parity: LIST path must mirror DETAIL (resolvePortOrPassthrough) and resolve
+  // vague discharge descriptors via resolveVaguePort, else discharge DA is dropped and
+  // list TCE underestimates vs the voyage detail page.
+  //
+  // NB: a real range descriptor ("European Continent" / "ARA range") is used here, not
+  // bare "ARA" — resolvePort('ARA') fuzzy-matches the substring "ara" in "Mtwara" (TZMYW)
+  // and returns a non-null (wrong) port, so the ?? fallback never fires for it. The prod
+  // descriptors that actually trigger the dropped-DA bug (resolvePort → null) are the
+  // range forms below; those are what resolveVaguePort rescues.
+  test('vague descriptor "European Continent" resolves via resolveVaguePort → Rotterdam DA included', () => {
+    const db = makeDb();
+    // Marmara (TRMAR, exact) = 14k ; "European Continent" → Rotterdam (NLRTM, vague) = 19k.
+    const result = sumMatchPortDaUsd(['Marmara', 'European Continent'], 30000, null, db);
+    // Must include the vague-resolved discharge DA, not just the load port.
+    expect(result.totalUsd).toBe(14000 + 19000);
     db.close();
   });
 
