@@ -28,7 +28,8 @@ describe('PublicLanding', () => {
   it('renders CTA buttons', () => {
     render(<PublicLanding />);
     expect(screen.getByText(/Connect Gmail/i)).toBeInTheDocument();
-    expect(screen.getByText(/Try with sample data/i)).toBeInTheDocument();
+    const demoLink = screen.getByRole('link', { name: /View demo/i });
+    expect(demoLink).toHaveAttribute('href', '/login');
   });
 
   it('renders 3 feature cards', () => {
