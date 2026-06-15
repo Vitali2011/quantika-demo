@@ -197,6 +197,7 @@ describe('POST /api/ai/explain-deal', () => {
 
   it('returns 403 feature_disabled when EXPLAIN_DEAL_ENABLED is not set', async () => {
     delete process.env.EXPLAIN_DEAL_ENABLED;
+    mockGetSession.mockReturnValue(baseSession);
     const req = makeRequest({ matchIndex: 0 }, 'sess-1');
     const res = await POST(req);
     expect(res.status).toBe(403);
@@ -206,6 +207,7 @@ describe('POST /api/ai/explain-deal', () => {
 
   it('returns 403 feature_disabled when EXPLAIN_DEAL_ENABLED=false', async () => {
     process.env.EXPLAIN_DEAL_ENABLED = 'false';
+    mockGetSession.mockReturnValue(baseSession);
     const req = makeRequest({ matchIndex: 0 }, 'sess-1');
     const res = await POST(req);
     expect(res.status).toBe(403);

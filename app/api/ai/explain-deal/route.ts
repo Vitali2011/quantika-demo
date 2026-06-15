@@ -200,14 +200,6 @@ function parseSections(
 }
 
 export async function POST(request: NextRequest) {
-  // Feature flag check — disabled by default
-  if (process.env.EXPLAIN_DEAL_ENABLED !== 'true') {
-    return NextResponse.json(
-      { error: 'feature_disabled', message: 'Explain Deal feature is not enabled' },
-      { status: 403 },
-    );
-  }
-
   if (!validateCsrf(request)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -242,9 +234,17 @@ export async function POST(request: NextRequest) {
     (v) => v.emailId === match.vesselEmailId && v.itemIndex === match.vesselItemIndex,
   );
 
-  // Demo mode: return template explanation without LLM call
+  // Demo mode: return template explanation without LLM call (checked before feature flag)
   if (isDemoMode()) {
     return NextResponse.json(buildDemoExplanation(match, cargo ?? null, vessel ?? null, language));
+  }
+
+  // Feature flag check — gates real LLM path only (demo bypasses above)
+  if (process.env.EXPLAIN_DEAL_ENABLED !== 'true') {
+    return NextResponse.json(
+      { error: 'feature_disabled', message: 'Explain Deal feature is not enabled' },
+      { status: 403 },
+    );
   }
 
   const userPrompt = buildExplainDealUserPrompt(match, cargo ?? null, vessel ?? null, matchIndex);
