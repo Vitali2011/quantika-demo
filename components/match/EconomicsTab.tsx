@@ -166,11 +166,14 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 }
               : null,
           );
-          // NOTE: We intentionally do NOT auto-set bunkerPort here.
-          // The headline voyage TCE must stay on the baseline port (NLRTM/VLSFO) so it
-          // matches the stored LIST TCE (which is always computed at NLRTM). The
-          // recommendation is advisory — shown as savings + comparison table — and the
-          // user can still switch the bunker port manually via the dropdown.
+          // NOTE: We do NOT auto-set bunkerPort to the recommended on-route port here.
+          // The headline voyage TCE stays on baseline NLRTM/VLSFO so it matches the stored
+          // LIST/fit TCE, which is computed at live NLRTM/VLSFO spot (DEFAULT_BUNKER_USD_PER_MT=600
+          // is only the empty-table fallback). Auto-switching the headline port would make
+          // DETAIL TCE diverge from LIST TCE on every Med/Black-Sea route — regressing epic #1004
+          // AC-E1 ("one number"). The route-aware recommendation is surfaced as savings + the
+          // comparison table (advisory). Issue #1002 wants this in the headline; the correct fix
+          // makes the STORED path route-aware too (both paths same port) — tracked as a follow-up.
         }
       })
       .catch(() => {});

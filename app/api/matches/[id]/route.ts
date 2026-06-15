@@ -28,13 +28,18 @@ function buildCargoProxy(m: StoredMatch): ParsedCargo {
     destinationPort: cf(m.discharge_port),
     cargoType: (m.cargo_type ?? null) as unknown as 'BULK',
     cargoDescription: null,
-    weightMt: null,
+    // Persisted at match-creation (migration 052). resolveCargoWeight reads
+    // weightMt(Max) — feed the stored quantity there so PATCH economics uses the
+    // real cargo tonnage, not the DWT×0.65 fallback (#1000).
+    weightMt: cf(m.cargo_quantity_mt),
     weightMtMin: null,
     weightMtMax: null,
     volumeCbm: null,
     dimensions: null,
     containerType: null,
-    quantity: null,
+    // resolveCargoWeight reads weightMt (above); `quantity` is a raw number|Range
+    // and is left null — the persisted tonnage flows through weightMt.
+    quantity: m.cargo_quantity_mt ?? null,
     incoterms: null,
     preferredDates: null,
     laycan: null,
@@ -81,14 +86,17 @@ function buildVesselProxy(m: StoredMatch): ParsedVessel {
     craneCapacity: null,
     hatchType: null,
     vesselType: null,
-    openPosition: null,
+    // Persisted at match-creation (migration 052) — restores single-voyage
+    // duration (ballast leg from openPosition) + real speed/consumption so PATCH
+    // Recalculate matches the fit/stored TCE instead of nulling to round-trip (#1000).
+    openPosition: cf(m.vessel_open_position ?? null),
     openDate: null,
     direction: null,
     restrictions: [],
     lastCargoes: null,
-    speedLaden: null,
+    speedLaden: m.vessel_speed_kts != null ? String(m.vessel_speed_kts) : null,
     speedBallast: null,
-    consumption: null,
+    consumption: m.vessel_consumption_mt_per_day != null ? String(m.vessel_consumption_mt_per_day) : null,
     deckCapacity: null,
     specialFeatures: [],
   };

@@ -5,6 +5,8 @@ import { createMatch } from '@/lib/matching/matches-repository';
 import { parseLaycan } from '@/lib/sailing/date-parsing';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
+import { parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { deriveBucketReason } from '@/lib/matching/bucket-reason';
 import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 import { calculateReadinessGap, detectSpot } from '@/lib/sailing/readiness-gap';
@@ -190,6 +192,10 @@ export function persistSessionMatches(
       worksheet_json: worksheetJson,
       consumption_estimated,
       ballast_distance_nm: eco.ballast_distance_nm ?? null,
+      vessel_open_position: vessel ? (cfValue(vessel.openPosition) ?? null) : null,
+      vessel_speed_kts: vessel ? (parseLeadingNumber(vessel.speedLaden) || null) : null,
+      vessel_consumption_mt_per_day: vessel ? (parseConsumption(vessel.consumption, 0) || null) : null,
+      cargo_quantity_mt: cargo ? (resolveCargoWeight(cargo) ?? null) : null,
       breakeven_tce_usd_per_day: vesselDwt ? breakevenTceByDwt(vesselDwt) : null,
       // Refresh stale per-session rows on every render: economics drift with
       // the live bunker price and re-parses; without this the first insert
