@@ -37,7 +37,9 @@ function buildCargoProxy(m: StoredMatch): ParsedCargo {
     volumeCbm: null,
     dimensions: null,
     containerType: null,
-    quantity: m.cargo_quantity_mt != null ? { value: m.cargo_quantity_mt, confidence: 'interpreted' as const } : null,
+    // resolveCargoWeight reads weightMt (above); `quantity` is a raw number|Range
+    // and is left null — the persisted tonnage flows through weightMt.
+    quantity: m.cargo_quantity_mt ?? null,
     incoterms: null,
     preferredDates: null,
     laycan: null,
