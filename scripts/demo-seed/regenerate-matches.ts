@@ -44,6 +44,8 @@ import { seedPscHistoryWithDb } from '../knowledge/seeds/seed-psc-history';
 import { seedPortDa, type BaselinePort } from '../seed-port-da';
 import { lookupCii } from '@/lib/imo/cii-lookup';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { resolveRecommendedBunkerPort } from '@/lib/economics/bunker-routing';
+import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { deriveBucketReason } from '@/lib/matching/bucket-reason';
@@ -709,6 +711,7 @@ async function main() {
   const hasWorksheetCol = _matchesCols.some((c) => c.name === 'worksheet_json');
   const hasBreakevenCol = _matchesCols.some((c) => c.name === 'breakeven_tce_usd_per_day');
   const hasVCInputsCol = _matchesCols.some((c) => c.name === 'vessel_open_position');
+  const hasBunkerPortCol = _matchesCols.some((c) => c.name === 'bunker_port');
 
   const insert = db.prepare(`
     INSERT OR IGNORE INTO matches
@@ -716,8 +719,8 @@ async function main() {
        created_at, updated_at, reason_structured, cargo_type, load_port, discharge_port,
        laycan_start, laycan_end, vessel_dwt, tce_usd_per_day, distance_nm, vessel_name, cargo_ref,
        fit_percent, fit_breakdown,
-       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''}${hasBreakevenCol ? ', breakeven_tce_usd_per_day' : ''}${hasVCInputsCol ? ', vessel_open_position, vessel_speed_kts, vessel_consumption_mt_per_day, cargo_quantity_mt' : ''})
-    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''}${hasBreakevenCol ? ', ?' : ''}${hasVCInputsCol ? ', ?, ?, ?, ?' : ''})
+       freight_rate_usd_per_mt, freight_rate_source${hasWorksheetCol ? ', worksheet_json' : ''}${hasBreakevenCol ? ', breakeven_tce_usd_per_day' : ''}${hasVCInputsCol ? ', vessel_open_position, vessel_speed_kts, vessel_consumption_mt_per_day, cargo_quantity_mt' : ''}${hasBunkerPortCol ? ', bunker_port' : ''})
+    VALUES (?, ?, ?, ?, ?, ?, 'shortlist', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${hasWorksheetCol ? ', ?' : ''}${hasBreakevenCol ? ', ?' : ''}${hasVCInputsCol ? ', ?, ?, ?, ?' : ''}${hasBunkerPortCol ? ', ?' : ''})
   `);
 
   function writeBucket(matches: Match[], userId: string | null): number {
@@ -765,6 +768,22 @@ async function main() {
         vessel ? (parseConsumption(vessel.consumption, 0) || null) : null,
         cargo ? (resolveCargoWeight(cargo) ?? null) : null,
       );
+      if (hasBunkerPortCol) {
+        // Route-aware bunker port (#1002): persist the on-route hub the detail page
+        // will seed from (NLRTM fallback for non-Med routes). NOTE: the seed
+        // tce_usd_per_day above still comes from analyzePairs' single-price econ;
+        // the per-session hydrate (persistSessionMatches) recomputes TCE at this
+        // same route-aware port so the displayed list==detail. A full route-aware
+        // seed-TCE regen is the deferred gated step (recon §6).
+        const recoSpeed = vessel ? (parseLeadingNumber(vessel.speedLaden) || 0) : 0;
+        const reco = resolveRecommendedBunkerPort(db, loadPort, dischargePort, 'VLSFO', {
+          dwt: vesselDwt ?? 0,
+          speedKn: recoSpeed,
+          consMtPerDay: vessel ? parseConsumption(vessel.consumption, 0) : 0,
+          voyageDays: estimateVoyageDays(voyage?.nm ?? null, recoSpeed),
+        });
+        args.push(reco.port);
+      }
       insert.run(...args);
       n++;
     }

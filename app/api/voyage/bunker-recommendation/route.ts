@@ -12,53 +12,22 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPortDistance } from '@/lib/sailing/port-distances';
 import { getStore } from '@/lib/session-store';
-import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
-import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { formatNumber } from '@/lib/utils';
-import { computeBunkerComparison } from '@/lib/economics/bunker-comparison';
-import { isCandidateInVoyageBasins } from '@/lib/sailing/voyage-basin';
-import { estimateBunkerLift } from '@/lib/economics/bunker-lift';
 import { consFromDwt, resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
-import type { BunkerPrice } from '@/lib/economics/bunker';
+import { estimateBunkerLift } from '@/lib/economics/bunker-lift';
+import {
+  resolveOnRouteBunkerCandidates,
+  BUNKER_CANDIDATES,
+  DEFAULT_LIFT_TONNES,
+} from '@/lib/economics/bunker-routing';
 import type { BunkerCandidateResult } from '@/lib/economics/bunker-comparison';
 
 export { consFromDwt } from '@/lib/economics/vessel-consumption';
+/** Re-exported for backward-compat — canonical definition lives in bunker-routing.ts. */
+export { BUNKER_CANDIDATES } from '@/lib/economics/bunker-routing';
 
 export const dynamic = 'force-dynamic';
-
-/** 28 global bunker hubs — 23 deep-sea + 5 regional Med/Black Sea (Bug 4 coverage). */
-const BUNKER_CANDIDATES = [
-  // Asia/Pacific
-  'SGSIN', 'CNZOS', 'HKHKG', 'KRPUS', 'CNSHA', 'TWKHH', 'LKCMB',
-  // Middle East
-  'AEFJR', 'SAJED',
-  // Europe ARA + Med
-  'NLRTM', 'BEANR', 'GIGIB', 'ESALG', 'ESLPA', 'GRPIR', 'TRIST', 'MTMLA',
-  // Med + Black Sea regional hubs (Bug 4 — added 2026-06-02)
-  'ROCND', // Constanta — main Black Sea hub
-  'EGPSD', // Port Said — Suez gateway, Egypt
-  'ITAUG', // Augusta — central Med
-  'ESCEU', // Ceuta — alt Gibraltar Strait
-  'CYLMS', // Limassol — Cyprus / East Med
-  // Americas
-  'USHOU', 'USNYC', 'PABLB', 'BRSSZ', 'USLAX',
-  // Africa
-  'ZADUR',
-] as const;
-
-/** Port is on-route if detour is within 15% of direct distance or under 200 NM. */
-const DETOUR_RATIO = 0.15;
-const DETOUR_ABS_CAP_NM = 200;
-
-/** A1: log a warning if any on-route candidate's price is older than this many days. */
-const BUNKER_STALE_DAYS = 7;
-
-/** Vessel defaults for per-port effective $/MT math (Supramax representative). */
-const DEFAULT_SPEED_KN = 12.5;
-const DEFAULT_LIFT_TONNES = 500;
-const DEFAULT_VESSEL_DAY_RATE_USD = 15000;
 
 /** Stored cons >1.8× the DWT-class midpoint is implausible (e.g. Supramax figure on a coaster). */
 const IMPLAUSIBLE_CONS_FACTOR = 1.8;
@@ -119,8 +88,6 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
   const consParam = parseFiniteNumber(url.searchParams.get('consMtPerDay'));
   const voyageDaysParam = parseFiniteNumber(url.searchParams.get('voyageDays'));
 
-  const speedKn = speedParam && speedParam > 0 ? speedParam : DEFAULT_SPEED_KN;
-
   const rawCons = consParam ?? 0;
   const consMtPerDay = resolveConsMtPerDay(rawCons, dwtParam ?? 0);
   if (rawCons > 0 && consMtPerDay !== rawCons) {
@@ -154,57 +121,18 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
     );
   }
 
-  const directResult = getPortDistance(from, to);
-  const directNm = directResult?.nm ?? null;
-
   const db = getStore().getDb();
 
-  // A1: compute stale threshold date string once
-  const staleThreshold = new Date();
-  staleThreshold.setDate(staleThreshold.getDate() - BUNKER_STALE_DAYS);
-  const staleThresholdStr = staleThreshold.toISOString().slice(0, 10);
+  // Single source of truth — the same selection algorithm the stored write-paths
+  // call via resolveRecommendedBunkerPort, so route winner == stored bunker_port.
+  const result = resolveOnRouteBunkerCandidates(db, from, to, grade, {
+    dwt: dwtParam ?? 0,
+    speedKn: speedParam,
+    consMtPerDay: rawCons,
+    voyageDays: voyageDaysParam ?? 0,
+  });
 
-  const onRouteWithPrices: Array<{ port: string; price: BunkerPrice; deviationNm: number }> = [];
-
-  for (const candidate of BUNKER_CANDIDATES) {
-    // Bug 1 fix: basin filter — Pacific/EastAsia/SouthAtlantic hubs never on-route
-    // for a Med/Black Sea/NW Europe voyage. Stops haversine-fallback false positives
-    // at the root rather than tweaking detour thresholds.
-    if (!isCandidateInVoyageBasins(candidate, from, to)) continue;
-
-    const priceRow = getLatestBunkerPrice(db, candidate, grade);
-    if (!priceRow) continue;
-
-    // A1: freshness watchdog — log stale price, no DB write
-    if (priceRow.price_date < staleThresholdStr) {
-      console.warn(`[bunker-rec] bunker_price_stale: ${candidate} last=${priceRow.price_date}`);
-    }
-
-    let deviationNm = 0;
-    if (directNm != null) {
-      const leg1 = getPortDistance(from, candidate);
-      const leg2 = getPortDistance(candidate, to);
-      if (leg1 && leg2) {
-        const rawDetour = leg1.nm + leg2.nm - directNm;
-        const threshold = Math.max(DETOUR_RATIO * directNm, DETOUR_ABS_CAP_NM);
-        if (rawDetour > threshold) continue;
-        deviationNm = rawDetour;
-      }
-      // If either leg distance is unknown, include the candidate (fail-open), deviationNm stays 0
-    }
-
-    onRouteWithPrices.push({
-      port: candidate,
-      deviationNm,
-      price: {
-        port: candidate,
-        vlsfo: priceRow.price_usd_per_mt,
-        fetched_at: priceRow.fetched_at,
-      },
-    });
-  }
-
-  if (onRouteWithPrices.length === 0) {
+  if (result.fallback || result.candidates.length === 0) {
     return NextResponse.json({
       fallback: true,
       message: 'No bunker port on this route — enter price manually or select nearest port',
@@ -212,67 +140,39 @@ export async function GET(req: NextRequest): Promise<NextResponse<BunkerRecommen
       priceUsdPerMt: null,
       recommendation: null,
       savingsUsd: 0,
-      liftTonnes,
-      capacityMt: liftEstimate.capacityMt,
-      liftCapped: liftEstimate.capped,
+      liftTonnes: result.liftTonnes,
+      capacityMt: result.capacityMt,
+      liftCapped: result.liftCapped,
       candidates: [],
     });
   }
 
-  const bunkerPrices = new Map<string, BunkerPrice>(
-    onRouteWithPrices.map(({ port, price }) => [port, price]),
-  );
-
-  let euaPriceEur: number | undefined;
-  try {
-    const euaRow = getLatestEuaPrice(db);
-    euaPriceEur = euaRow?.price_eur_per_tco2 ?? undefined;
-  } catch {
-    // eua_prices table unavailable in this environment — carbon omitted from eff
-  }
-
-  // Candidates sorted by effectiveUsdPerMt ASC (all-in: price + detour + carbon).
-  const candidates = computeBunkerComparison({
-    candidates: onRouteWithPrices.map(({ port, price, deviationNm }) => ({
-      port,
-      grade,
-      priceUsdPerMt: price.vlsfo,
-      deviationNm,
-    })),
-    vesselSpeedKn: speedKn,
-    dailyConsMtPerDay: consMtPerDay,
-    liftTonnes,
-    vesselDayRateUsd: DEFAULT_VESSEL_DAY_RATE_USD,
-    euaPriceEur,
-  });
-
-  // Winner = min effective $/MT — must match table's #1 row, not min raw price.
+  const candidates = result.candidates;
+  // Winner = min effective $/MT — candidates[0] (sorted ASC). priceUsdPerMt on the
+  // result IS the raw price (== the old bunkerPrices.get(port).vlsfo).
   const effWinner = candidates[0];
   const effLoser = candidates[candidates.length - 1];
-  const recommendedPort = effWinner?.port ?? onRouteWithPrices[0].port;
-  const recommendedPrice = bunkerPrices.get(recommendedPort);
 
   const savingsUsd =
-    effWinner && effLoser && effWinner !== effLoser
-      ? Math.max(0, Math.round((effLoser.effectiveUsdPerMt - effWinner.effectiveUsdPerMt) * liftTonnes))
+    effWinner !== effLoser
+      ? Math.max(0, Math.round((effLoser.effectiveUsdPerMt - effWinner.effectiveUsdPerMt) * result.liftTonnes))
       : 0;
 
-  const recommendation = effWinner
-    ? savingsUsd > 0
-      ? `Bunker at ${effWinner.port} (${effWinner.effectiveUsdPerMt} USD/MT eff.) — saves ~$${formatNumber(savingsUsd)} vs ${effLoser!.port}`
-      : `Bunker at ${effWinner.port} (${effWinner.effectiveUsdPerMt} USD/MT eff.)`
-    : null;
+  const recommendation =
+    savingsUsd > 0
+      ? `Bunker at ${effWinner.port} (${effWinner.effectiveUsdPerMt} USD/MT eff.) — saves ~$${formatNumber(savingsUsd)} vs ${effLoser.port}`
+      : `Bunker at ${effWinner.port} (${effWinner.effectiveUsdPerMt} USD/MT eff.)`;
 
   return NextResponse.json({
     fallback: false,
     message: null,
-    port: recommendedPort,
-    priceUsdPerMt: recommendedPrice?.vlsfo ?? null,
+    port: effWinner.port,
+    priceUsdPerMt: effWinner.priceUsdPerMt,
     recommendation,
     savingsUsd,
-    liftTonnes,
-    capacityMt: liftEstimate.capacityMt,
-    liftCapped: liftEstimate.capped,
+    liftTonnes: result.liftTonnes,
+    capacityMt: result.capacityMt,
+    liftCapped: result.liftCapped,
     candidates,
   });
 }

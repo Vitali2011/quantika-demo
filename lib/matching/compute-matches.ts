@@ -12,6 +12,8 @@ import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economi
 import { parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
 import { resolveCargoWeight } from '@/lib/sailing/cargo-weight';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { resolveRecommendedBunkerPort } from '@/lib/economics/bunker-routing';
+import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { deriveBucketReason } from '@/lib/matching/bucket-reason';
 import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 
@@ -93,10 +95,23 @@ export async function computeAndPersistMatches(
     const distanceResult = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
     const vesselDwt = vessel ? (cfValue(vessel.dwtSummer) ?? 0) : 0;
 
+    // Route-aware bunker port (#1002): pick the cheapest on-route hub for this
+    // voyage (NLRTM fallback for non-Med routes). The SAME inputs the detail-page
+    // EconomicsTab passes, so stored bunker_port == the recommended port the user
+    // sees, and the detail TCE (seeded from bunker_port) matches the list TCE.
+    const recoSpeed = vessel ? (parseLeadingNumber(vessel.speedLaden) || 0) : 0;
+    const reco = resolveRecommendedBunkerPort(db, loadPort, dischargePort, 'VLSFO', {
+      dwt: vesselDwt,
+      speedKn: recoSpeed,
+      consMtPerDay: vessel ? parseConsumption(vessel.consumption, 0) : 0,
+      voyageDays: estimateVoyageDays(distanceResult?.nm ?? null, recoSpeed),
+    });
+
     // Economics via shared helper — includes port-DA, canal, and war-risk convention
-    // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page.
+    // (excludeWarRiskFromDailyTce:true) so stored TCE matches the detail page. Uses
+    // the route-aware bunker price (reco.priceUsdPerMt) — the column persists reco.port.
     const eco = cargo && vessel
-      ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt })
+      ? computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt: reco.priceUsdPerMt })
       : { tce_usd_per_day: null, freight_rate_usd_per_mt: null, freight_rate_source: null, consumption_estimated: false, ballast_distance_nm: null };
     const tce_usd_per_day = eco.tce_usd_per_day;
     const freight_rate_usd_per_mt = eco.freight_rate_usd_per_mt;
@@ -153,6 +168,7 @@ export async function computeAndPersistMatches(
       vessel_speed_kts: vessel ? (parseLeadingNumber(vessel.speedLaden) || null) : null,
       vessel_consumption_mt_per_day: vessel ? (parseConsumption(vessel.consumption, 0) || null) : null,
       cargo_quantity_mt: cargo ? (resolveCargoWeight(cargo) ?? null) : null,
+      bunker_port: reco.port,
       fit_percent: m.fitPercent ?? null,
       fit_breakdown: m.fitBreakdown ? JSON.stringify(m.fitBreakdown) : null,
       cargo_item_index: m.cargoItemIndex,
