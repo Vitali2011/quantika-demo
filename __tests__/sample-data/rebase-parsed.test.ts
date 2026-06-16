@@ -51,6 +51,45 @@ describe('rebaseParsedCargoes — laycan', () => {
     rebaseParsedCargoes(input, now);
     expect(input[0].laycan).toBe(before);
   });
+
+  it('drops preferredDates.sourceText when the laycan is shifted (no false [¹]) but keeps value', () => {
+    const withSource = {
+      emailId: 'p1',
+      laycan: '11-16 May',
+      cargoType: 'BULK',
+      preferredDates: { value: '11-16 May 2026', confidence: 'confirmed', sourceText: '11 - 16 May' },
+    } as unknown as ParsedCargo;
+
+    const out = rebaseParsedCargoes([withSource], now);
+
+    expect(out[0].laycan).not.toBe('11-16 May');          // laycan was shifted
+    expect(out[0].preferredDates?.sourceText).toBeUndefined(); // citation dropped
+    expect(out[0].preferredDates?.value).toBe('11-16 May 2026'); // display value kept
+  });
+
+  it('drops preferredDates.sourceText for spot cargoes synthesized to a fresh window', () => {
+    // A spot cargo is only synthesized to a fresh window when the set has at least one
+    // parseable laycan (production always passes the full corpus). Pair it with one so
+    // the synthesis path — and the citation drop — actually fires.
+    const anchor = {
+      emailId: 'a1',
+      laycan: '11-16 May',
+      cargoType: 'BULK',
+      preferredDates: { value: '11-16 May 2026', confidence: 'confirmed', sourceText: '11 - 16 May' },
+    } as unknown as ParsedCargo;
+    const spotWithSource = {
+      emailId: 's1',
+      laycan: 'Spot',
+      cargoType: 'BULK',
+      preferredDates: { value: 'prompt', confidence: 'uncertain', sourceText: 'Spot' },
+    } as unknown as ParsedCargo;
+
+    const out = rebaseParsedCargoes([anchor, spotWithSource], now);
+    const spot = out.find((c) => c.emailId === 's1')!;
+
+    expect(spot.laycan).not.toBe('Spot');                  // synthesized to a fresh window
+    expect(spot.preferredDates?.sourceText).toBeUndefined(); // citation dropped
+  });
 });
 
 describe('rebaseParsedVessels — openDate', () => {
