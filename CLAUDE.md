@@ -1,5 +1,17 @@
 # Claude Code — quantika-demo
 
+## Общий язык домена (читай ПЕРЕД задачей)
+
+- Перед задачей читай [`CONTEXT.md`](CONTEXT.md) — канонический глоссарий домена
+  фрахта (TCE, voyage P&L, RAG scope, bunker/discharge port, demotion reason,
+  match bucket, demo-mode и т.д.).
+- Имена переменных, тестов и функций = **каноничные термины оттуда**
+  (`tce`, не `timeCharterEq`; `discharge_port`, не `destinationPort`).
+  Новый доменный термин → допиши в `CONTEXT.md` в том же PR.
+- Новое архитектурное решение (новый провайдер, БД, движок, что трудно
+  откатить) → заведи ADR в [`docs/adr/`](docs/adr/) по шаблону из
+  [`docs/adr/README.md`](docs/adr/README.md).
+
 ## VPS Deploy Notes
 
 - Прод (outreach-vps 185.249.225.169) — **systemd unit `quantika-demo`**
