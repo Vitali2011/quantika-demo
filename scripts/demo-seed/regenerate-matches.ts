@@ -53,16 +53,19 @@ import { breakevenTceByDwt } from '@/lib/economics/breakeven-thresholds';
 
 // ── CII hydration helper ──────────────────────────────────────────────────────
 
-/** Hydrate vessel.ciiRating from the static cii.json dataset by IMO (offline,
- *  no LLM). 'unknown'/no-IMO → leave null (neutral). Never overwrites an
- *  existing rating. Mutates the vessels in place. */
+/** Hydrate vessel.ciiRating + vessel.ciiSource from the static cii.json dataset by
+ *  IMO (offline, no LLM). 'unknown'/no-IMO → leave null (neutral). Never overwrites
+ *  an existing rating. ciiSource carries provenance ('imo-public' real vs 'estimated'
+ *  age/type) so the UI can disclose estimates. Mutates the vessels in place. */
 export async function hydrateCiiRatings(vessels: ParsedVessel[]): Promise<void> {
   for (const vessel of vessels) {
     if (vessel.ciiRating != null) continue;
     const imo = vessel.imo;
     if (!imo) continue;
-    const { rating } = await lookupCii(imo, { callLlm: async () => 'unknown' });
-    vessel.ciiRating = rating === 'unknown' ? null : rating;
+    const { rating, source } = await lookupCii(imo, { callLlm: async () => 'unknown' });
+    if (rating === 'unknown') continue;
+    vessel.ciiRating = rating;
+    vessel.ciiSource = source;
   }
 }
 

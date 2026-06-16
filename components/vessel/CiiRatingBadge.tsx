@@ -1,9 +1,9 @@
-import type { CiiRating } from '@/lib/imo/cii-lookup';
+import type { CiiRating, CiiSource } from '@/lib/imo/cii-lookup';
 
 interface CiiRatingBadgeProps {
   rating: CiiRating;
   year: number;
-  source: 'imo-public' | 'llm-fallback';
+  source: CiiSource;
   size?: 'small' | 'medium';
 }
 
@@ -24,11 +24,17 @@ const SIZE_CLASSES = {
 export function CiiRatingBadge({ rating, year, source, size = 'small' }: CiiRatingBadgeProps) {
   const colorClass = RATING_COLORS[rating];
   const sizeClass = SIZE_CLASSES[size];
-  const isEstimated = source === 'llm-fallback';
+  // Both 'estimated' (age/type rule) and 'llm-fallback' (AI) are estimates → asterisk + disclosure.
+  const isEstimated = source === 'estimated' || source === 'llm-fallback';
   const label = rating === 'unknown' ? 'CII ?' : isEstimated ? `CII ${rating}*` : `CII ${rating}`;
-  const tooltip = isEstimated
-    ? `CII rating ${rating}* (${year}, Estimated by AI)`
-    : `CII rating ${rating} (${year}, source: ${source})`;
+  let tooltip: string;
+  if (source === 'estimated') {
+    tooltip = `CII rating ${rating}* (${year}, оценка по возрасту/типу — не официальный рейтинг IMO)`;
+  } else if (source === 'llm-fallback') {
+    tooltip = `CII rating ${rating}* (${year}, Estimated by AI)`;
+  } else {
+    tooltip = `CII rating ${rating} (${year}, source: ${source})`;
+  }
 
   return (
     <span
