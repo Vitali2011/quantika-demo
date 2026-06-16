@@ -430,6 +430,17 @@ max_vessel_age_yrs (NUMBER | null):
 - "age max NN" → max_vessel_age_yrs = NN
 - If not stated → null
 
+min_vessel_dwt_mt / max_vessel_dwt_mt (NUMBER | null):
+- When the inquiry requests a vessel SIZE BAND in DWT (a "tonnage order" proxy for
+  cargo size), extract the band as numbers: min = lower bound, max = upper bound.
+  "any 12,000 - 14,000 dwt vsl" → min_vessel_dwt_mt = 12000, max_vessel_dwt_mt = 14000
+  "abt 30k dwt"                 → min_vessel_dwt_mt = 30000, max_vessel_dwt_mt = 30000
+  "max 25,000 dwt"              → min_vessel_dwt_mt = null,  max_vessel_dwt_mt = 25000
+- These describe the REQUIRED VESSEL, NOT the cargo weight. Do NOT populate
+  weight_mt/weight_mt_min/weight_mt_max from a DWT requirement. ALSO keep the raw
+  phrase in special_requirements (additive). Apply EUROPEAN-DOTS + K-SUFFIX rules
+  to these numbers too.
+
 gear_required (BOOLEAN | null):
 - "Vsl shd be geared", "NEED GEARED VSLS", "geared vessel required", "GRD/Grab fitted vsl req.", "gear req", "grd vsl needed" → true
 - "Gearless w.able", "gearless acceptable", "gless a/e", "gearless ok" → do NOT set to true (gear is NOT required; charterer accepts gearless)
@@ -480,6 +491,15 @@ Extract per inquiry item:
   RANGE RULE: If cargo weight is given as an explicit range (e.g. "4000/4800 MT", "5000-5500 MT", "40-50k mt"), set weight_mt=null (no single definitive quantity — information is a range, not a single value). Populate weight_mt_min (lower bound) and weight_mt_max (upper bound) only.
   ✗ weight_mt=4400 from "4000-4800 mts salt" → WRONG (midpoint is fabricated — shippers did not say 4400)
   ✓ weight_mt=null, weight_mt_min=4000, weight_mt_max=4800 from "4000-4800 mts salt"
+  EUROPEAN-DOTS RULE: When a number uses dots as thousands separators (groups of
+  EXACTLY 3 digits after each dot, e.g. "5.000", "10.000", "5.500"), interpret the
+  dot as a thousands separator, NOT a decimal point. Apply BEFORE the RANGE RULE.
+    "5.000mts"          → weight_mt = 5000 (single value)
+    "5.000/5.500mts"    → weight_mt = null, weight_mt_min = 5000, weight_mt_max = 5500
+    "10.000/12.000 mt"  → weight_mt = null, weight_mt_min = 10000, weight_mt_max = 12000
+  Disambiguation: "5.5" (ONE digit after the dot) = decimal 5.5, NOT thousands.
+  "5.000" (THREE digits after the dot) = thousands = 5000. Never output a 5 MT
+  cement/grain parcel from "5.000" — that is the dot-thousands trap.
   MOLOO RULE: MOLOO (More or Less Owner's Option) is a CONTRACT TOLERANCE clause — NOT a weight range. "28,000 mts (10% MOLOO)" means the nominal quantity is 28,000 mts and the owner may load ±10% at their option. Set weight_mt = 28000 (the nominal stated value). Set weight_mt_min = 25200 and weight_mt_max = 30800 to record the tolerance bounds. Do NOT set weight_mt to the MOLOO maximum (30800). "Abt 28,000 mts (10% MOLOO)" → weight_mt=28000 with confidence='interpreted' (due to "abt"), weight_mt_min=25200, weight_mt_max=30800.
   MOLCHOPT RULE: Same as MOLOO but charterer controls the tolerance. "2,720mts 2PCT MOLCHOPT" → weight_mt=2720, weight_mt_min=2666 (2720×0.98), weight_mt_max=2774 (2720×1.02).
   SINGLE VALUE: If a single definite number is given with no hedge, weight_mt = weight_mt_min = weight_mt_max = that number, confidence='confirmed'.
@@ -494,6 +514,15 @@ Extract per inquiry item:
   CRITICAL — NEVER compute volume_cbm from bag or cargo package dimensions (e.g., "110×110×65 cm big bags", "ABT 1.5 MT BIG BAGS MAX 5 TIERS ABT 110X110X65 CM", "135x125x115 cm"). Bag/package dimensions are packing specifications for stowage planning — NOT cargo volumetric data. Set volume_cbm = null unless the email explicitly states a total volumetric figure (e.g., "approx 2000 cbm", "cargo volume 1500 cbm").
   ✗ volume_cbm computed from 110×110×65 cm × quantity_of_bags → WRONG (no explicit total volume stated)
   ✓ volume_cbm = null when only bag dimensions are given without an explicit total volume figure
+  NET/GROSS CBM RULE: When the email states BOTH a net CBM and a gross CBM figure
+  (e.g. "12,000 net CBM / 13,500 gross CBM", "net 12000 cbm, gross 13500 cbm"),
+  this IS an explicit total volumetric figure — set volume_cbm = the NET CBM value.
+  Net CBM = cargo volume; gross CBM includes dunnage/broken stowage. If only gross
+  CBM is given, set volume_cbm = the gross value and note the assumption in missing_info.
+    ✓ "about 12,000 net CBM / 13,500 gross CBM" → volume_cbm = 12000
+    ✗ volume_cbm = null for a stated net/gross pair (do NOT treat "/" as "no total")
+- min_vessel_dwt_mt: number | null (required vessel DWT lower bound; see VESSEL RESTRICTION FIELDS)
+- max_vessel_dwt_mt: number | null (required vessel DWT upper bound; see VESSEL RESTRICTION FIELDS)
 - dimensions: e.g. "12m x 3m x 2.5m"
 - cargo_type: one of FCL / LCL / BREAK_BULK / BULK / PROJECT / AIR / RORO / OTHER
 - container_type: e.g. 20GP, 40HC, 40RF (null if not containerized)
