@@ -368,6 +368,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   payoutCondition={cargo?.payoutCondition ?? null}
                   storedBreakevenTce={storedMatch.breakeven_tce_usd_per_day}
                   fitBreakdown={storedMatch.fit_breakdown ?? null}
+                  initialBunkerPort={storedMatch.bunker_port ?? null}
                 />
 
                 {cargo && cargoEmail && (

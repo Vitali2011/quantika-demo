@@ -14,7 +14,8 @@ import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economi
 import type { ParsedCargo, ParsedVessel, FitBreakdown } from '@/lib/types';
 import type { StoredMatch } from '@/lib/matching/matches-repository';
 import { patchEconomicsComponent } from '@/lib/matching/persist-session-matches';
-import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+import { resolveRecommendedBunkerPort } from '@/lib/economics/bunker-routing';
+import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { attachPortLimits } from '@/lib/matching/attach-port-limits';
 
 export const dynamic = 'force-dynamic';
@@ -196,15 +197,24 @@ export async function PATCH(
       );
     }
 
-    // Live bunker price (NLRTM/VLSFO) so PATCH recomputed TCE matches the list,
-    // which uses the same price via persist-session-matches. Resilient to a missing
-    // bunker_prices table — falls through to the helper's DEFAULT_BUNKER_USD_PER_MT.
-    let bunkerPriceUsdPerMt: number | undefined;
-    try {
-      bunkerPriceUsdPerMt = getLatestBunkerPrice(db, 'NLRTM', 'VLSFO')?.price_usd_per_mt;
-    } catch {
-      bunkerPriceUsdPerMt = undefined;
-    }
+    // Route-aware bunker price (#1002) so PATCH recomputed TCE matches the list,
+    // which resolves the same on-route port via persist-session-matches. Selection
+    // is deterministic by route → same port the stored row used at creation. The
+    // same vessel inputs the detail EconomicsTab passes keep all three in agreement.
+    // Resilient to a missing bunker_prices table — falls through to NLRTM/default.
+    const reco = resolveRecommendedBunkerPort(
+      db,
+      existing.load_port,
+      existing.discharge_port,
+      'VLSFO',
+      {
+        dwt: existing.vessel_dwt ?? 0,
+        speedKn: existing.vessel_speed_kts ?? 0,
+        consMtPerDay: existing.vessel_consumption_mt_per_day ?? 0,
+        voyageDays: estimateVoyageDays(existing.distance_nm ?? null, existing.vessel_speed_kts ?? 0),
+      },
+    );
+    const bunkerPriceUsdPerMt = reco.priceUsdPerMt;
 
     // Reset-to-auto path: clear a sticky manual override and recompute via the
     // canonical economics path (port distance, DA, canal, ETS, excludeWarRisk).

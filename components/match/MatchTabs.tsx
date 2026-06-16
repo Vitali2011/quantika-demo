@@ -46,9 +46,11 @@ interface MatchTabsProps {
   storedBreakevenTce?: number | null;
   /** Serialised fit_breakdown JSON for the vetting accordion. */
   fitBreakdown?: string | null;
+  /** Route-aware bunker port (matches.bunker_port, migration 053, #1002). */
+  initialBunkerPort?: string | null;
 }
 
-export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, cargoEmailBody, vesselEmailBody, payoutCondition, storedBreakevenTce, fitBreakdown }: MatchTabsProps) {
+export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, storedFreightRate, freightRateSource, storedDistanceNm, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, cargoEmailBody, vesselEmailBody, payoutCondition, storedBreakevenTce, fitBreakdown, initialBunkerPort }: MatchTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('vessels');
   const uid = useId();
 
@@ -108,6 +110,7 @@ export function MatchTabs({ match, vessel, cargo, cargoEmailId, matchDbId, store
             consumptionEstimated={consumptionEstimated}
             balticRateAsOf={balticRateAsOf}
             storedBreakevenTce={storedBreakevenTce}
+            initialBunkerPort={initialBunkerPort}
           />
         )}
         {activeTab === 'passport' && (
