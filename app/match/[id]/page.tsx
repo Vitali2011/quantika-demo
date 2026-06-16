@@ -16,7 +16,9 @@ import { SourceAttributionSection } from '@/components/match/SourceAttributionSe
 import { ExplainDealModal } from '@/components/match/ExplainDealModal';
 import { MatchDetailPanel, MatchDetailMobileSheet } from '@/components/match/MatchDetailPanel';
 import { MatchWorksheet } from '@/components/match/MatchWorksheet';
-import type { MatchWorksheet as MatchWorksheetType } from '@/lib/types';
+import { DueDiligencePanel } from '@/components/match/DueDiligencePanel';
+import { buildDueDiligence } from '@/lib/matching/due-diligence';
+import type { MatchWorksheet as MatchWorksheetType, FitBreakdown } from '@/lib/types';
 import { cfValue } from '@/lib/types';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import { demotionReason } from '@/lib/sailing/match-scoring';
@@ -185,6 +187,30 @@ export default async function MatchDetailPage({ params }: Props) {
   }
   const vesselWithCii = vessel && ciiSource ? { ...vessel, ciiSource } : vessel;
 
+  // Due Diligence panel model — built server-side from STORED match data only
+  // (zero recompute → list==detail==panel parity, #856). Malformed fit_breakdown
+  // JSON degrades to null; fb-dependent rows render inactive, never crash.
+  let fitBreakdownParsed: FitBreakdown | null = null;
+  if (storedMatch.fit_breakdown) {
+    try {
+      fitBreakdownParsed = JSON.parse(storedMatch.fit_breakdown) as FitBreakdown;
+    } catch {
+      // malformed — degrade gracefully (panel shows fb-dependent rows inactive)
+    }
+  }
+  const ddModel = buildDueDiligence({
+    fitBreakdown: fitBreakdownParsed,
+    fitPercent: storedMatch.fit_percent ?? null,
+    worksheet,
+    sanctions: worksheet?.sanctions ?? null,
+    tceUsdPerDay: storedMatch.tce_usd_per_day ?? null,
+    breakevenTce: storedMatch.breakeven_tce_usd_per_day ?? null,
+    freightRateSource: storedMatch.freight_rate_source ?? null,
+    consumptionEstimated: storedMatch.consumption_estimated === 1,
+    vessel: vesselWithCii ?? vessel ?? null,
+    cargoDescription: cargo?.cargoDescription?.value ?? null,
+  });
+
   return (
     <main className="min-h-screen bg-ds-bg">
       <AnalyticsTracker event="detail_viewed" properties={{ type: 'match' }} />
@@ -342,13 +368,14 @@ export default async function MatchDetailPage({ params }: Props) {
                   payoutCondition={cargo?.payoutCondition ?? null}
                   storedBreakevenTce={storedMatch.breakeven_tce_usd_per_day}
                   fitBreakdown={storedMatch.fit_breakdown ?? null}
+                  initialBunkerPort={storedMatch.bunker_port ?? null}
                 />
 
                 {cargo && cargoEmail && (
                   <SourceAttributionSection
                     fields={[
                       ...(cargo.cargoDescription ? [{ label: 'Cargo', value: cargo.cargoDescription }] : []),
-                      ...(cargo.weightMt != null ? [{ label: 'Weight', value: { ...cargo.weightMt, value: `${cargo.weightMt.value} mt` } }] : []),
+                      ...(cargo.weightMt != null && cargo.weightMt.value != null ? [{ label: 'Weight', value: { ...cargo.weightMt, value: `${cargo.weightMt.value} mt` } }] : []),
                       ...(cargo.originPort ? [{ label: 'Load Port', value: cargo.originPort }] : []),
                       ...(cargo.destinationPort ? [{ label: 'Discharge Port', value: cargo.destinationPort }] : []),
                       ...(laycanDisplay
@@ -360,6 +387,10 @@ export default async function MatchDetailPage({ params }: Props) {
                     originalEmail={cargoEmail.body}
                   />
                 )}
+
+                {/* Due Diligence panel — full-width, under Source Attribution.
+                    NOT gated on cargoEmail: works whenever the match has stored data. */}
+                <DueDiligencePanel model={ddModel} />
               </>
             )}
 

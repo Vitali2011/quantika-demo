@@ -26,7 +26,7 @@ export function SourceAttributionSection({
   const [active, setActive] = useState<AttributableField | null>(null);
   const [expanded, setExpanded] = useState(false);
 
-  const attributableFields = fields.filter(f => f.value.sourceText);
+  const attributableFields = fields.filter(f => f.value.sourceText && f.value.value != null);
 
   if (attributableFields.length === 0) return null;
 

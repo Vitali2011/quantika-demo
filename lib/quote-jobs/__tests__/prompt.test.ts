@@ -93,3 +93,36 @@ it('matchId given but unknown match → no economics block (fallback to cargo pa
   const { user } = await buildQuotePrompt({ parsedCargo: cargo as any, email: email as any, ragEnabled: false, matchId: '999999', db });
   expect(user).not.toContain('MATCH ECONOMICS');
 });
+
+// ── #1018: date anchor in the system prompt (demo/live gated via lib/clock.today) ──
+
+import { today } from '@/lib/clock';
+
+it('anchors the system prompt to nowIso so future laycans are not called elapsed (#1018)', async () => {
+  const { system, user } = await buildQuotePrompt({ parsedCargo: cargo as any, email: email as any, ragEnabled: false, nowIso: '2026-05-28' });
+  expect(system).toContain('2026-05-28');
+  expect(system).toMatch(/do not describe.*elapsed/i);
+  // user prompt (frozen-template snapshot) stays untouched — date lives in system only
+  expect(user).not.toContain('2026-05-28');
+});
+
+it('omits the date anchor when nowIso is not provided (back-compat)', async () => {
+  const { system } = await buildQuotePrompt({ parsedCargo: cargo as any, email: email as any, ragEnabled: false });
+  expect(system).not.toMatch(/CURRENT DATE/);
+});
+
+it('live mode (DEMO_MODE unset): quote prompt carries the REAL date, not frozen 2026-05-28', async () => {
+  const saved = process.env.DEMO_MODE;
+  delete process.env.DEMO_MODE;
+  try {
+    const realIso = today(); // lib/clock — frozen only under DEMO_MODE; real wall-clock otherwise
+    const expected = new Date().toISOString().slice(0, 10);
+    expect(realIso).toBe(expected);
+    expect(realIso).not.toBe('2026-05-28');
+    const { system } = await buildQuotePrompt({ parsedCargo: cargo as any, email: email as any, ragEnabled: false, nowIso: realIso });
+    expect(system).toContain(expected);
+    expect(system).not.toContain('2026-05-28');
+  } finally {
+    if (saved === undefined) delete process.env.DEMO_MODE; else process.env.DEMO_MODE = saved;
+  }
+});
