@@ -375,7 +375,7 @@ export default async function MatchDetailPage({ params }: Props) {
                   <SourceAttributionSection
                     fields={[
                       ...(cargo.cargoDescription ? [{ label: 'Cargo', value: cargo.cargoDescription }] : []),
-                      ...(cargo.weightMt != null ? [{ label: 'Weight', value: { ...cargo.weightMt, value: `${cargo.weightMt.value} mt` } }] : []),
+                      ...(cargo.weightMt != null && cargo.weightMt.value != null ? [{ label: 'Weight', value: { ...cargo.weightMt, value: `${cargo.weightMt.value} mt` } }] : []),
                       ...(cargo.originPort ? [{ label: 'Load Port', value: cargo.originPort }] : []),
                       ...(cargo.destinationPort ? [{ label: 'Discharge Port', value: cargo.destinationPort }] : []),
                       ...(laycanDisplay
