@@ -35,6 +35,29 @@ describe('lookupCii — static dataset (imo-public)', () => {
   });
 });
 
+describe('lookupCii — estimated dataset entries', () => {
+  // IMO 8605480 is an estimated demo entry (built 1986 → E, source:"estimated")
+  const ESTIMATED_IMO = '8605480';
+
+  it('returns source "estimated" for an age/type-estimated record', async () => {
+    const cacheDir = makeTempDir();
+    const result = await lookupCii(ESTIMATED_IMO, {
+      cacheDir,
+      callLlm: async () => { throw new Error('should not call LLM'); },
+    });
+    expect(result.rating).toBe('E');
+    expect(result.source).toBe('estimated');
+  });
+
+  it('preserves "estimated" source through the cache on revisit', async () => {
+    const cacheDir = makeTempDir();
+    await lookupCii(ESTIMATED_IMO, { cacheDir, callLlm: async () => 'A' });
+    const second = await lookupCii(ESTIMATED_IMO, { cacheDir, callLlm: async () => 'A' });
+    expect(second.source).toBe('estimated'); // disclosure survives revisit
+    expect(second.rating).toBe('E');
+  });
+});
+
 describe('lookupCii — cache', () => {
   it('returns cached result on second call without hitting source', async () => {
     const cacheDir = makeTempDir();

@@ -175,11 +175,11 @@ export default async function MatchDetailPage({ params }: Props) {
     : null;
 
   // CII provenance for the disclosure asterisk: the badge only renders for a D/E
-  // restriction, and only an llm-fallback source should show "Estimated by AI".
+  // restriction; 'estimated' (age/type rule) and 'llm-fallback' (AI) both disclose.
   // Resolve source WITHOUT a live LLM call (stub returns 'unknown' — we use only .source,
-  // the badge rating comes from restrictions). Dataset hit → imo-public; miss → llm-fallback.
+  // the badge rating comes from restrictions). Dataset hit → imo-public/estimated; miss → llm-fallback.
   const hasCiiDorE = !!vessel?.restrictions?.some((r) => typeof r === 'string' && /\bCII\s+rating\s+[DE]\b/i.test(r));
-  let ciiSource: 'imo-public' | 'llm-fallback' | undefined;
+  let ciiSource: 'imo-public' | 'estimated' | 'llm-fallback' | undefined;
   if (vessel?.imo && hasCiiDorE) {
     ciiSource = (await lookupCii(vessel.imo, { callLlm: async () => 'unknown' })).source;
   }

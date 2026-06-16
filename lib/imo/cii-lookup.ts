@@ -4,11 +4,19 @@ import { getCiiCached, setCiiCached, DEFAULT_CACHE_DIR } from './cii-cache';
 
 export type CiiRating = 'A' | 'B' | 'C' | 'D' | 'E' | 'unknown';
 
+export type CiiSource = 'imo-public' | 'estimated' | 'llm-fallback';
+
 export interface CiiResult {
   imo: string;
   rating: CiiRating;
   year: number;
-  source: 'imo-public' | 'llm-fallback';
+  /**
+   * Provenance of the rating:
+   *  - 'imo-public'  → real rating from the public dataset (no disclaimer)
+   *  - 'estimated'   → derived from the conservative age/type rule (UI shows «оценка»)
+   *  - 'llm-fallback'→ AI-estimated when absent from the dataset
+   */
+  source: CiiSource;
   fetchedAt: string;
 }
 
@@ -30,16 +38,21 @@ function parseLlmRating(raw: string): CiiRating {
   return 'unknown';
 }
 
-function lookupInDataset(imo: string): CiiRating | null {
+/** A dataset record carries an optional `source` marker: 'estimated' for ratings
+ *  derived from the age/type rule, absent/'imo-public' for real ratings. */
+function lookupInDataset(imo: string): { rating: CiiRating; source: 'imo-public' | 'estimated' } | null {
   try {
     const datasetPath = path.join(process.cwd(), 'lib', 'sample-data', 'imo', 'cii.json');
     if (!fs.existsSync(datasetPath)) return null;
     const dataset = JSON.parse(fs.readFileSync(datasetPath, 'utf-8')) as {
       year: number;
-      records: { imo: string; rating: string }[];
+      records: { imo: string; rating: string; source?: string }[];
     };
     const record = dataset.records.find(r => r.imo === imo);
-    if (record && VALID_RATINGS.has(record.rating)) return record.rating as CiiRating;
+    if (record && VALID_RATINGS.has(record.rating)) {
+      const source = record.source === 'estimated' ? 'estimated' : 'imo-public';
+      return { rating: record.rating as CiiRating, source };
+    }
   } catch {
     // Dataset missing or malformed — fall through to LLM
   }
@@ -78,14 +91,14 @@ export async function lookupCii(imo: string, opts: LookupOpts = {}): Promise<Cii
   const cached = getCiiCached(imo, cacheDir);
   if (cached) return cached;
 
-  // Static dataset
-  const datasetRating = lookupInDataset(imo);
-  if (datasetRating !== null) {
+  // Static dataset (real or estimated — source preserved from the record marker)
+  const datasetHit = lookupInDataset(imo);
+  if (datasetHit !== null) {
     const result: CiiResult = {
       imo,
-      rating: datasetRating,
+      rating: datasetHit.rating,
       year: 2025,
-      source: 'imo-public',
+      source: datasetHit.source,
       fetchedAt: new Date().toISOString(),
     };
     setCiiCached(imo, result, cacheDir);
