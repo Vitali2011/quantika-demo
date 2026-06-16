@@ -11,9 +11,11 @@ interface BuildArgs {
   matchId?: string;
   /** Database instance needed to resolve match numbers (required when matchId is set). */
   db?: Database.Database;
+  /** Frozen "today" ISO date (YYYY-MM-DD). When set, anchors the quote's temporal reasoning (#1018). */
+  nowIso?: string;
 }
 
-export async function buildQuotePrompt({ parsedCargo, email, ragEnabled, matchId, db }: BuildArgs): Promise<{ system: string; user: string }> {
+export async function buildQuotePrompt({ parsedCargo, email, ragEnabled, matchId, db, nowIso }: BuildArgs): Promise<{ system: string; user: string }> {
   const fromName = resolveSenderName({ fromName: email?.fromName, from: email?.from });
 
   const ragContextParts: string[] = [];
@@ -42,9 +44,16 @@ export async function buildQuotePrompt({ parsedCargo, email, ragEnabled, matchId
     } catch (e) { console.warn('[quote-prompt] IGC RAG failed:', e); }
   }
 
-  const system = ragContextParts.length
+  const baseSystem = ragContextParts.length
     ? `${DRAFT_QUOTE_SYSTEM_PROMPT}\n\n${ragContextParts.join('\n')}`
     : DRAFT_QUOTE_SYSTEM_PROMPT;
+  // #1018: anchor temporal reasoning to a known "today" so the LLM stops calling fresh
+  // future laycans "elapsed". In demo this is the frozen date; in live it is real today
+  // (resolved by the caller via lib/clock.today). Injected into system only — the user
+  // prompt stays byte-stable for the frozen-template snapshot (PI3).
+  const system = nowIso
+    ? `${baseSystem}\n\nCURRENT DATE: ${nowIso}. Treat this as "today" for all temporal reasoning. Do NOT describe a laycan on or after ${nowIso} as elapsed, expired, or past — those dates are in the future.`
+    : baseSystem;
 
   let user = `
 Parsed cargo inquiry data:

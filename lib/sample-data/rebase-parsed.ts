@@ -105,17 +105,31 @@ export function rebaseParsedCargoes(
   const target = addDays(nowMs, opts.laycanAnchorOffsetDays ?? 0);
   const shift = Math.round((target - epoch) / DAY);
 
+  // When the laycan is shifted/synthesized, preferredDates.sourceText (a quote for the
+  // ORIGINAL email date) no longer attributes the displayed value — drop it so the match
+  // page does not render a false [¹] citation (#1024). Keep .value for display.
+  const dropLaycanSource = (c: ParsedCargo): ParsedCargo['preferredDates'] =>
+    c.preferredDates ? { ...c.preferredDates, sourceText: undefined } : c.preferredDates;
+
   return cargoes.map((c) => {
     if (isSpot(c.laycan)) {
-      return { ...c, laycan: `${isoDay(nowMs)} to ${isoDay(addDays(nowMs, window))}` };
+      return {
+        ...c,
+        laycan: `${isoDay(nowMs)} to ${isoDay(addDays(nowMs, window))}`,
+        preferredDates: dropLaycanSource(c),
+      };
     }
     const r = parseLaycan(c.laycan, CORPUS_REF_YEAR);
     if (r) {
       const start = addDays(r.start.getTime(), shift);
       const end = addDays(r.end.getTime(), shift);
-      return { ...c, laycan: `${isoDay(start)} to ${isoDay(end)}` };
+      return {
+        ...c,
+        laycan: `${isoDay(start)} to ${isoDay(end)}`,
+        preferredDates: dropLaycanSource(c),
+      };
     }
-    return { ...c };
+    return { ...c }; // laycan unparseable → NOT shifted → keep original sourceText
   });
 }
 

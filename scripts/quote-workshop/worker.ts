@@ -8,6 +8,7 @@ import { callClaudeCliRaw } from '@/lib/ai-provider';
 import { claimNextJob, completeJob, failJob, reapStaleJobs, heartbeatJob } from '@/lib/quote-jobs/store';
 import { buildQuotePrompt } from '@/lib/quote-jobs/prompt';
 import { isRagEnabled } from '@/lib/knowledge/flags';
+import { today } from '@/lib/clock';
 
 const MODEL = process.env.DRAFT_QUOTE_CLI_MODEL ?? 'claude-sonnet-4-6';
 const BUDGET = Number(process.env.DRAFT_QUOTE_CLI_BUDGET_USD) || 0.20;
@@ -52,7 +53,12 @@ async function main() {
     heartbeatJob(db, job.id);
 
     try {
-      const { system, user } = await buildQuotePrompt({ parsedCargo, email, ragEnabled: isRagEnabled(), matchId: job.match_id ?? undefined, db });
+      // #1018: anchor the quote to the demo-frozen (or live real) date via lib/clock.today.
+      // Runs outside the Next runtime; if the demo seed is unavailable, degrade to no
+      // anchor rather than crashing the quote.
+      let nowIso: string | undefined;
+      try { nowIso = today(); } catch (e) { console.warn('[quote-worker] demo clock unavailable; quote omits date anchor:', e); }
+      const { system, user } = await buildQuotePrompt({ parsedCargo, email, ragEnabled: isRagEnabled(), matchId: job.match_id ?? undefined, db, nowIso });
       // NOTE: callClaudeCliRaw is synchronous (spawnSync) and will block the event loop.
       // Heartbeat before and after is the best we can do without async subprocess.
       const { text } = callClaudeCliRaw(system, user, MODEL, { maxBudgetUsd: BUDGET, timeoutMs: 85_000 });
