@@ -114,6 +114,3 @@ scripts/demo-seed/.llm-cache/
 
 # QA scratch (/test-skill adversarial output) — not for VCS
 .test-review/
-
-# tdd-guard runtime data (test results + transient state) — not for VCS
-.claude/tdd-guard/

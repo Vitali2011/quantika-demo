@@ -25,11 +25,6 @@ const config = {
     ...(process.cwd().includes('/.worktrees/') ? [] : ['/\\.worktrees/']),
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  // tdd-guard: reporter writes test results to .claude/tdd-guard/data/ so the
-  // PreToolUse hook knows whether a failing test exists. projectRoot omitted on
-  // purpose — defaults to process.cwd() (= repo root), keeping this portable
-  // across machines (local ~/work vs VPS /root). See README section "tdd-guard".
-  reporters: ['default', 'tdd-guard-jest'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
