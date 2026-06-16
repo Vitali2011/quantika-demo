@@ -1,4 +1,5 @@
 import { createSession, updateSession } from '@/lib/session';
+import { now } from '@/lib/clock';
 import { rebaseDates } from './rebase';
 import {
   resolveDemoParsedCargoes,
@@ -91,7 +92,11 @@ const SAMPLE_EMAILS_RAW: SampleEmailRaw[] = [
  */
 export function createDemoSession(): string {
   const sessionId = createSession('sample-data-token');
-  const today = new Date();
+  // Frozen demo clock (lib/clock) — NOT new Date(). Unifies session-init rebasing with
+  // the match engine so synthesized laycans match the engine's "now" (#1024) and
+  // downstream consumers (quote prompt, freshness) share one clock (#1018). Outside
+  // DEMO_MODE now() returns real time, so production behaviour is unchanged.
+  const today = now();
   const emails = rebaseDates(SAMPLE_EMAILS_RAW, today);
   const parsedCargos = resolveDemoParsedCargoes(today);
   const classifications = resolveDemoClassifications();
