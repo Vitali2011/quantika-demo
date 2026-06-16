@@ -64,7 +64,7 @@ export function DueDiligencePanel({ model }: { model: DDModel }) {
           <p className="text-sm text-ds-text mt-1">
             Прогнали <span className="font-semibold">{counter.ran}</span> проверок
             <span className="text-ds-text-muted">
-              {' · '}{counter.pass} ✓ · {counter.caution} ⚠ · критичных стопов {criticalText}
+              {' · '}{counter.pass} ✓ · {counter.caution} ⚠{counter.info > 0 && <> · <Info className="inline h-3.5 w-3.5 align-text-bottom text-sky-600" aria-hidden /> {counter.info}</>} · критичных стопов {criticalText}
             </span>
           </p>
         </div>

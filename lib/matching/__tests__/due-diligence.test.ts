@@ -154,6 +154,22 @@ describe('buildDueDiligence', () => {
     expect(m.counter.ran).toBe(checks.filter((c) => c.state !== 'inactive').length);
   });
 
+  it('counter.info: breakdown reconciles — pass+caution+info === ran', () => {
+    const m = buildDueDiligence(fullArgs());
+    expect(m.counter).toHaveProperty('info');
+    expect(m.counter.pass + m.counter.caution + m.counter.info).toBe(m.counter.ran);
+    expect(m.counter.info).toBe(flat(m).filter((c) => c.state === 'info').length);
+  });
+
+  it('weight=0 component → inactive, not pass', () => {
+    const fb = fullFb();
+    const zeroWeightComp = fb.components.find((c) => c.factor === 'utilisation')!;
+    zeroWeightComp.weight = 0;
+    zeroWeightComp.score = 0;
+    const m = buildDueDiligence(fullArgs({ fitBreakdown: fb }));
+    expect(byLabel(m, 'Утилизация DWT')?.state).toBe('inactive');
+  });
+
   it('parity: fitPercent echoes the passed value, never recomputes from fitBreakdown', () => {
     // fb.fitPercent is 94 but the stored fit_percent is 87 → must use 87.
     const m = buildDueDiligence(fullArgs({ fitPercent: 87 }));

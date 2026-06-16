@@ -43,7 +43,7 @@ export interface DDCategory {
 
 export interface DDModel {
   categories: DDCategory[];
-  counter: { ran: number; pass: number; caution: number; flagsCritical: number };
+  counter: { ran: number; pass: number; caution: number; info: number; flagsCritical: number };
   /** Echoes the passed stored fit-% verbatim — never recomputed (parity invariant). */
   fitPercent: number | null;
 }
@@ -75,7 +75,8 @@ function findComponent(
 /** Map a fit-breakdown component to a state by its earned-vs-weight ratio. */
 function componentState(c: FitBreakdownComponent | undefined): DDState {
   if (!c) return 'inactive';
-  const ratio = c.weight > 0 ? c.score / c.weight : 1;
+  if (c.weight === 0) return 'inactive';
+  const ratio = c.score / c.weight;
   return ratio >= PASS_THRESHOLD ? 'pass' : 'caution';
 }
 
@@ -331,6 +332,7 @@ export function buildDueDiligence(args: BuildDDArgs): DDModel {
     ran: active.length,
     pass: allChecks.filter((c) => c.state === 'pass').length,
     caution: allChecks.filter((c) => c.state === 'caution').length,
+    info: allChecks.filter((c) => c.state === 'info').length,
     // A blocking sanction would have removed this pair from the board — rare on a
     // detail page (the row exists because it survived), usually 0.
     flagsCritical: args.sanctions?.blocking ? 1 : 0,
