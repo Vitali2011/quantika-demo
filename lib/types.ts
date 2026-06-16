@@ -240,6 +240,8 @@ export interface ParsedCargo {
   destinationPortRotation?: string[] | null;
   weightPerPort?: number[] | null;
   maxVesselAgeYrs?: number | null;
+  minVesselDwtMt?: number | null;
+  maxVesselDwtMt?: number | null;
   gearRequired?: boolean | null;
   maxLoaM?: number | null;
   maxBeamM?: number | null;
