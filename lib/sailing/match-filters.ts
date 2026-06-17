@@ -144,6 +144,12 @@ export interface VolumeCheckInput {
   cargoDescription: string | null;
   stowageFactor: string | null;      // free-text, e.g. "1.3 m³/mt"
   grainCapacity: number | null;       // m³
+  /**
+   * #1021: net cargo volume in m³ recovered by the Claude re-parse, used for
+   * CBM-only cargo (no weight stated). Lets the volume gate verify the direct
+   * volumetric fit instead of silently passing. Mirrors scoreVolume's CBM path.
+   */
+  volumeCbm?: number | null;
 }
 
 function resolveStowageFactor(cargoDescription: string | null, explicit: string | null): number {
@@ -166,9 +172,29 @@ function resolveStowageFactor(cargoDescription: string | null, explicit: string 
 }
 
 export function checkVolume(input: VolumeCheckInput): FilterResult {
-  const { weightMt, grainCapacity, cargoDescription, stowageFactor } = input;
+  const { weightMt, grainCapacity, cargoDescription, stowageFactor, volumeCbm } = input;
   // Use max bound for conservative capacity check (worst-case scenario)
   const effectiveWeight = isRange<number>(weightMt) ? weightMt.max : weightMt;
+  const haveWeight = effectiveWeight != null && Number.isFinite(effectiveWeight) && effectiveWeight > 0;
+  const haveGrain = grainCapacity != null && Number.isFinite(grainCapacity) && grainCapacity > 0;
+
+  // CBM-only cargo: weight absent but recovered net CBM present — verify the
+  // direct volumetric fit against the vessel grain capacity (mirrors scoreVolume
+  // #1021). Overflow beyond the 5% "abt" tolerance → WARNING, NOT a hard gate:
+  // honesty, not exclusion (Group B phase-2 mandate). The match stays in the list;
+  // the Volume row just stops lying with a green "OK".
+  if (!haveWeight && volumeCbm != null && Number.isFinite(volumeCbm) && volumeCbm > 0 && haveGrain) {
+    const capacityWithMargin = grainCapacity! * 1.05; // 5% tolerance for "abt" values
+    if (volumeCbm > capacityWithMargin) {
+      return {
+        pass: true,
+        warning: true,
+        reason: `cargo volume ${Math.round(volumeCbm)}m³ exceeds vessel grain capacity ${grainCapacity}m³`,
+      };
+    }
+    return { pass: true };
+  }
+
   if (effectiveWeight == null || !Number.isFinite(effectiveWeight) || effectiveWeight <= 0) return { pass: true };
   if (grainCapacity == null || !Number.isFinite(grainCapacity) || grainCapacity <= 0) return { pass: true };
 
@@ -531,6 +557,8 @@ export interface HardFilterInput {
   geared: boolean | null;
   draftMax: number | null;
   grainCapacity: number | null;
+  /** #1021: recovered net cargo CBM — drives the volume gate for CBM-only cargo. */
+  volumeCbm?: number | null;
   dwtSummer: number | null;
   dwcc: number | null;
   vesselRestrictions?: string[];
@@ -588,6 +616,7 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     cargoDescription: input.cargoDescription,
     stowageFactor: input.stowageFactor,
     grainCapacity: input.grainCapacity,
+    volumeCbm: input.volumeCbm ?? null,
   });
   const cargoVessel = checkCargoVesselCompat({
     cargoType: input.cargoType,
