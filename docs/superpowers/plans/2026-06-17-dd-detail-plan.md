@@ -93,6 +93,36 @@ app/match/[id]/page.tsx (RSC)
 - **Flag (Paris MoU):** «Флаг судна сверяется со списком Paris MoU — межгосударственного
   меморандума по портовому контролю. Серый/чёрный список = повышенный риск задержаний в портах.»
 
+## Worked-calc в detail (founder 2026-06-17 — «видна полностью логика, чтоб человек перепроверил»)
+
+Источник формул: `docs/research/recon-dd-calc-2026-06-17.md` (ground-truth, file:line каждой
+формулы). Executor берёт формулы ОТТУДА, НЕ выдумывает. `detail` для проверки с `has_calc=true`
+строится из СОХРАНЁННЫХ полей матча (storedMatch + fitBreakdown.bracketData/rationale +
+worksheet.hardFilters) — НЕ пересчёт (паритет сохраняется). Структура detail:
+- что проверяем (1 строка);
+- **Расчёт:** входные числа → операция → результат (проверяемо вручную);
+- Итог: вердикт;
+- honesty-оговорка где помечено.
+
+Числа берём из ЭТОГО матча (через bracketData / stored-поля), не хардкод:
+
+| Проверка | Расчёт в detail | Источник чисел | Обяз. оговорка |
+|---|---|---|---|
+| Утилизация DWT | `груз {cargoNom} mt ÷ вместимость {cap} mt = {util}% → вердикт` | bracketData "X / Y mt" | вместимость = DWCC если есть, иначе DWT |
+| Объём под трюмы | `{cargoMax} mt × SF {sf} = {reqM3} m³ ÷ {grain} m³ = {ratio}%` | bracketData "% of grain" + rationale | SF из письма или keyword-оценка |
+| TCE vs breakeven | `TCE ${tce}/сут − breakeven ${be}/сут = {diff}/сут → вердикт` | `tce_usd_per_day`, `breakeven_tce_usd_per_day` | **war-risk показан в breakdown отдельно, в это число НЕ входит** |
+| Балласт-переход | `{dist} nm vs радиус класса ~{r} nm ({cls}) → вердикт` | bracketData "~N nm" | бункер балластного перехода учтён в строке TCE |
+| Возраст судна | `{refYear} − {built} = {age} лет → ok/caution/warn` | `vessel.built`, `refYear` | — |
+| Осадка (load/disch) | `осадка в грузу ~{laden}m vs лимит причала {limit}m → запас {margin}m` | `worksheet.hardFilters.{draft,destDraft}` | **оценка осадки по DWT и загрузке (screening), считается от ВЕРХНЕЙ границы груза — не точный расчёт** |
+
+`has_calc=false` (флаг Paris MoU, класс IACS, P&I, санкции OFAC/EU, war-risk, CII-оценка):
+`detail` = объяснение что это + источник, БЕЗ формулы (lookup по реестру/списку, не арифметика).
+НЕ выдумывать формулу.
+
+**Честность worked-calc (тест):** если показанное число не сходится с движком 1:1 (war-risk-
+исключение в TCE; nominal-vs-max груз в утилизации/осадке) — `detail` ОБЯЗАН нести оговорку.
+Прямой запрос фаундера: проверяющий должен суметь воспроизвести число; где не может — объясняем почему.
+
 ## Verification (executor — запустить, эмитить маркеры)
 - `NODE_OPTIONS=--max-old-space-size=4096 npx tsc --noEmit`.
 - `npx jest lib/matching/__tests__/due-diligence.test.ts` + `--findRelatedTests` для
