@@ -9,7 +9,7 @@
     "imo": "8605480",
     "flag": null,
     "built": 1986,
-    "classSociety": null,
+    "classSociety": "Dutch Lloyd",
     "pandi": null,
     "dwtSummer": {
       "value": 2570,
@@ -399,9 +399,9 @@
       "confidence": "confirmed"
     },
     "imo": "8887296",
-    "flag": "Cameroon",
+    "flag": "St Kitts and Nevis",
     "built": 1995,
-    "classSociety": "Dutch Lloyd",
+    "classSociety": "Capital Register of Shipping",
     "pandi": "Thomas Miller Pandi",
     "dwtSummer": {
       "value": 4916,
@@ -732,8 +732,8 @@
     "imo": "9701360",
     "flag": "Panama",
     "built": 2015,
-    "classSociety": "NK",
-    "pandi": "CPI",
+    "classSociety": "Nippon Kaiji Kyokai",
+    "pandi": "UK P&I Club",
     "dwtSummer": {
       "value": 63695.7,
       "confidence": "confirmed",
@@ -1119,8 +1119,8 @@
     "imo": "9145786",
     "flag": "Belize",
     "built": 1997,
-    "classSociety": "Turkish Lloyd",
-    "pandi": null,
+    "classSociety": "Turk Loydu",
+    "pandi": "American Steamship Owner P&I association",
     "dwtSummer": {
       "value": 24804,
       "confidence": "confirmed",
@@ -1322,10 +1322,10 @@
       "confidence": "confirmed"
     },
     "imo": "9125073",
-    "flag": "Antigua & Barbuda",
+    "flag": "Antigua and Barbuda",
     "built": 1997,
-    "classSociety": "NK",
-    "pandi": "West of England",
+    "classSociety": "Nippon Kaiji Kyokai",
+    "pandi": "The West of England Shipowners",
     "dwtSummer": {
       "value": 4444,
       "confidence": "confirmed",
@@ -2134,7 +2134,7 @@
     "imo": "9166510",
     "flag": "Palau",
     "built": 1999,
-    "classSociety": "TL",
+    "classSociety": "Turk Loydu",
     "pandi": "London P&I",
     "dwtSummer": {
       "value": 5007,
@@ -2218,7 +2218,7 @@
     "imo": "9367841",
     "flag": "Saint Vincent and the Grenadines",
     "built": 2006,
-    "classSociety": "TL",
+    "classSociety": "Turk Loydu",
     "pandi": "London P&I",
     "dwtSummer": {
       "value": 3178,
@@ -2296,8 +2296,8 @@
     "imo": "9238351",
     "flag": "Portugal",
     "built": 2001,
-    "classSociety": "KR",
-    "pandi": "London P&I",
+    "classSociety": "Korean Register",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 8930,
       "confidence": "confirmed",
@@ -2371,8 +2371,8 @@
     "imo": "9238363",
     "flag": "Portugal",
     "built": 2002,
-    "classSociety": "KR",
-    "pandi": "London P&I",
+    "classSociety": "Korean Register",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 8930,
       "confidence": "confirmed",
@@ -2445,7 +2445,7 @@
     "imo": "8834940",
     "flag": "Vanuatu",
     "built": 1988,
-    "classSociety": "BRS",
+    "classSociety": "Bulgarski Koraben Registar",
     "pandi": "Turk P&I",
     "dwtSummer": {
       "value": 2362,
@@ -2517,7 +2517,7 @@
     "imo": "9145360",
     "flag": "Vanuatu",
     "built": 1996,
-    "classSociety": "BRS",
+    "classSociety": "Turk Loydu",
     "pandi": "Turk P&I",
     "dwtSummer": {
       "value": 1602,
@@ -2745,7 +2745,7 @@
     "imo": "9367841",
     "flag": "Saint Vincent and the Grenadines",
     "built": 2006,
-    "classSociety": "TL",
+    "classSociety": "Turk Loydu",
     "pandi": "Turk P&I",
     "dwtSummer": {
       "value": 3178,
@@ -2820,7 +2820,7 @@
     "imo": "9166510",
     "flag": "Palau",
     "built": 1999,
-    "classSociety": "TL",
+    "classSociety": "Turk Loydu",
     "pandi": "Turk P&I",
     "dwtSummer": {
       "value": 5007,
@@ -2894,8 +2894,8 @@
     "imo": "9238351",
     "flag": "Portugal",
     "built": 2001,
-    "classSociety": "KR",
-    "pandi": "UK P&I",
+    "classSociety": "Korean Register",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 8930,
       "confidence": "confirmed",
@@ -2956,8 +2956,8 @@
     "imo": "9238363",
     "flag": "Portugal",
     "built": 2002,
-    "classSociety": "KR",
-    "pandi": "UK P&I",
+    "classSociety": "Korean Register",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 8930,
       "confidence": "confirmed",
@@ -3168,8 +3168,8 @@
     "imo": "9554145",
     "flag": "Marshall Islands",
     "built": 2010,
-    "classSociety": "RINA",
-    "pandi": "HYDOR",
+    "classSociety": "Registro Italiano Navale",
+    "pandi": "Hydor AS",
     "dwtSummer": {
       "value": 4712,
       "confidence": "confirmed"
@@ -3243,10 +3243,10 @@
       "confidence": "confirmed"
     },
     "imo": "9167320",
-    "flag": "Kitts & Nevis",
+    "flag": "St Kitts and Nevis",
     "built": 1997,
-    "classSociety": "TURK LOYDU (IACS)",
-    "pandi": "HYDOR",
+    "classSociety": "Turk Loydu",
+    "pandi": "Hydor AS",
     "dwtSummer": {
       "value": 4260,
       "confidence": "confirmed"
@@ -3317,7 +3317,7 @@
     "imo": "9111761",
     "flag": "Palau",
     "built": 1996,
-    "classSociety": "Phoenix",
+    "classSociety": "Turk Loydu",
     "pandi": "Turk P&I",
     "dwtSummer": {
       "value": 3085,
@@ -3389,7 +3389,7 @@
     "imo": "8834940",
     "flag": "Vanuatu",
     "built": 1988,
-    "classSociety": "BRS",
+    "classSociety": "Bulgarski Koraben Registar",
     "pandi": "Turk P&I",
     "dwtSummer": {
       "value": 2362,
@@ -3460,7 +3460,7 @@
     "imo": "9145360",
     "flag": "Vanuatu",
     "built": 1996,
-    "classSociety": "BRS",
+    "classSociety": "Turk Loydu",
     "pandi": "Turk P&I",
     "dwtSummer": {
       "value": 1602,
@@ -4685,7 +4685,7 @@
     "imo": "9166510",
     "flag": "Palau",
     "built": 1999,
-    "classSociety": "TL",
+    "classSociety": "Turk Loydu",
     "pandi": "London P&I",
     "dwtSummer": {
       "value": 5007,
@@ -4769,7 +4769,7 @@
     "imo": "9367841",
     "flag": "Saint Vincent and the Grenadines",
     "built": 2006,
-    "classSociety": "TL",
+    "classSociety": "Turk Loydu",
     "pandi": "London P&I",
     "dwtSummer": {
       "value": 3178,
@@ -4847,8 +4847,8 @@
     "imo": "9238351",
     "flag": "Portugal",
     "built": 2001,
-    "classSociety": "KR",
-    "pandi": "London P&I",
+    "classSociety": "Korean Register",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 8930,
       "confidence": "confirmed",
@@ -4922,8 +4922,8 @@
     "imo": "9238363",
     "flag": "Portugal",
     "built": 2002,
-    "classSociety": "KR",
-    "pandi": "London P&I",
+    "classSociety": "Korean Register",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 8930,
       "confidence": "confirmed",
@@ -5225,8 +5225,8 @@
     },
     "imo": "8216100",
     "flag": "Comoros",
-    "built": 1987,
-    "classSociety": null,
+    "built": 1986,
+    "classSociety": "Hellas Naval Bureau",
     "pandi": null,
     "dwtSummer": null,
     "dwcc": {
@@ -5296,9 +5296,9 @@
       "confidence": "confirmed"
     },
     "imo": "9381407",
-    "flag": null,
+    "flag": "St Kitts and Nevis",
     "built": 2008,
-    "classSociety": "IR",
+    "classSociety": "Capital Register of Shipping",
     "pandi": null,
     "dwtSummer": {
       "value": 8100,
@@ -5439,10 +5439,10 @@
       "confidence": "confirmed"
     },
     "imo": "1033822",
-    "flag": "Cameroon",
-    "built": 2020,
-    "classSociety": "OMROS",
-    "pandi": "Thomas Miller",
+    "flag": "St Kitts and Nevis",
+    "built": 2022,
+    "classSociety": "Capital Register of Shipping",
+    "pandi": "Hydor AS",
     "dwtSummer": {
       "value": 9220,
       "confidence": "confirmed"
@@ -5730,7 +5730,7 @@
     "imo": "9013012",
     "flag": "Palau",
     "built": 1991,
-    "classSociety": "IACS",
+    "classSociety": "Phoenix Register of Shipping",
     "pandi": null,
     "dwtSummer": null,
     "dwcc": {
@@ -5821,9 +5821,9 @@
       "confidence": "confirmed"
     },
     "imo": "9013036",
-    "flag": "Panama",
+    "flag": "Cameroon",
     "built": 1991,
-    "classSociety": "IRS (IACS)",
+    "classSociety": "Phoenix Register of Shipping",
     "pandi": null,
     "dwtSummer": {
       "value": 1723,
@@ -5910,8 +5910,8 @@
     "imo": "9103740",
     "flag": "Panama",
     "built": 1995,
-    "classSociety": "LR",
-    "pandi": "Shipowner P&I Club",
+    "classSociety": "Turk Loydu",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 3200,
       "confidence": "confirmed"
@@ -6167,10 +6167,10 @@
       "confidence": "confirmed"
     },
     "imo": "9173331",
-    "flag": "Panama",
+    "flag": "San Marino",
     "built": 1999,
-    "classSociety": "Indian Register of Shipping",
-    "pandi": null,
+    "classSociety": "Polish Register of Shipping",
+    "pandi": "The London P&I Club",
     "dwtSummer": {
       "value": 4900,
       "confidence": "confirmed"

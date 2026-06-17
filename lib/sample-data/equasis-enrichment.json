@@ -1,0 +1,200 @@
+[
+  {
+    "imo": "1033822",
+    "flag": "St.Kitts and Nevis",
+    "yearBuilt": 2022,
+    "classSociety": "Capital Register of Shipping",
+    "pandi": "Hydor AS",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.048Z"
+  },
+  {
+    "imo": "8216100",
+    "flag": "Comoros",
+    "yearBuilt": 1986,
+    "classSociety": "Hellas Naval Bureau",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.069Z"
+  },
+  {
+    "imo": "8605480",
+    "flag": null,
+    "yearBuilt": 1986,
+    "classSociety": "Dutch Lloyd",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.087Z"
+  },
+  {
+    "imo": "8834940",
+    "flag": "Vanuatu",
+    "yearBuilt": 1988,
+    "classSociety": "Bulgarski Koraben Registar",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.105Z"
+  },
+  {
+    "imo": "8887296",
+    "flag": "St.Kitts and Nevis",
+    "yearBuilt": 1995,
+    "classSociety": "Capital Register of Shipping",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.117Z"
+  },
+  {
+    "imo": "9013012",
+    "flag": "Palau (Republic of)",
+    "yearBuilt": 1991,
+    "classSociety": "Phoenix Register of Shipping",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.140Z"
+  },
+  {
+    "imo": "9013036",
+    "flag": "Cameroon",
+    "yearBuilt": 1991,
+    "classSociety": "Phoenix Register of Shipping",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.162Z"
+  },
+  {
+    "imo": "9063873",
+    "flag": "Bahamas",
+    "yearBuilt": 1993,
+    "classSociety": "DNV (IACS)",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.189Z"
+  },
+  {
+    "imo": "9103740",
+    "flag": "Panama",
+    "yearBuilt": 1995,
+    "classSociety": "Turk Loydu (IACS)",
+    "pandi": "The London P&I Club",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.205Z"
+  },
+  {
+    "imo": "9111761",
+    "flag": "Palau (Republic of)",
+    "yearBuilt": 1996,
+    "classSociety": "Turk Loydu (IACS)",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.226Z"
+  },
+  {
+    "imo": "9125073",
+    "flag": "Antigua and Barbuda",
+    "yearBuilt": 1997,
+    "classSociety": "Nippon Kaiji Kyokai (IACS)",
+    "pandi": "The West of England Shipowners",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.261Z"
+  },
+  {
+    "imo": "9145360",
+    "flag": "Vanuatu",
+    "yearBuilt": 1996,
+    "classSociety": "Turk Loydu (IACS)",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.280Z"
+  },
+  {
+    "imo": "9145786",
+    "flag": "Belize",
+    "yearBuilt": 1997,
+    "classSociety": "Turk Loydu (IACS)",
+    "pandi": "American Steamship Owner P&I association",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.360Z"
+  },
+  {
+    "imo": "9166510",
+    "flag": "Palau (Republic of)",
+    "yearBuilt": 1999,
+    "classSociety": "Turk Loydu (IACS)",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.426Z"
+  },
+  {
+    "imo": "9167320",
+    "flag": "St.Kitts and Nevis",
+    "yearBuilt": 1997,
+    "classSociety": "Turk Loydu (IACS)",
+    "pandi": "Hydor AS",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.486Z"
+  },
+  {
+    "imo": "9173331",
+    "flag": "San Marino",
+    "yearBuilt": 1999,
+    "classSociety": "Polish Register of Shipping (IACS)",
+    "pandi": "The London P&I Club",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.516Z"
+  },
+  {
+    "imo": "9238351",
+    "flag": "Portugal (MAR)",
+    "yearBuilt": 2001,
+    "classSociety": "Korean Register (IACS)",
+    "pandi": "The London P&I Club",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.561Z"
+  },
+  {
+    "imo": "9238363",
+    "flag": "Portugal (MAR)",
+    "yearBuilt": 2002,
+    "classSociety": "Korean Register (IACS)",
+    "pandi": "The London P&I Club",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.591Z"
+  },
+  {
+    "imo": "9367841",
+    "flag": "St Vincent and Grenadines",
+    "yearBuilt": 2006,
+    "classSociety": "Turk Loydu (IACS)",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.609Z"
+  },
+  {
+    "imo": "9381407",
+    "flag": "St.Kitts and Nevis",
+    "yearBuilt": 2008,
+    "classSociety": "Capital Register of Shipping",
+    "pandi": null,
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.629Z"
+  },
+  {
+    "imo": "9554145",
+    "flag": "Marshall Islands",
+    "yearBuilt": 2010,
+    "classSociety": "Registro Italiano Navale (IACS)",
+    "pandi": "Hydor AS",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.653Z"
+  },
+  {
+    "imo": "9701360",
+    "flag": "Panama",
+    "yearBuilt": 2015,
+    "classSociety": "Nippon Kaiji Kyokai (IACS)",
+    "pandi": "UK P&I Club",
+    "source": "equasis",
+    "fetchedAt": "2026-06-17T08:49:36.674Z"
+  }
+]
