@@ -138,21 +138,49 @@ export function extractFlag(html: string): string | null {
 }
 
 /**
- * Extract the first listed entity name from a collapsible section anchored by
- * `anchor` (e.g. the `<!-- Classification -->` comment or the `P&I Information`
- * heading). The real page renders each entry as
+ * Extract the CURRENT (active) entity name from a collapsible section anchored
+ * by `anchor` (e.g. the `<!-- Classification -->` comment or the `P&I
+ * Information` heading). The real page renders each entry as
  *   `<div class="round-list ..."></div></div> <p>NAME</p>`
- * The first such `<p>` after the anchor is the current society / club.
+ * and, in the Classification block, a trailing status badge
+ *   `<span class="badge Withdrawn|Delivered ...">STATUS</span>`.
+ *
+ * A formerly-assigned classification society is listed FIRST but carries a
+ * `Withdrawn` badge, while the active society carries `Delivered`. Returning the
+ * literal first `<p>` therefore picked the WRONG (withdrawn) society for vessels
+ * that changed class — so we SKIP any entry whose status badge is `Withdrawn`
+ * and return the first active/`Delivered` entry instead.
+ *
+ * Sections without status badges (e.g. P&I Information) fall through to the
+ * first entry, preserving prior behaviour.
  */
 export function extractAnchoredEntity(html: string, anchor: string): string | null {
   const collapsed = collapseWs(html);
   const i = collapsed.indexOf(anchor);
   if (i < 0) return null;
   const seg = collapsed.slice(i, i + 4500);
-  const m = seg.match(/round-list[^>]*><\/div>\s*<\/div>\s*<p>\s*([^<]{2,90}?)\s*<\/p>/i);
-  if (!m) return null;
-  const v = decodeEntities(m[1]);
-  return v.length ? v : null;
+
+  const nameRe = /round-list[^>]*><\/div>\s*<\/div>\s*<p>\s*([^<]{2,90}?)\s*<\/p>/gi;
+  const entries: Array<{ name: string; idx: number }> = [];
+  let m: RegExpExecArray | null;
+  while ((m = nameRe.exec(seg)) !== null) {
+    entries.push({ name: decodeEntities(m[1]), idx: m.index });
+  }
+  if (!entries.length) return null;
+
+  // Status badge for an entry = the first `badge <STATUS>` token after this
+  // entry's name and before the next entry's name.
+  const badgeRe = /<span[^>]*\bbadge\s+(\w+)/i;
+  for (let k = 0; k < entries.length; k++) {
+    const start = entries[k].idx;
+    const end = k + 1 < entries.length ? entries[k + 1].idx : seg.length;
+    const bm = seg.slice(start, end).match(badgeRe);
+    if (bm && /^Withdrawn$/i.test(bm[1])) continue; // former society — skip
+    return entries[k].name.length ? entries[k].name : null;
+  }
+
+  // Every entry is Withdrawn (or empty) — fall back to the first listed.
+  return entries[0].name.length ? entries[0].name : null;
 }
 
 /**

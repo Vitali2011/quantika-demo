@@ -157,3 +157,64 @@ describe('parseShipInfo — REAL Equasis div-grid markup (live-verified 2026-06-
     expect(extractAnchoredEntity('<div>no class block here</div>', '<!-- Classification -->')).toBeNull();
   });
 });
+
+describe('extractAnchoredEntity — withdrawn-vs-active classification society', () => {
+  // Faithful slice of the real Equasis Classification collapse block: each entry
+  // is `round-list…<p>NAME</p>` followed by a status badge
+  // `<span class="badge STATUS …">STATUS</span>`. A formerly-assigned society is
+  // listed FIRST but carries a `Withdrawn` badge; the active society carries
+  // `Delivered`. Structure copied verbatim from /tmp/equasis-raw/9145786.html
+  // (MV ALTO) — IMB Withdrawn, Turk Loydu active.
+  const classBlock = (entries: Array<{ name: string; status: string }>): string => {
+    const rows = entries
+      .map(
+        (e) => `
+          <div class="row"><div class="access-body">
+            <div class="col-lg-3"> <div class="pull-left"> <div class="round-list orange-equasis"></div> </div> <p>${e.name}</p> </div>
+            <div class="col-lg-2"> <p> <span class="badge ${e.status} font-size-md">${e.status}</span> </p> </div>
+            <div class="col-lg-3"> <p>during 05/2024</p> </div>
+          </div></div>`,
+      )
+      .join('');
+    return `<!-- Classification --> <div id="collapse4"> <h5>Status </h5> ${rows} </div>`;
+  };
+
+  it('skips a Withdrawn society and returns the first active one (real 9145786 case)', () => {
+    const html = classBlock([
+      { name: 'International Maritime Bureau', status: 'Withdrawn' },
+      { name: 'Turk Loydu (IACS)', status: 'Delivered' },
+      { name: 'International Register of Shipping (IS)', status: 'Withdrawn' },
+      { name: 'Nippon Kaiji Kyokai (IACS)', status: 'Withdrawn' },
+    ]);
+    expect(extractAnchoredEntity(html, '<!-- Classification -->')).toBe('Turk Loydu (IACS)');
+  });
+
+  it('returns the first Delivered when an earlier entry is Withdrawn (real 9381407 case)', () => {
+    const html = classBlock([
+      { name: 'International Register of Shipping (IS)', status: 'Withdrawn' },
+      { name: 'Capital Register of Shipping', status: 'Delivered' },
+      { name: 'DNV-GL (ex GL) (IACS)', status: 'Delivered' },
+    ]);
+    expect(extractAnchoredEntity(html, '<!-- Classification -->')).toBe('Capital Register of Shipping');
+  });
+
+  it('falls back to the first entry when every society is Withdrawn', () => {
+    const html = classBlock([
+      { name: 'Old Society A', status: 'Withdrawn' },
+      { name: 'Old Society B', status: 'Withdrawn' },
+    ]);
+    expect(extractAnchoredEntity(html, '<!-- Classification -->')).toBe('Old Society A');
+  });
+
+  it('returns the sole society when there is exactly one Delivered entry', () => {
+    const html = classBlock([{ name: 'Turk Loydu (IACS)', status: 'Delivered' }]);
+    expect(extractAnchoredEntity(html, '<!-- Classification -->')).toBe('Turk Loydu (IACS)');
+  });
+
+  it('still returns the first entry for badge-less sections (P&I has no status badge)', () => {
+    // P&I Information entries have no status badge — must keep returning the first.
+    const html =
+      'P&I Information <div id="collapse6"> <div class="pull-left"> <div class="round-list orange-equasis"></div> </div> <p>American Steamship Owner P&I association</p> </div>';
+    expect(extractAnchoredEntity(html, 'P&I Information')).toBe('American Steamship Owner P&I association');
+  });
+});
