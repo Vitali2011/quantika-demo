@@ -10,6 +10,7 @@ import {
   scoreTiming,
   scoreVetting,
   scoreDraft,
+  scoreVolume,
 } from '../fit-breakdown';
 import type { MatchReadiness, MatchSanctions, MatchHardFilters, ParsedCargo, ParsedVessel } from '@/lib/types';
 
@@ -699,5 +700,34 @@ describe('#884 — HRC cargo on corrected-capacity YUCATAN vessel is a comfortab
     expect(result.score).toBe(0);
     expect(result.rationale).toContain('laden');
     expect(result.rationale).toContain('12.9');
+  });
+});
+
+describe('scoreVolume — CBM-only cargo (#1021 Group B)', () => {
+  it('scores volume from volumeCbm when weight is null (CBM cargo)', () => {
+    // SEAGULL 69 MDF: 12,000 net CBM, no weight stated, vessel grain 13,000 cbm
+    const c = scoreVolume(null, 'MDF', 13000, null, 12000);
+    expect(c.factor).toBe('volume');
+    expect(c.rationale).not.toMatch(/not stated/i);
+    expect(c.score).toBeGreaterThan(0);
+  });
+
+  it('stays unknown when neither weight nor volumeCbm present', () => {
+    const c = scoreVolume(null, null, 13000, null, null);
+    expect(c.rationale).toMatch(/not stated/i);
+  });
+
+  it('weight path still wins when weight present (volumeCbm ignored)', () => {
+    const c = scoreVolume(5000, 'wheat', 7000, null, 12000);
+    expect(c.bracketData).not.toMatch(/CBM/);
+  });
+
+  it('computeFitBreakdown wires cargo.volumeCbm into the volume factor', () => {
+    const cargo = makeCargo({ weightMt: null, weightMtMax: null, volumeCbm: 12000 });
+    const vessel = makeVessel({ grainCapacity: 13000 });
+    const bd = computeFitBreakdown({ cargo, vessel, readiness: READY_IDEAL, sanctions: SANCTIONS_OK, hardFilters: HF_PASS });
+    const vol = bd.components.find((x) => x.factor === 'volume')!;
+    expect(vol.rationale).not.toMatch(/not stated/i);
+    expect(vol.score).toBeGreaterThan(0);
   });
 });
