@@ -52,7 +52,13 @@ export function MatchWorksheet({ worksheet }: Props) {
     return parts.length > 0 ? parts.join(' → ') : '—';
   })();
 
-  const rows: Array<{ label: string; vessel: string; cargoPort: string; verdict: string; detail?: React.ReactNode }> = [
+  // #1022 honest residue: cargo weight is TRULY absent (no nominal, no worst-case).
+  const weightTrulyAbsent = c.weightMt == null && c.weightMtEffective == null;
+  // Volume is unverifiable when there is neither a weight to derive stowage from
+  // nor an explicit recovered CBM figure.
+  const volumeTrulyAbsent = weightTrulyAbsent && c.volumeCbm == null;
+
+  const rows: Array<{ label: string; vessel: string; cargoPort: string; verdict: string; detail?: React.ReactNode; testId?: string }> = [
     {
       label: '⏱ Time',
       vessel: [r.openDate ? `free ${r.openDate}` : null, r.openPosition ? `@ ${r.openPosition}` : null].filter(Boolean).join(' ') || '—',
@@ -70,21 +76,31 @@ export function MatchWorksheet({ worksheet }: Props) {
     },
     {
       label: '⚖️ Weight',
+      testId: 'worksheet-weight-row',
       vessel: v.dwtSummer != null ? `${v.dwtSummer.toLocaleString('en-US')} DWT${v.dwcc != null ? ` / ${v.dwcc.toLocaleString('en-US')} DWCC` : ''}` : '—',
       cargoPort: c.weightMt != null
           ? (c.weightMtEffective != null && c.weightMtEffective !== c.weightMt
               ? `${c.weightMt.toLocaleString('en-US')} mt (${c.weightMtEffective.toLocaleString('en-US')} max w/ option)`
               : `${c.weightMt.toLocaleString('en-US')} mt`)
           : '—',
+      // #1022: never show a green "✅ OK" verdict when the cargo weight was never
+      // stated — that is a green lie. Surface honest "not verified" (LOW) instead.
       verdict: util != null
         ? `${util}% utilisation${util > 100 ? ' ❌' : util >= 85 ? ' ✅' : util >= 70 ? ' ⚠️' : ' ❌'}`
-        : verdictBadge(hf.volume.pass, hf.volume.reason),
+        : weightTrulyAbsent
+          ? '⚠️ Cargo weight not verified'
+          : verdictBadge(hf.volume.pass, hf.volume.reason),
     },
     {
       label: '📦 Volume',
+      testId: 'worksheet-volume-row',
       vessel: v.grainCapacity != null ? `${v.grainCapacity.toLocaleString('en-US')} ${v.grainCapacityUnit ?? 'cbm'}` : '—',
-      cargoPort: '—',
-      verdict: verdictBadge(hf.volume.pass, hf.volume.reason),
+      // #1021: surface the recovered net CBM figure when present.
+      cargoPort: c.volumeCbm != null ? `${c.volumeCbm.toLocaleString('en-US')} cbm` : '—',
+      // #1022: no false "✅ OK" when there is nothing to verify volume against.
+      verdict: volumeTrulyAbsent
+        ? '⚠️ Volume not verified'
+        : verdictBadge(hf.volume.pass, hf.volume.reason),
     },
     {
       label: '🚢 Type',
@@ -156,7 +172,7 @@ export function MatchWorksheet({ worksheet }: Props) {
         <tbody>
           {rows.map((row) => (
             <React.Fragment key={row.label}>
-              <tr className="border-t border-ds-border hover:bg-ds-bg/50">
+              <tr className="border-t border-ds-border hover:bg-ds-bg/50" data-testid={row.testId}>
                 <td className="py-2 px-3 font-medium text-ds-text-muted whitespace-nowrap">{row.label}</td>
                 <td className="py-2 px-3 text-ds-text">{row.vessel}</td>
                 <td className="py-2 px-3 text-ds-text">{row.cargoPort}</td>

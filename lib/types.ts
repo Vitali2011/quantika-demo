@@ -441,6 +441,17 @@ export interface MatchHardFilters {
   voyage?: HardFilterCheck;
   flagClass?: HardFilterCheck;
   warPositionVoyage?: HardFilterCheck;
+  /** #1023 SOFT gate — required vessel-DWT band check. NOT a hard filter:
+   *  out-of-band vessel still matches but is penalised + flagged downstream. */
+  vesselDwtRange?: VesselDwtRangeCheck;
+}
+
+/** SOFT vessel-DWT band descriptor (#1023). Distinct from HardFilterCheck —
+ *  carries stated/inRange instead of pass, because it never excludes a pair. */
+export interface VesselDwtRangeCheck {
+  stated: boolean;
+  inRange: boolean;
+  reason?: string;
 }
 
 /** Sanctions screening (see lib/validation/sanctions.ts). */
