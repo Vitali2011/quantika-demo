@@ -473,6 +473,9 @@ export interface MatchWorksheet {
   cargo: {
     weightMt: number | null;
     weightMtEffective?: number | null;  // worst-case (resolveCargoWeight) for util% gating
+    volumeCbm?: number | null;          // #1021: net CBM recovered by Claude re-parse
+    minVesselDwtMt?: number | null;     // #1023: required vessel DWT band (soft gate)
+    maxVesselDwtMt?: number | null;
     cargoType: string | null;
     loadPort: string | null;
     dischargePort: string | null;
