@@ -5,6 +5,7 @@ import {
   checkCargoVesselCompat,
   checkCargoWeight,
   checkImsbc,
+  checkVesselDwtRange,
   runHardFilters,
   STOWAGE_FACTORS,
 } from '../match-filters';
@@ -715,5 +716,69 @@ describe('runHardFilters — laden-draft gate (M3)', () => {
     expect(r.checks.destDraft.pass).toBe(true);
     expect(r.checks.draft.portLimitM).toBeUndefined();
     expect(r.checks.destDraft.portLimitM).toBeUndefined();
+  });
+});
+
+describe('checkVesselDwtRange (soft gate — #1023)', () => {
+  it('flags vessel below the requested band', () => {
+    // GRAIN TRADER P wants 12-14k dwt; SEAGULL 71 is 8,100 dwt
+    const r = checkVesselDwtRange({ vesselDwt: 8100, minVesselDwtMt: 12000, maxVesselDwtMt: 14000 });
+    expect(r.stated).toBe(true);
+    expect(r.inRange).toBe(false);
+    expect(r.reason).toMatch(/outside required DWT/i);
+  });
+
+  it('flags vessel above the requested band', () => {
+    const r = checkVesselDwtRange({ vesselDwt: 20000, minVesselDwtMt: 12000, maxVesselDwtMt: 14000 });
+    expect(r.inRange).toBe(false);
+  });
+
+  it('passes a vessel inside the band', () => {
+    const r = checkVesselDwtRange({ vesselDwt: 13000, minVesselDwtMt: 12000, maxVesselDwtMt: 14000 });
+    expect(r.stated).toBe(true);
+    expect(r.inRange).toBe(true);
+  });
+
+  it('passes within 5% tolerance of the band edges', () => {
+    const r = checkVesselDwtRange({ vesselDwt: 11500, minVesselDwtMt: 12000, maxVesselDwtMt: 14000 });
+    expect(r.inRange).toBe(true); // 12000*0.95 = 11400 ≤ 11500
+  });
+
+  it('is neutral when no DWT band stated', () => {
+    const r = checkVesselDwtRange({ vesselDwt: 8100, minVesselDwtMt: null, maxVesselDwtMt: null });
+    expect(r.stated).toBe(false);
+    expect(r.inRange).toBe(true);
+  });
+
+  it('cannot disprove when vessel DWT unknown', () => {
+    const r = checkVesselDwtRange({ vesselDwt: null, minVesselDwtMt: 12000, maxVesselDwtMt: 14000 });
+    expect(r.stated).toBe(true);
+    expect(r.inRange).toBe(true);
+  });
+});
+
+describe('runHardFilters — vesselDwtRange is SOFT (does not exclude)', () => {
+  it('out-of-band vessel still passes hard filters but reports vesselDwtRange', () => {
+    const r = runHardFilters({
+      cargoType: 'BULK',
+      originPort: null,
+      destinationPort: null,
+      weightMt: null,
+      cargoDescription: 'grain',
+      stowageFactor: null,
+      vesselType: 'Handysize Bulker',
+      geared: true,
+      draftMax: null,
+      grainCapacity: null,
+      dwtSummer: 8100,
+      dwcc: null,
+      cargoMinVesselDwtMt: 12000,
+      cargoMaxVesselDwtMt: 14000,
+    });
+    expect(r.checks.vesselDwtRange?.stated).toBe(true);
+    expect(r.checks.vesselDwtRange?.inRange).toBe(false);
+    // SOFT: the out-of-band condition must NOT fail the overall hard-filter gate
+    expect(r.pass).toBe(true);
+    expect(r.failures).not.toContain(r.checks.vesselDwtRange?.reason);
   });
 });
