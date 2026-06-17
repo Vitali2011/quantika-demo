@@ -107,7 +107,16 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   }
 
   const dedupedVessels = dedupByKey(parsedVessels);
-  const dedupedCargos  = dedupByKey(parsedCargos);
+  // #1024: the displayed laycan is synthesized/shifted to keep the demo current,
+  // but preferredDates.sourceText still carries the ORIGINAL email date quote —
+  // SourceAttributionSection would render a false [¹] citation. Strip it here,
+  // mirroring rebaseParsedCargoes' dropLaycanSource (the createDemoSession path),
+  // so both write-paths behave the same. Read-time only — no prod-data write.
+  const dedupedCargos = dedupByKey(parsedCargos).map((c) =>
+    c.preferredDates
+      ? { ...c, preferredDates: { ...c.preferredDates, sourceText: undefined } }
+      : c,
+  );
   for (const v of dedupedVessels) {
     // CBFT→CBM: code is the single owner of the conversion — shared util, the
     // SAME one the engine/regen intake calls (#984 follow-up), so all readers
