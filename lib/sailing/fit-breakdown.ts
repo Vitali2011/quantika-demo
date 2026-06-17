@@ -402,14 +402,38 @@ export function scoreCranes(
 }
 
 /** Volume / hold fit — stowage ratio of cargo m³ to vessel grain capacity. */
+function volumeShare(ratio: number): { share: number; note: string } {
+  if (ratio <= 0.7) return { share: 0.85, note: 'comfortable fit, room to spare' };
+  if (ratio <= 0.9) return { share: 1.0, note: 'ideal fill' };
+  if (ratio <= 1.0) return { share: 0.85, note: 'a tight but workable fit' };
+  return { share: 0.25, note: 'cargo overflows the holds' };
+}
+
 export function scoreVolume(
   cargoWtMax: number | null,
   cargoDescription: string | null,
   grainCapacity: number | null,
   stowageFactor: string | null,
+  volumeCbm: number | null = null,
 ): FitBreakdownComponent {
   const w = FIT_WEIGHTS.volume;
-  if (!cargoWtMax || cargoWtMax <= 0 || !grainCapacity || grainCapacity <= 0) {
+  const haveGrain = !!grainCapacity && grainCapacity > 0;
+  const haveWeight = !!cargoWtMax && cargoWtMax > 0;
+  // #1021: CBM-only cargo (net CBM recovered by Claude re-parse, no weight stated)
+  // — score the direct volumetric fit instead of returning unknown.
+  if (!haveWeight && volumeCbm != null && volumeCbm > 0 && haveGrain) {
+    const ratio = volumeCbm / grainCapacity!;
+    const { share, note } = volumeShare(ratio);
+    return {
+      factor: 'volume',
+      label: 'Volume / hold fit',
+      weight: w,
+      score: Math.round(w * share * 10) / 10,
+      rationale: `Cargo volume ~${Math.round(ratio * 100)}% of the ship's grain capacity (${fmt(volumeCbm)} cbm vs ${fmt(grainCapacity!)} cbm) — ${note}.`,
+      bracketData: `${Math.round(ratio * 100)}% of grain (CBM)`,
+    };
+  }
+  if (!haveWeight || !haveGrain) {
     return unknown('volume', 'Volume / hold fit', 'Cargo weight or grain capacity not stated, scored conservatively.');
   }
   // Resolve stowage factor (explicit > keyword > default)
@@ -628,7 +652,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
     scoreClassFit(cargoWtNominal, dwt, partCargo),
     scoreCargoTypeQuality(cargo.cargoType, vessel.vesselType, vessel.lastCargoes),
     scoreCranes(vessel.geared, cfValue(cargo.originPort), cfValue(cargo.destinationPort)),
-    scoreVolume(cargoWtNominal, desc, vessel.grainCapacity, cargo.stowageFactor),
+    scoreVolume(cargoWtNominal, desc, vessel.grainCapacity, cargo.stowageFactor, cargo.volumeCbm),
     scoreDraft(hardFilters),
     scoreVetting(vessel, refYear, detentionCount),
     scoreEconomics(tceUsdPerDay, dwt),

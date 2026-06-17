@@ -69,3 +69,22 @@ describe('U4 parse-cargo prompt — universal conflict / hedge rule (audit Top-1
     expect(lower).toContain('operative');
   });
 });
+
+describe('parse-cargo prompt — Group B cargo-data-truth rules (#1021 #1023)', () => {
+  it('teaches European dot-as-thousands separator', () => {
+    const p = CARGO_INQUIRY_PARSER_PROMPT;
+    expect(p).toMatch(/EUROPEAN-DOTS RULE/);
+    expect(p).toMatch(/5\.000\/5\.500/);          // worked example from #1021
+    expect(p).toMatch(/thousands separator/i);
+  });
+  it('teaches net/gross CBM disambiguation', () => {
+    expect(CARGO_INQUIRY_PARSER_PROMPT).toMatch(/NET\/GROSS CBM RULE/);
+    expect(CARGO_INQUIRY_PARSER_PROMPT).toMatch(/12,000 net CBM/);
+  });
+  it('teaches vessel-DWT range extraction', () => {
+    const p = CARGO_INQUIRY_PARSER_PROMPT;
+    expect(p).toMatch(/min_vessel_dwt_mt/);
+    expect(p).toMatch(/max_vessel_dwt_mt/);
+    expect(p).toMatch(/12,?000\s*-\s*14,?000\s*dwt/i);   // GRAIN TRADER P example
+  });
+});

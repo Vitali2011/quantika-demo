@@ -417,6 +417,44 @@ export function checkVesselDimensions(input: VesselDimensionsCheckInput): Filter
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// Vessel-DWT range check — SOFT gate (#1023, founder decision).
+//
+//   The cargo inquiry may request a vessel SIZE BAND in DWT ("any 12,000-14,000
+//   dwt vsl"). A vessel outside that band STILL matches — this is NOT a hard
+//   filter. It returns a soft descriptor that drives a score penalty + flag in
+//   pair-analyzer. Conservative: no band stated, or vessel DWT unknown → neutral.
+//   5% tolerance mirrors checkCargoWeight ("abt").
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface VesselDwtRangeResult {
+  /** A DWT band was stated on the cargo (something to enforce). */
+  stated: boolean;
+  /** Vessel is inside the band (or band/vessel unknown → cannot disprove → true). */
+  inRange: boolean;
+  reason?: string;
+}
+
+const VESSEL_DWT_RANGE_TOLERANCE = 0.05; // 5% "abt" tolerance on each band edge
+
+export function checkVesselDwtRange(args: {
+  vesselDwt: number | null;
+  minVesselDwtMt: number | null;
+  maxVesselDwtMt: number | null;
+}): VesselDwtRangeResult {
+  const { vesselDwt, minVesselDwtMt, maxVesselDwtMt } = args;
+  if (minVesselDwtMt == null && maxVesselDwtMt == null) return { stated: false, inRange: true };
+  if (vesselDwt == null || !Number.isFinite(vesselDwt)) return { stated: true, inRange: true }; // can't disprove
+  const lo = minVesselDwtMt != null ? minVesselDwtMt * (1 - VESSEL_DWT_RANGE_TOLERANCE) : -Infinity;
+  const hi = maxVesselDwtMt != null ? maxVesselDwtMt * (1 + VESSEL_DWT_RANGE_TOLERANCE) : Infinity;
+  if (vesselDwt >= lo && vesselDwt <= hi) return { stated: true, inRange: true };
+  return {
+    stated: true,
+    inRange: false,
+    reason: `Vessel ${Math.round(vesselDwt)} DWT outside required DWT ${minVesselDwtMt ?? '?'}-${maxVesselDwtMt ?? '?'}`,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // War-risk open position + tiny vessel + intercontinental voyage gate
 //
 // A sub-handy vessel (DWT < SUB_HANDY_DWT_THRESHOLD) open in a JWC HRA zone
@@ -510,6 +548,9 @@ export interface HardFilterInput {
   cargoFlagRequired?: string | null;
   cargoClassRequired?: string | null;
   vesselOpenPosition?: string | null;
+  // #1023 SOFT gate — required vessel DWT band (not a hard filter)
+  cargoMinVesselDwtMt?: number | null;
+  cargoMaxVesselDwtMt?: number | null;
 }
 
 export interface HardFilterResult {
@@ -531,6 +572,8 @@ export interface HardFilterResult {
     voyage?: FilterResult;
     flagClass?: FilterResult;
     warPositionVoyage?: FilterResult;
+    /** #1023 SOFT gate — out-of-band vessel does NOT add to failures; drives penalty+flag downstream. */
+    vesselDwtRange?: VesselDwtRangeResult;
   };
 }
 
@@ -595,6 +638,12 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     originPort: input.originPort,
     destinationPort: input.destinationPort ?? null,
   });
+  // #1023 SOFT gate — computed but intentionally NOT added to `failures` below.
+  const vesselDwtRange = checkVesselDwtRange({
+    vesselDwt: input.dwtSummer ?? null,
+    minVesselDwtMt: input.cargoMinVesselDwtMt ?? null,
+    maxVesselDwtMt: input.cargoMaxVesselDwtMt ?? null,
+  });
 
   const failures: string[] = [];
   if (!draft.pass && draft.reason) failures.push(draft.reason);
@@ -618,6 +667,7 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     checks: {
       draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight, imsbc,
       vesselAge, dimensions, gearRequired, voyage, flagClass, warPositionVoyage,
+      vesselDwtRange,
     },
   };
 }

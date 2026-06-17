@@ -69,6 +69,11 @@ export const IDLE_HARD_MAX_GAP_DAYS = 21;
 // PSC detention lookback for the vetting signal: 3 years before refYear.
 const PSC_LOOKBACK_YEARS = 3;
 
+// #1023 SOFT vessel-DWT gate (founder decision): fit-% penalty applied when a
+// vessel falls outside the cargo's requested DWT band. Strong (knocks the pair
+// off the main board most of the time) but NOT a hard exclusion.
+const DWT_OUT_OF_BAND_PENALTY = 25;
+
 /** Outcome of the matching pipeline: the main "worth calling" list plus the
  *  preserved side-buckets (no pair is ever dropped — see the partition below). */
 export interface AnalyzePairsResult {
@@ -145,6 +150,9 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     cargoFlagRequired: c.flagRequired ?? null,
     cargoClassRequired: c.classRequired ?? null,
     vesselOpenPosition: cfValue(v.openPosition) ?? null,
+    // #1023 SOFT gate — required vessel DWT band
+    cargoMinVesselDwtMt: c.minVesselDwtMt ?? null,
+    cargoMaxVesselDwtMt: c.maxVesselDwtMt ?? null,
   });
 
   const hardFilters: MatchHardFilters = {
@@ -162,6 +170,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
     voyage: hf.checks.voyage,
     flagClass: hf.checks.flagClass,
     warPositionVoyage: hf.checks.warPositionVoyage,
+    vesselDwtRange: hf.checks.vesselDwtRange,
   };
 
   const imsbcCheck = checkImsbcLoadability(cfValue(c.cargoDescription), { restrictions: v.restrictions ?? [] });
@@ -747,6 +756,15 @@ export async function analyzePairs(
       });
       m.fitPercent = fb.fitPercent;
       m.fitBreakdown = fb;
+      // #1023 SOFT vessel-DWT gate (founder decision): a vessel outside the cargo's
+      // requested DWT band still matches, but takes a strong fit penalty + a surfaced
+      // flag. NOT a hard exclusion and NOT a forced bucket demotion — the pair routes
+      // normally; the penalty just lowers its headline %.
+      const dwtRange = analysis?.hardFilters?.vesselDwtRange;
+      if (dwtRange?.stated && !dwtRange.inRange) {
+        m.fitPercent = Math.max(0, Math.round((m.fitPercent - DWT_OUT_OF_BAND_PENALTY) * 10) / 10);
+        if (dwtRange.reason) m.issues = [...(m.issues ?? []), dwtRange.reason];
+      }
       // Derive matchLevel from fitPercent (spec §3.4); safety demotions below may lower it.
       m.matchLevel = deriveMatchLevelFromFit(m.fitPercent);
       // Safety demotion: ballast + size cap may lower the fit-derived level.

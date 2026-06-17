@@ -36,6 +36,8 @@ export interface RawCargoItem {
   destination_port_rotation?: unknown[] | null;
   weight_per_port?: unknown[] | null;
   max_vessel_age_yrs?: number | null;
+  min_vessel_dwt_mt?: number | null;
+  max_vessel_dwt_mt?: number | null;
   gear_required?: boolean | null;
   max_loa_m?: number | null;
   max_beam_m?: number | null;
@@ -163,6 +165,8 @@ export function parseCargoAIResponse(raw: string, emailId: string): ParsedCargo[
         ? item.weight_per_port.map((n) => Number(n)).filter((n) => !isNaN(n))
         : null,
       maxVesselAgeYrs: item.max_vessel_age_yrs != null ? extractNum(item.max_vessel_age_yrs) : null,
+      minVesselDwtMt: item.min_vessel_dwt_mt != null ? extractNum(item.min_vessel_dwt_mt) : null,
+      maxVesselDwtMt: item.max_vessel_dwt_mt != null ? extractNum(item.max_vessel_dwt_mt) : null,
       gearRequired: typeof item.gear_required === 'boolean' ? item.gear_required : null,
       maxLoaM: item.max_loa_m != null ? extractNum(item.max_loa_m) : null,
       maxBeamM: item.max_beam_m != null ? extractNum(item.max_beam_m) : null,

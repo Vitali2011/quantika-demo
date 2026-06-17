@@ -367,6 +367,9 @@ export async function rebuildWorksheets(
       cargo: {
         weightMt: cfValue(cargo.weightMt) ?? null,
         weightMtEffective: resolveCargoWeight(cargo) ?? null,
+        volumeCbm: cargo.volumeCbm ?? null,
+        minVesselDwtMt: cargo.minVesselDwtMt ?? null,
+        maxVesselDwtMt: cargo.maxVesselDwtMt ?? null,
         cargoType: cargoTypeStr(cargo),
         loadPort: cfValue(cargo.originPort) ?? null,
         dischargePort: cfValue(cargo.destinationPort) ?? null,
@@ -491,6 +494,9 @@ export function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel:
     },
     cargo: {
       weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,
+      volumeCbm: cargo ? (cargo.volumeCbm ?? null) : null,
+      minVesselDwtMt: cargo ? (cargo.minVesselDwtMt ?? null) : null,
+      maxVesselDwtMt: cargo ? (cargo.maxVesselDwtMt ?? null) : null,
       cargoType: cargo ? cargoTypeStr(cargo) : null,
       loadPort: cargo ? (cfValue(cargo.originPort) ?? null) : null,
       dischargePort: cargo ? (cfValue(cargo.destinationPort) ?? null) : null,
