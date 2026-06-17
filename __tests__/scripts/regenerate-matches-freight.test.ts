@@ -167,6 +167,37 @@ describe('buildWorksheet — full filter passport (#958/#959)', () => {
   });
 });
 
+describe('buildWorksheet — cargo data-truth fields flow through (#1021 #1023)', () => {
+  const cargoWithNewFields = {
+    emailId: 'cargo-1',
+    itemIndex: 0,
+    weightMt: { value: 5000, confidence: 'confirmed', sourceText: '5.000/5.500mts' },
+    weightMtMin: 5000,
+    weightMtMax: 5500,
+    volumeCbm: 12000,
+    minVesselDwtMt: 12000,
+    maxVesselDwtMt: 14000,
+    cargoType: 'GENERAL',
+    originPort: { value: 'Marmara', confidence: 'confirmed', sourceText: 'marmara' },
+    destinationPort: { value: 'Veracruz', confidence: 'confirmed', sourceText: 'veracruz' },
+  } as unknown as ParsedCargo;
+
+  test('volumeCbm / minVesselDwtMt / maxVesselDwtMt propagate from cargo into worksheet.cargo', () => {
+    const ws = buildWorksheet(makeMatch(), cargoWithNewFields, undefined);
+    expect(ws).not.toBeNull();
+    expect(ws!.cargo.volumeCbm).toBe(12000);
+    expect(ws!.cargo.minVesselDwtMt).toBe(12000);
+    expect(ws!.cargo.maxVesselDwtMt).toBe(14000);
+  });
+
+  test('absent cargo → new fields null (no crash)', () => {
+    const ws = buildWorksheet(makeMatch(), undefined, undefined);
+    expect(ws!.cargo.volumeCbm).toBeNull();
+    expect(ws!.cargo.minVesselDwtMt).toBeNull();
+    expect(ws!.cargo.maxVesselDwtMt).toBeNull();
+  });
+});
+
 describe('breakeven_tce_usd_per_day — persisted via createMatch (#959)', () => {
   function freshDbWithBreakeven(): Database.Database {
     const db = new Database(':memory:');

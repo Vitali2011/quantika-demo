@@ -47,3 +47,4 @@ Proposed | Accepted | Superseded by ADR-XXXX | Deprecated
 | #                                      | Решение                                       | Статус   |
 | -------------------------------------- | --------------------------------------------- | -------- |
 | [0001](0001-sqlite-rag-over-vertex.md) | SQLite RAG как дефолт вместо Vertex AI Search | Accepted |
+| [0002](0002-claude-canonical-cargo-parser.md) | Claude как канонический парсер cargo (офлайн claude-cli + live Anthropic-API провайдер) | Proposed |
