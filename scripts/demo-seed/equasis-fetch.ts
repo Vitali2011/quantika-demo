@@ -1,219 +1,253 @@
 /**
  * scripts/demo-seed/equasis-fetch.ts
  *
- * Fetch flag / classification society / year-built / P&I from Equasis
- * for the real-IMO demo vessels. Outputs enrichment.json for human review.
+ * Fetch flag / classification society / year-built / P&I from Equasis for the
+ * real-IMO demo vessels, via a HEADLESS BROWSER (Playwright/Chromium).
  *
- * Usage:
- *   set -a; . /root/.equasis-creds; set +a
- *   npx tsx scripts/demo-seed/equasis-fetch.ts
+ * Why a browser and not curl: the Equasis login flow does not establish a
+ * usable restricted/ShipInfo session from a scripted curl POST — the authed
+ * cookie/session is set client-side. A real Chromium drives the login form the
+ * same way the founder's browser does.
  *
- * Requires: EQUASIS_USER, EQUASIS_PASS in env.
- * Polite: 2.5s delay between requests. Do not run in CI.
+ * ── AUTH STATUS (2026-06-17) ────────────────────────────────────────────────
+ * Headless login currently FAILS with the explicit modal
+ *   "Your login (e-mail) or/and password are unknown in Equasis."
+ * The login form is driven correctly (email + password fields filled, submit
+ * fires, server responds) — the server rejects the credentials. This is a
+ * CREDENTIALS rejection, not a captcha / bot-wall. Two unblock paths:
+ *
+ *   1. Founder verifies / updates the password in /root/.equasis-creds, then:
+ *        set -a; . /root/.equasis-creds; set +a
+ *        npx tsx scripts/demo-seed/equasis-fetch.ts
+ *
+ *   2. Founder exports an authenticated browser session (Playwright
+ *      storageState JSON) from a logged-in equasis.org tab, then:
+ *        EQUASIS_STORAGE_STATE=/path/to/equasis-state.json \
+ *          npx tsx scripts/demo-seed/equasis-fetch.ts
+ *      (no password needed in this mode).
+ *
+ * Output: lib/sample-data/equasis-enrichment.json — for HUMAN REVIEW before any
+ * patch into demo-parsed-vessels.json. This script NEVER writes seed data and
+ * NEVER fabricates values.
+ *
+ * Polite: 3s delay between ships, 22 ships ≈ ~70s. Do NOT run in CI.
  */
 import * as fs from 'fs';
 import * as path from 'path';
-import * as https from 'https';
-import { URLSearchParams } from 'url';
 
 const BASE = 'https://www.equasis.org/EquasisWeb';
-const DELAY_MS = 2500;
+const DELAY_MS = 3000;
 
 // Real IMOs from demo-parsed-vessels.json (excludes null + duplicates).
-const DEMO_IMOS = [
-  '8605480',  // MV HASKAL
-  '8887296',  // MV BARABULKA
-  '9701360',  // MV GLORY TOM
-  '9063873',  // MV IMI
-  '9145786',  // MV ALTO
-  '9125073',  // MV GULF BLUE
-  '9166510',  // MV BBA LARISA (has 3 dupe entries — pick once)
-  '9367841',  // MV YUCATAN
-  '9238351',  // MV ONEGO TRADER
-  '9238363',  // MV ONEGO MERCHANT
-  '8834940',  // FIRTINA S
-  '9145360',  // EMINE ANNE
-  '9554145',  // GOYNUK
-  '9167320',  // GOCEK
-  '9111761',  // DOGANBEY
-  '8216100',  // MV MIMI
-  '9381407',  // MV SNAPPER
-  '1033822',  // M/V AVAT 1
-  '9013012',  // DOLPHIN E
-  '9013036',  // SERENITY AC
-  '9103740',  // M/V CANKA
-  '9173331',  // M/V TEOS
+export const DEMO_IMOS: ReadonlyArray<string> = [
+  '8605480', // MV HASKAL
+  '8887296', // MV BARABULKA
+  '9701360', // MV GLORY TOM
+  '9063873', // MV IMI
+  '9145786', // MV ALTO
+  '9125073', // MV GULF BLUE
+  '9166510', // MV BBA LARISA (3 dupe entries — fetch once)
+  '9367841', // MV YUCATAN
+  '9238351', // MV ONEGO TRADER
+  '9238363', // MV ONEGO MERCHANT
+  '8834940', // FIRTINA S
+  '9145360', // EMINE ANNE
+  '9554145', // GOYNUK
+  '9167320', // GOCEK
+  '9111761', // DOGANBEY
+  '8216100', // MV MIMI
+  '9381407', // MV SNAPPER
+  '1033822', // M/V AVAT 1
+  '9013012', // DOLPHIN E
+  '9013036', // SERENITY AC
+  '9103740', // M/V CANKA
+  '9173331', // M/V TEOS
 ];
 
-interface EquasisFields {
+export interface EquasisFields {
   imo: string;
   flag: string | null;
   yearBuilt: number | null;
   classSociety: string | null;
   pandi: string | null;
+  source: 'equasis';
   fetchedAt: string;
   error?: string;
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+
+function decodeEntities(s: string): string {
+  return s
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .trim();
 }
 
-function fetchUrl(url: string, opts: {
-  method?: 'GET' | 'POST';
-  body?: string;
-  headers?: Record<string, string>;
-  cookies?: string;
-}): Promise<{ status: number; headers: Record<string, string[]>; body: string }> {
-  return new Promise((resolve, reject) => {
-    const u = new URL(url);
-    const reqHeaders: Record<string, string> = {
-      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-      'Accept': 'text/html,application/xhtml+xml',
-      'Accept-Language': 'en-US,en;q=0.9',
-      ...(opts.headers ?? {}),
-    };
-    if (opts.cookies) reqHeaders['Cookie'] = opts.cookies;
-    if (opts.body) {
-      reqHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
-      reqHeaders['Content-Length'] = String(Buffer.byteLength(opts.body));
-    }
-    const req = https.request({
-      hostname: u.hostname,
-      path: u.pathname + u.search,
-      method: opts.method ?? 'GET',
-      headers: reqHeaders,
-    }, (res) => {
-      let data = '';
-      res.setEncoding('utf8');
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
-        resolve({
-          status: res.statusCode ?? 0,
-          headers: res.headers as Record<string, string[]>,
-          body: data,
-        });
-      });
-    });
-    req.on('error', reject);
-    req.setTimeout(30_000, () => { req.destroy(); reject(new Error('timeout')); });
-    if (opts.body) req.write(opts.body);
-    req.end();
-  });
-}
-
-function parseCookies(resp: { headers: Record<string, string[]> }): string[] {
-  const raw = resp.headers['set-cookie'];
-  if (!raw) return [];
-  return Array.isArray(raw) ? raw : [raw];
-}
-
-function extractCookieJar(cookieLines: string[]): string {
-  return cookieLines.map((line) => line.split(';')[0]).join('; ');
-}
-
-/** Extract field value from a simple <td>LABEL</td><td>VALUE</td> pattern. */
-function extractTableField(html: string, labelPattern: string): string | null {
-  const re = new RegExp(
-    labelPattern + '\\s*</td>\\s*<td[^>]*>\\s*([^<]{1,100}?)\\s*</td>',
-    'i'
-  );
+/**
+ * Extract a value from a simple `<td>LABEL</td><td>VALUE</td>` row. `labelRe`
+ * is a regex source fragment (already HTML-entity-aware for the label).
+ */
+export function extractTableField(html: string, labelRe: string): string | null {
+  const re = new RegExp(labelRe + '\\s*</td>\\s*<td[^>]*>\\s*([^<]{1,120}?)\\s*</td>', 'i');
   const m = html.match(re);
-  return m ? m[1].trim().replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ') : null;
+  if (!m) return null;
+  const v = decodeEntities(m[1]);
+  return v.length ? v : null;
 }
 
-function parseShipInfo(html: string, imo: string): EquasisFields {
+/**
+ * Detect an unauthenticated / failed-auth Equasis response. Verified against
+ * the real bad-credentials modal text captured 2026-06-17.
+ */
+export function detectAuthFailure(html: string): boolean {
+  return (
+    /unknown in Equasis/i.test(html) ||
+    /session has expired/i.test(html) ||
+    /Please Login/i.test(html)
+  );
+}
+
+/** Parse an authenticated Equasis ShipInfo page into structured fields. */
+export function parseShipInfo(html: string, imo: string): EquasisFields {
   const flag = extractTableField(html, 'Flag');
   const yearRaw = extractTableField(html, 'Year\\s+of\\s+[Bb]uild(?:ing)?');
   const classSociety = extractTableField(html, 'Classification\\s+[Ss]ociet\\w*');
-  const pandi = extractTableField(html, 'P\\s*&amp;\\s*I\\s+[Cc]lub|P&I\\s+[Cc]lub');
+  const pandi =
+    extractTableField(html, 'P&amp;I\\s+[Cc]lub') ?? extractTableField(html, 'P&I\\s+[Cc]lub');
+
+  const yearNum = yearRaw ? parseInt(yearRaw, 10) : NaN;
 
   return {
     imo,
-    flag: flag || null,
-    yearBuilt: yearRaw ? parseInt(yearRaw, 10) || null : null,
-    classSociety: classSociety || null,
-    pandi: pandi || null,
+    flag: flag ?? null,
+    yearBuilt: Number.isFinite(yearNum) ? yearNum : null,
+    classSociety: classSociety ?? null,
+    pandi: pandi ?? null,
+    source: 'equasis',
     fetchedAt: new Date().toISOString(),
   };
 }
 
-async function main() {
+// ────────────────────────────────────────────────────────────────────────────
+// Playwright runner (only when invoked as a script)
+// ────────────────────────────────────────────────────────────────────────────
+
+async function run(): Promise<void> {
+  // Lazy import so unit tests don't pull the browser SDK.
+  const { chromium } = await import('playwright');
+
+  const storageStatePath = process.env.EQUASIS_STORAGE_STATE;
   const user = process.env.EQUASIS_USER;
   const pass = process.env.EQUASIS_PASS;
-  if (!user || !pass) {
-    console.error('ERROR: EQUASIS_USER and EQUASIS_PASS must be set in env');
+
+  if (!storageStatePath && (!user || !pass)) {
+    console.error(
+      'ERROR: provide EQUASIS_STORAGE_STATE=<path> (founder browser export) OR EQUASIS_USER + EQUASIS_PASS.',
+    );
     process.exit(1);
   }
-  // Never log the password
-  console.log(`Equasis user: ${user}`);
 
-  // Step 1: get initial session cookie
-  console.log('Getting initial session...');
-  const homeResp = await fetchUrl(`${BASE}/public/HomePage`, {});
-  const initialCookies = parseCookies(homeResp);
-  let jar = extractCookieJar(initialCookies);
+  const launchOpts: Parameters<typeof chromium.launch>[0] = {
+    headless: true,
+    args: ['--disable-blink-features=AutomationControlled'],
+  };
+  if (process.env.EQUASIS_CHROMIUM_PATH) launchOpts.executablePath = process.env.EQUASIS_CHROMIUM_PATH;
 
-  // Step 2: authenticate
-  console.log('Authenticating...');
-  const loginBody = new URLSearchParams({
-    j_email: user,
-    j_password: pass,
-  }).toString();
-  const loginResp = await fetchUrl(`${BASE}/authen/HomePage?fs=HomePage`, {
-    method: 'POST',
-    body: loginBody,
-    cookies: jar,
-    headers: { 'Referer': `${BASE}/public/HomePage` },
+  const browser = await chromium.launch(launchOpts);
+  const ctx = await browser.newContext({
+    userAgent:
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    locale: 'en-US',
+    ...(storageStatePath ? { storageState: storageStatePath } : {}),
   });
-  const loginCookies = parseCookies(loginResp);
-  if (loginCookies.length > 0) {
-    jar = extractCookieJar([...initialCookies, ...loginCookies]);
-  }
+  await ctx.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => false });
+  });
+  const page = await ctx.newPage();
 
-  // Verify auth success — no error modal expected
-  if (loginResp.body.includes('unknown in Equasis')) {
-    console.error('AUTH FAILED: credentials unknown in Equasis. Register the account first.');
-    console.error('Register at: https://www.equasis.org/EquasisWeb/public/ConditionsRegistration');
-    process.exit(1);
-  }
-  console.log('Auth OK.');
-
-  // Step 3: fetch each IMO
-  const results: EquasisFields[] = [];
-  for (const imo of DEMO_IMOS) {
-    console.log(`Fetching IMO ${imo}...`);
-    await sleep(DELAY_MS);
-    try {
-      const resp = await fetchUrl(
-        `${BASE}/restricted/ShipInfo?fs=Search&P_IMO=${imo}`,
-        { cookies: jar, headers: { 'Referer': `${BASE}/restricted/Search?fs=HomePage` } }
-      );
-      if (resp.body.includes('session has expired') || resp.body.includes('Please Login')) {
-        console.error(`  Session expired at IMO ${imo} — re-run script`);
-        results.push({ imo, flag: null, yearBuilt: null, classSociety: null, pandi: null,
-          fetchedAt: new Date().toISOString(), error: 'session_expired' });
-        continue;
+  try {
+    if (storageStatePath) {
+      console.log(`Using imported browser session: ${storageStatePath}`);
+    } else {
+      console.log(`Logging in as ${user} (password not shown)...`);
+      await page.goto(`${BASE}/public/HomePage`, { waitUntil: 'domcontentloaded', timeout: 45000 });
+      // 3 login forms (mobile/header/home) share the j_email/j_password names — fill the visible pair.
+      const email = page.locator('input[name="j_email"]:visible').first();
+      const passwd = page.locator('input[name="j_password"]:visible').first();
+      await email.waitFor({ state: 'visible', timeout: 20000 });
+      await email.fill(user!);
+      await passwd.fill(pass!);
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 45000 }).catch(() => {}),
+        passwd.press('Enter'),
+      ]);
+      await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+      const body = await page.content();
+      if (detectAuthFailure(body)) {
+        console.error('AUTH FAILED: credentials rejected by Equasis (login/email or password unknown).');
+        console.error('Fix the password in /root/.equasis-creds, or use EQUASIS_STORAGE_STATE. See file header.');
+        await browser.close();
+        process.exit(2);
       }
-      const fields = parseShipInfo(resp.body, imo);
-      console.log(`  flag=${fields.flag} year=${fields.yearBuilt} class=${fields.classSociety} pandi=${fields.pandi}`);
-      results.push(fields);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error(`  ERROR ${imo}: ${msg}`);
-      results.push({ imo, flag: null, yearBuilt: null, classSociety: null, pandi: null,
-        fetchedAt: new Date().toISOString(), error: msg });
+      console.log('Auth OK.');
     }
-  }
 
-  // Write output
-  const outPath = path.join(process.cwd(), 'lib/sample-data/equasis-enrichment.json');
-  fs.writeFileSync(outPath, JSON.stringify(results, null, 2));
-  console.log(`\nDone. Results: ${outPath}`);
-  console.log('Review equasis-enrichment.json, then run backfill-equasis.ts to patch demo-parsed-vessels.json');
+    const results: EquasisFields[] = [];
+    for (const imo of DEMO_IMOS) {
+      await sleep(DELAY_MS);
+      console.log(`Fetching IMO ${imo}...`);
+      try {
+        await page.goto(`${BASE}/restricted/ShipInfo?fs=ShipList&P_IMO=${imo}`, {
+          waitUntil: 'domcontentloaded',
+          timeout: 45000,
+        });
+        const html = await page.content();
+        if (detectAuthFailure(html)) {
+          console.error(`  Session lost at IMO ${imo} — re-run script.`);
+          results.push(blank(imo, 'session_expired'));
+          continue;
+        }
+        const fields = parseShipInfo(html, imo);
+        console.log(
+          `  flag=${fields.flag} year=${fields.yearBuilt} class=${fields.classSociety} pandi=${fields.pandi}`,
+        );
+        results.push(fields);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`  ERROR ${imo}: ${msg}`);
+        results.push(blank(imo, msg));
+      }
+    }
+
+    const outPath = path.join(process.cwd(), 'lib/sample-data/equasis-enrichment.json');
+    fs.writeFileSync(outPath, JSON.stringify(results, null, 2));
+    console.log(`\nDone. Results: ${outPath}`);
+    console.log('Review equasis-enrichment.json, then write a backfill to patch demo-parsed-vessels.json.');
+  } finally {
+    await browser.close();
+  }
 }
 
-main().catch((err) => {
-  console.error('Fatal:', err);
-  process.exit(1);
-});
+function blank(imo: string, error: string): EquasisFields {
+  return {
+    imo,
+    flag: null,
+    yearBuilt: null,
+    classSociety: null,
+    pandi: null,
+    source: 'equasis',
+    fetchedAt: new Date().toISOString(),
+    error,
+  };
+}
+
+// Run only when executed directly (not when imported by tests).
+if (require.main === module) {
+  run().catch((err) => {
+    console.error('Fatal:', err);
+    process.exit(1);
+  });
+}

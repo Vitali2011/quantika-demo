@@ -244,3 +244,59 @@ Equasis will show the current P&I — reconcile to single record.
 | Demo current | partial | mostly OK | partial | partial |
 
 **Equasis is the right source** — free, comprehensive, authoritative (IMO-endorsed). Auth is the only blocker.
+
+---
+
+## 10. Headless-Browser Attempt (2026-06-17, EXEC) — STILL BLOCKED ❌
+
+The recon hypothesis was "curl can't establish the session; a real browser can".
+**Tested directly with headless Chromium (Playwright).** Result: the headless
+browser drives the real login form correctly (fills the visible `j_email` /
+`j_password` pair, fires submit, server responds 200) but Equasis returns the
+explicit modal:
+
+> **"Your login (e-mail) or/and password are unknown in Equasis. Please, try again"**
+
+Captured verbatim from a live attempt; the email field was confirmed to hold
+`v.marychenka@gmail.com` and the password (13 chars, clean — no whitespace / CR
+/ quotes) was submitted intact.
+
+### What this rules in / out
+
+- **Not a captcha / bot-wall.** The response is a *credentials-unknown* modal,
+  not a challenge. `navigator.webdriver` spoof + real UA made no difference.
+- **The blocker is the account credentials**, not the scripting method. The
+  prior "scripted curl is being bot-blocked" theory is **refuted** — headless
+  Chromium is rejected with the same credentials error.
+
+### Two unblock paths (founder action required)
+
+1. **Verify / update the password.** The password in `/root/.equasis-creds` is
+   rejected. Founder logs in at equasis.org by hand, confirms the working
+   password, updates `/root/.equasis-creds`, then:
+   ```bash
+   set -a; . /root/.equasis-creds; set +a
+   npx tsx scripts/demo-seed/equasis-fetch.ts
+   ```
+2. **Export an authenticated browser session** (no password in the pipeline).
+   From a logged-in equasis.org tab, export a Playwright `storageState` JSON,
+   then:
+   ```bash
+   EQUASIS_STORAGE_STATE=/path/to/equasis-state.json \
+     npx tsx scripts/demo-seed/equasis-fetch.ts
+   ```
+
+### Deliverable in this PR
+
+- `scripts/demo-seed/equasis-fetch.ts` — rewritten as a **Playwright headless
+  fetcher** with both auth modes above, polite 3 s inter-ship delay, robust
+  missing-field handling, and exported pure helpers (`parseShipInfo`,
+  `detectAuthFailure`).
+- `scripts/demo-seed/__tests__/equasis-fetch.test.ts` — unit tests. `detectAuthFailure`
+  is pinned against the **real** bad-credentials modal text; `parseShipInfo`
+  selectors model the documented ShipInfo `<td>label</td><td>value</td>` layout
+  but are **UNVERIFIED against a live authenticated page** — they MUST be
+  validated against the first real fetch before any seed write.
+
+**No seed data was written. No values were fabricated.** `demo-parsed-vessels.json`
+is untouched. The data-fill step stays BLOCKED until auth is fixed.
