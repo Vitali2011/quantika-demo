@@ -1,8 +1,13 @@
 # Equasis Enrich — Recon Report (2026-06-17)
 
 **Branch:** equasis-enrich  
-**Status:** PARTIAL — auth blocked; method proven; plan complete  
+**Status:** ✅ RESOLVED — auth solved via live session cookie; 22/22 fetched, parsed, integrated  
 **Agent:** Sonnet 4.6 subagent, orchestrator-day dispatch
+
+> **UPDATE 2026-06-17 (data-fill):** Auth unblocked with a valid `JSESSIONID`
+> session cookie (founder-supplied) + browser User-Agent — `curl` against
+> `restricted/ShipInfo` returns the authenticated page. All 22 demo IMOs fetched,
+> parsed, and integrated into the seed. See **§5 Results** below.
 
 ---
 
@@ -300,3 +305,105 @@ Captured verbatim from a live attempt; the email field was confirmed to hold
 
 **No seed data was written. No values were fabricated.** `demo-parsed-vessels.json`
 is untouched. The data-fill step stays BLOCKED until auth is fixed.
+
+---
+
+## 5. Results (RESOLVED 2026-06-17)
+
+### Auth method that worked
+
+A valid live **`JSESSIONID` session cookie** (founder-supplied, in
+`/root/.equasis-cookie`) plus a desktop browser `User-Agent` — no headless login
+needed:
+
+```bash
+curl -A '<browser UA>' -b "JSESSIONID=<value>" \
+  "https://www.equasis.org/EquasisWeb/restricted/ShipInfo?fs=Search&P_IMO=<imo>"
+```
+
+Raw HTML for all 22 was saved to `/tmp/equasis-raw/<imo>.html` first (cookie-expiry
+resilience), then parsed offline.
+
+### Parser correction (important)
+
+The live authenticated ShipInfo page is **Bootstrap div-grid**, NOT the `<td>`
+table layout the original (auth-blocked) parser assumed:
+
+- **Flag** — image (`flags/PAN.png`) + parenthesised country text (`(Panama)`,
+  `(Portugal (MAR))`, `(Not Known)` → null).
+- **Year of build** — grid row `<b>Year of build</b></div><div>VALUE</div>`.
+- **Classification society** — first `round-list` `<p>` after the
+  `<!-- Classification -->` anchor.
+- **P&I** — first `round-list` `<p>` after the `P&I Information` heading.
+
+`parseShipInfo` now tries the real div-grid extractors first, falling back to the
+legacy `<td>` extractors (so the original synthetic fixtures still pass).
+
+### Real values fetched (proof, all 22)
+
+| IMO | Vessel | Flag | Built | Class society | P&I |
+|-----|--------|------|-------|---------------|-----|
+| 1033822 | M/V AVAT 1 | St Kitts and Nevis | 2022 | Zianlian Chuen | Hydor AS |
+| 8216100 | MV MIMI | Comoros | 1986 | Hellas Naval Bureau | — |
+| 8605480 | MV HASKAL | (Not Known) → null | 1986 | Dutch Lloyd | — |
+| 8834940 | FIRTINA S | Vanuatu | 1988 | Turk Loydu (IACS) | — |
+| 8887296 | MV BARABULKA | St Kitts and Nevis | 1995 | Capital Register of Shipping | — |
+| 9013012 | DOLPHIN E | Palau | 1991 | Phoenix Register of Shipping | — |
+| 9013036 | SERENITY AC | Cameroon | 1991 | Phoenix Register of Shipping | — |
+| 9063873 | MV IMI | Bahamas | 1993 | DNV (IACS) | — |
+| 9103740 | M/V CANKA | Panama | 1995 | Turk Loydu (IACS) | The London P&I Club |
+| 9111761 | DOGANBEY | Palau | 1996 | Turk Loydu (IACS) | — |
+| 9125073 | MV GULF BLUE | Antigua and Barbuda | 1997 | Nippon Kaiji Kyokai (IACS) | The West of England Shipowners |
+| 9145360 | EMINE ANNE | Vanuatu | 1996 | Turk Loydu (IACS) | — |
+| 9145786 | MV ALTO | Belize | 1997 | International Maritime Bureau | American Steamship Owner P&I association |
+| 9166510 | MV BBA LARISA | Palau | 1999 | Turk Loydu (IACS) | — |
+| 9167320 | GOCEK | St Kitts and Nevis | 1997 | Turk Loydu (IACS) | Hydor AS |
+| 9173331 | M/V TEOS | San Marino | 1999 | Polish Register of Shipping (IACS) | The London P&I Club |
+| 9238351 | MV ONEGO TRADER | Portugal (MAR) | 2001 | Korean Register (IACS) | The London P&I Club |
+| 9238363 | MV ONEGO MERCHANT | Portugal (MAR) | 2002 | Korean Register (IACS) | The London P&I Club |
+| 9367841 | MV YUCATAN | St Vincent and Grenadines | 2006 | Turk Loydu (IACS) | — |
+| 9381407 | MV SNAPPER | St Kitts and Nevis | 2008 | International Register of Shipping (IS) | — |
+| 9554145 | GOYNUK | Marshall Islands | 2010 | Registro Italiano Navale (IACS) | Hydor AS |
+| 9701360 | MV GLORY TOM | Panama | 2015 | Nippon Kaiji Kyokai (IACS) | UK P&I Club |
+
+Verbatim values (with `(IACS)`/`(MAR)` suffixes, `source: 'equasis'`,
+`fetchedAt`) are persisted to `lib/sample-data/equasis-enrichment.json` (the
+provenance record of truth).
+
+### Integration into the seed
+
+`scripts/demo-seed/equasis-backfill.ts` patches `demo-parsed-vessels.json` from
+the sidecar — only fields Equasis returned, filling gaps and **correcting
+fabricated guesses**. Light normalisation maps Equasis spelling to the demo's
+canonical Paris-MoU flag keys and IACS-alias class keys (strip `(MAR)`/`(IACS)`,
+fix `St.` spacing). Result: **5 fields filled, 49 corrected.**
+
+Notable corrections (seed had optimistic fabrications):
+
+- **9013036 SERENITY AC** — flag was `Panama` (fake) → real **Cameroon**.
+- **9173331 M/V TEOS** — flag `Panama` + class `Indian Register of Shipping`
+  (both fake) → real **San Marino** + **Polish Register of Shipping**.
+- **1033822 M/V AVAT 1** — class `OMROS` → **Zianlian Chuen**, built `2020` →
+  **2022**.
+
+### Value-check (flag/class/age → vetting)
+
+`computeVesselVetting` before/after, all moves within **±0.14** (no inflation):
+
+| Vessel | Before | After | Δ |
+|--------|--------|-------|---|
+| MV GLORY TOM | 0.62 | 0.76 | +0.14 (real NK class now resolves IACS) |
+| MV BARABULKA | 0.54 | 0.62 | +0.08 |
+| SERENITY AC | 0.61 | 0.53 | **−0.08** (fake Panama → real Cameroon) |
+| M/V TEOS | 0.68 | 0.54 | **−0.14** (fake Panama+IRS → real San Marino+PRS) |
+
+Scores move toward truth in **both** directions — fabricated-favorable records
+correctly *deflate*. No wild inflation.
+
+### Known follow-ups (out of scope here)
+
+- `Polish Register of Shipping` (PRS) is a genuine IACS member but absent from
+  `lib/sanctions/iacs-members.ts` → scored `caution` not `ok`. Extend that
+  registry in a separate PR.
+- 1033822 real built `2022` (was estimated `2020`); CII bucket unchanged
+  (`estimateCiiByBuildYear` 2020 = 2022 = C), so `cii.json` stays consistent.

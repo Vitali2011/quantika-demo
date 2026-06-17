@@ -89,10 +89,67 @@ function decodeEntities(s: string): string {
 /**
  * Extract a value from a simple `<td>LABEL</td><td>VALUE</td>` row. `labelRe`
  * is a regex source fragment (already HTML-entity-aware for the label).
+ *
+ * Retained for backward-compat / synthetic fixtures. The REAL authenticated
+ * Equasis ShipInfo page is Bootstrap div-grid, not `<td>` tables — see the
+ * grid/flag/collapse extractors below (verified against 22 live pages
+ * 2026-06-17).
  */
 export function extractTableField(html: string, labelRe: string): string | null {
   const re = new RegExp(labelRe + '\\s*</td>\\s*<td[^>]*>\\s*([^<]{1,120}?)\\s*</td>', 'i');
   const m = html.match(re);
+  if (!m) return null;
+  const v = decodeEntities(m[1]);
+  return v.length ? v : null;
+}
+
+/** Collapse all whitespace runs to single spaces — the real page is pretty-printed. */
+function collapseWs(html: string): string {
+  return html.replace(/\s+/g, ' ');
+}
+
+/**
+ * Extract a value from the real Equasis Bootstrap grid row:
+ *   `<b>LABEL</b></div> <div class="col..."> VALUE </div>`
+ * Operates on whitespace-collapsed HTML. Returns null if absent.
+ */
+export function extractGridField(html: string, labelRe: string): string | null {
+  const re = new RegExp('<b>\\s*' + labelRe + '\\s*</b>\\s*</div>\\s*<div[^>]*>\\s*([^<]{1,80}?)\\s*</div>', 'i');
+  const m = collapseWs(html).match(re);
+  if (!m) return null;
+  const v = decodeEntities(m[1]);
+  return v.length ? v : null;
+}
+
+/**
+ * Extract the flag (registered) country from the real page. The flag cell shows
+ * an image (`flags/PAN.png`) plus the country NAME as parenthesised text in a
+ * trailing column: `(Panama)`, `(San Marino)`, `(Portugal (MAR))`, `(Not Known)`.
+ * `(Not Known)` and empties → null. A trailing register code (e.g. " (MAR)") is
+ * preserved as Equasis reports it; callers may normalise.
+ */
+export function extractFlag(html: string): string | null {
+  const re = /<b>\s*Flag\s*<\/b>.*?<div[^>]*hidden-lg[^>]*>\s*<\/div>\s*<div[^>]*>\s*\(([^<]+?)\)\s*<\/div>/i;
+  const m = collapseWs(html).match(re);
+  if (!m) return null;
+  const v = decodeEntities(m[1]);
+  if (!v.length || /^not\s+known$/i.test(v)) return null;
+  return v;
+}
+
+/**
+ * Extract the first listed entity name from a collapsible section anchored by
+ * `anchor` (e.g. the `<!-- Classification -->` comment or the `P&I Information`
+ * heading). The real page renders each entry as
+ *   `<div class="round-list ..."></div></div> <p>NAME</p>`
+ * The first such `<p>` after the anchor is the current society / club.
+ */
+export function extractAnchoredEntity(html: string, anchor: string): string | null {
+  const collapsed = collapseWs(html);
+  const i = collapsed.indexOf(anchor);
+  if (i < 0) return null;
+  const seg = collapsed.slice(i, i + 4500);
+  const m = seg.match(/round-list[^>]*><\/div>\s*<\/div>\s*<p>\s*([^<]{2,90}?)\s*<\/p>/i);
   if (!m) return null;
   const v = decodeEntities(m[1]);
   return v.length ? v : null;
@@ -110,13 +167,24 @@ export function detectAuthFailure(html: string): boolean {
   );
 }
 
-/** Parse an authenticated Equasis ShipInfo page into structured fields. */
+/**
+ * Parse an authenticated Equasis ShipInfo page into structured fields.
+ *
+ * Tries the REAL div-grid markup first (live-verified 2026-06-17), then falls
+ * back to the legacy `<td>` extractors so synthetic `<td>` fixtures still parse.
+ */
 export function parseShipInfo(html: string, imo: string): EquasisFields {
-  const flag = extractTableField(html, 'Flag');
-  const yearRaw = extractTableField(html, 'Year\\s+of\\s+[Bb]uild(?:ing)?');
-  const classSociety = extractTableField(html, 'Classification\\s+[Ss]ociet\\w*');
+  const flag = extractFlag(html) ?? extractTableField(html, 'Flag');
+  const yearRaw =
+    extractGridField(html, 'Year\\s+of\\s+[Bb]uild(?:ing)?') ??
+    extractTableField(html, 'Year\\s+of\\s+[Bb]uild(?:ing)?');
+  const classSociety =
+    extractAnchoredEntity(html, '<!-- Classification -->') ??
+    extractTableField(html, 'Classification\\s+[Ss]ociet\\w*');
   const pandi =
-    extractTableField(html, 'P&amp;I\\s+[Cc]lub') ?? extractTableField(html, 'P&I\\s+[Cc]lub');
+    extractAnchoredEntity(html, 'P&I Information') ??
+    extractTableField(html, 'P&amp;I\\s+[Cc]lub') ??
+    extractTableField(html, 'P&I\\s+[Cc]lub');
 
   const yearNum = yearRaw ? parseInt(yearRaw, 10) : NaN;
 

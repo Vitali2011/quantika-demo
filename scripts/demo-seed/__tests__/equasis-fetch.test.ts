@@ -12,7 +12,12 @@
  * these tests pin the extraction LOGIC (missing → null, entity decode, year
  * coercion, label disambiguation), not real-page fidelity.
  */
-import { parseShipInfo, detectAuthFailure } from '../equasis-fetch';
+import {
+  parseShipInfo,
+  detectAuthFailure,
+  extractGridField,
+  extractAnchoredEntity,
+} from '../equasis-fetch';
 
 describe('detectAuthFailure', () => {
   it('detects the real Equasis bad-credentials modal text', () => {
@@ -78,5 +83,77 @@ describe('parseShipInfo', () => {
     expect(r).toEqual(
       expect.objectContaining({ imo: '9999999', flag: null, yearBuilt: null, classSociety: null, pandi: null }),
     );
+  });
+});
+
+describe('parseShipInfo — REAL Equasis div-grid markup (live-verified 2026-06-17)', () => {
+  // Faithful slice of the live authenticated ShipInfo page (Bootstrap div-grid,
+  // NOT <td> tables). Structure copied verbatim from /tmp/equasis-raw/9701360.html
+  // (MV GLORY TOM) — flag image + parenthesised country text, year grid row,
+  // Classification collapse block, P&I Information collapse block.
+  const realHtml = `
+    <div class="row">
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6"> <b>Flag </b> </div>
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6"> &nbsp;<img class="img-responsive pull-left" src="../Static/img/flags/PAN.png" style="height: 25px;" data-toggle="tooltip" data-placement="top"> </div>
+      <div class="col-sm-6 col-xs-6 hidden-lg hidden-md"></div>
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6"> (Panama) </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6"> <b>Year of build </b> </div>
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6"> 2015 </div>
+    </div>
+    <!-- Classification -->
+    <div class="collapse" id="collapse4">
+      <div class="access-body"> <h5>Status </h5> </div>
+      <div class="col-lg-3"> <div class="pull-left"> <div class="round-list orange-equasis"></div> </div> <p>Nippon Kaiji Kyokai (IACS)</p> </div>
+      <div class="col-lg-3"> <div class="pull-left"> <div class="round-list orange-equasis"></div> </div> <p>Lloyd's Register (IACS)</p> </div>
+    </div>
+    <h3>P&I Information</h3>
+    <div class="collapse" id="collapse6">
+      <div class="access-body"> <div class="pull-left"> <div class="round-list orange-equasis"></div> </div> <p>UK P&I Club</p> </div>
+    </div>`;
+
+  it('extracts flag/year/class/P&I from the real div-grid layout', () => {
+    const r = parseShipInfo(realHtml, '9701360');
+    expect(r.flag).toBe('Panama');
+    expect(r.yearBuilt).toBe(2015);
+    expect(r.classSociety).toBe('Nippon Kaiji Kyokai (IACS)'); // first listed = current
+    expect(r.pandi).toBe('UK P&I Club');
+    expect(r.source).toBe('equasis');
+  });
+
+  it('preserves a register suffix in the flag (Portugal (MAR))', () => {
+    const html = `<b>Flag </b> </div>
+      <div class="col"> <img src="../Static/img/flags/PMD.png"> </div>
+      <div class="col hidden-lg hidden-md"></div>
+      <div class="col"> (Portugal (MAR)) </div>`;
+    expect(parseShipInfo(html, '9238351').flag).toBe('Portugal (MAR)');
+  });
+
+  it('maps "(Not Known)" flag to null (real IMO 8605480 case)', () => {
+    const html = `<b>Flag </b> </div>
+      <div class="col"> </div>
+      <div class="col hidden-lg hidden-md"></div>
+      <div class="col"> (Not Known) </div>`;
+    expect(parseShipInfo(html, '8605480').flag).toBeNull();
+  });
+
+  it('returns null P&I when the section is absent (real IMO 8216100 case)', () => {
+    const html = `<b>Flag </b> </div> <div class="col"> <img src="../Static/img/flags/COM.png"> </div>
+      <div class="col hidden-lg hidden-md"></div> <div class="col"> (Comoros) </div>
+      <!-- Classification -->
+      <div id="collapse4"> <div class="round-list orange-equasis"></div> </div> <p>Hellas Naval Bureau</p> </div>`;
+    const r = parseShipInfo(html, '8216100');
+    expect(r.flag).toBe('Comoros');
+    expect(r.classSociety).toBe('Hellas Naval Bureau');
+    expect(r.pandi).toBeNull();
+  });
+
+  it('extractGridField returns null for a missing label', () => {
+    expect(extractGridField('<b>Flag </b></div><div>x</div>', 'Gross\\s+tonnage')).toBeNull();
+  });
+
+  it('extractAnchoredEntity returns null when the anchor is absent', () => {
+    expect(extractAnchoredEntity('<div>no class block here</div>', '<!-- Classification -->')).toBeNull();
   });
 });
