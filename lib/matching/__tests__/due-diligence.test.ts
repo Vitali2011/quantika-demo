@@ -286,10 +286,11 @@ describe('buildDueDiligence — LOA berth row', () => {
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
     const row = byLabel(m, 'LOA под причал');
     expect(row?.state).toBe('caution');
-    // When both ports fail, both reasons must appear in evidence (not just load port)
-    expect(row?.evidence).toMatch(/LOA/i);
-    // Evidence must contain content (not empty)
-    expect(row?.evidence?.length).toBeGreaterThan(5);
+    // Both port failures must appear in evidence — verified by presence of separator
+    // (single-port failure uses the reason directly without ' / ').
+    expect(row?.evidence?.includes(' / ')).toBe(true);
+    // Each reason mentions the vessel LOA — two occurrences, one per port
+    expect(row?.evidence).toMatch(/200m.*200m/s);
   });
 });
 
