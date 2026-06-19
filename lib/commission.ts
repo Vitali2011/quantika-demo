@@ -16,14 +16,25 @@ function safeNum(v: unknown): number | null {
   return null;
 }
 
-/** Extract commission percent from raw commission text, e.g. "3.75% TTL on F/D/D" -> 3.75 */
+/**
+ * Extract commission percent from raw commission text.
+ * The total commission is the sum of its components (address + brokerage), e.g.
+ * "addcom 1.25% + 2.5% bkge ttl" -> 3.75. A "% ttl/total" label marks the final
+ * figure directly, e.g. "3.75% TTL on F/D/D" -> 3.75.
+ */
 function extractPercentFromText(text: string): number | null {
-  const m = text.match(/(\d+(?:\.\d+)?)\s*%/);
-  if (m) {
-    const n = parseFloat(m[1]);
-    return isNaN(n) ? null : n;
-  }
-  return null;
+  const all = Array.from(text.matchAll(/(\d+(?:\.\d+)?)\s*%/g))
+    .map((m) => parseFloat(m[1]))
+    .filter((n) => !isNaN(n));
+  if (all.length === 0) return null;
+
+  // Single percentage → it is the commission (e.g. "3.75% TTL on F/D/D", "5%").
+  if (all.length === 1) return all[0];
+
+  // Multiple components (address + brokerage) → the total is their sum. A "ttl"
+  // label in the text marks the sum as the final figure, not the last component.
+  const sum = all.reduce((a, b) => a + b, 0);
+  return Math.round(sum * 100) / 100;
 }
 
 export function calculateCommission(recap: ParsedFixtureRecap): CommissionResult | null {

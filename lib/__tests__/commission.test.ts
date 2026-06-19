@@ -110,6 +110,40 @@ describe('calculateCommission', () => {
     expect(result!.commissionPercent).toBe(3.75);
   });
 
+  it('sums multiple commission components instead of taking the first (W1-7)', () => {
+    // "addcom 1.25% + 2.5% bkge ttl" — first % is address/rebate, total is 3.75
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: 'addcom 1.25% + 2.5% bkge ttl',
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(3.75);
+  });
+
+  it('sums commission components regardless of order (W1-7)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: 'address 2.5% + brokerage 1.25% ttl',
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(3.75);
+  });
+
+  it('keeps single-percent commission text unchanged (W1-7)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: '5% commission',
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(5);
+  });
+
   it('uses precomputed commissionAmount when provided', () => {
     const recap = baseRecap({
       commissionPercent: 5,
