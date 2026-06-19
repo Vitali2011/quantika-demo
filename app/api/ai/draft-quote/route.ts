@@ -3,6 +3,7 @@ import { validateCsrf } from '@/lib/csrf';
 import { requireSession } from '@/lib/session';
 import { DraftQuoteBodySchema } from '@/lib/api-schemas';
 import { getStore } from '@/lib/session-store';
+import { getMatch } from '@/lib/matching/matches-repository';
 import { enqueueQuoteJob, QueueFullError } from '@/lib/quote-jobs/store';
 import { ensureWorker } from '@/lib/quote-jobs/ensure-worker';
 
@@ -21,8 +22,22 @@ export async function POST(request: NextRequest) {
   const parsedCargo = session.parsedCargos.find(r => r.emailId === emailId);
   if (!parsedCargo) return NextResponse.json({ error: 'Parsed request not found' }, { status: 404 });
 
+  const db = getStore().getDb();
+
+  // IDOR guard: a matchId is opaque to the worker (getMatch has no user_id
+  // filter), so verify ownership here before enqueue. Mirror matches/[id] —
+  // return 404 for both missing matches and matches owned by another session,
+  // so we never leak the existence of another session's match.
+  if (matchId !== undefined) {
+    const numId = Number(matchId);
+    const m = Number.isInteger(numId) && numId >= 1 ? getMatch(db, numId) : null;
+    if (!m || m.user_id !== sessionId) {
+      return NextResponse.json({ error: `Match not found: ${matchId}` }, { status: 404 });
+    }
+  }
+
   try {
-    const job = enqueueQuoteJob(getStore().getDb(), { sessionId, emailId, matchId });
+    const job = enqueueQuoteJob(db, { sessionId, emailId, matchId });
     ensureWorker();
     return NextResponse.json({ jobId: job.id, status: job.status }, { status: 202 });
   } catch (err) {
