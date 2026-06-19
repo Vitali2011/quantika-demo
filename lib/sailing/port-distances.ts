@@ -1130,8 +1130,12 @@ function getFuzzyCorpus(): { lookup: string; canonical: string }[] {
   // name AND each lowercased alias (aliases were previously dead for name
   // normalization — only getPortMaster's byAlias index used them).
   const portMaster = loadPortMasterFromJson(PORTS_JSON as unknown as PortMaster[]);
-  for (const [nameLower, entry] of Array.from(portMaster.entries())) {
+  // Iterate values() — the map keys are now portLookupKey() (space/accent-stripped)
+  // for reconciliation, but fuzzy matching needs the original spaced/hyphenated
+  // name as the lookup string (e.g. "fos-sur-mer", so "Fos-sr-Mer" typos resolve).
+  for (const entry of Array.from(portMaster.values())) {
     if (!entry.name) continue;
+    const nameLower = entry.name.toLowerCase();
     if (!seen.has(nameLower)) seen.set(nameLower, entry.name);
     for (const alias of entry.aliases ?? []) {
       const aliasLower = alias.toLowerCase();
@@ -1291,6 +1295,38 @@ function getSearouteJson(): Map<string, number> {
 /** Override the searoute JSON map for unit tests. Pass null to reset to file-backed loader. */
 export function _setSearouteJsonForTest(m: Map<string, number> | null): void {
   _searouteJson = m;
+  _searouteNormalized = null;
+  _searouteNormalizedSource = null;
+}
+
+// Normalized-key view of the searoute map: each `A|B` key is re-keyed by sorting
+// the two endpoints' portLookupKey() forms. This bridges the space/accent gap so
+// canonical concatenated names ("BandarAbbas|Singapore") match spaced JSON keys
+// ("Bandar Abbas|Singapore"). Rebuilt whenever the underlying map identity changes
+// (covers _setSearouteJsonForTest). The raw lookup is tried first for back-compat
+// with canonical-keyed injected test maps.
+let _searouteNormalized: Map<string, number> | null = null;
+let _searouteNormalizedSource: Map<string, number> | null = null;
+
+function getSearouteNormalized(): Map<string, number> {
+  const source = getSearouteJson();
+  if (_searouteNormalized !== null && _searouteNormalizedSource === source) {
+    return _searouteNormalized;
+  }
+  const { portLookupKey } = require('./port-master-loader') as typeof import('./port-master-loader');
+  const norm = new Map<string, number>();
+  for (const [key, nm] of source) {
+    const sep = key.indexOf('|');
+    if (sep < 0) continue;
+    const ka = portLookupKey(key.slice(0, sep));
+    const kb = portLookupKey(key.slice(sep + 1));
+    if (!ka || !kb) continue;
+    const [first, second] = [ka, kb].sort();
+    norm.set(`${first}|${second}`, nm);
+  }
+  _searouteNormalized = norm;
+  _searouteNormalizedSource = source;
+  return norm;
 }
 
 // ── Tier 3: on-the-fly searoute ──────────────────────────────────────────────
@@ -1429,8 +1465,15 @@ function computeDirectDistance(
   // Tier 2: pre-populated searoute JSON (~106k pairs, exact sea routes)
   if (process.env.DISTANCE_USE_SEAROUTE_JSON !== 'false') {
     const sj = getSearouteJson();
+    // Raw lookup first (back-compat for canonical-keyed injected test maps).
     const sjNm = sj.get(`${first}|${second}`);
     if (sjNm != null) return { nm: sjNm, exact: true };
+    // Normalized fallback: bridges concatenated-canonical vs spaced/accented JSON
+    // keys (e.g. "BandarAbbas|Singapore" → "Bandar Abbas|Singapore").
+    const { portLookupKey } = require('./port-master-loader') as typeof import('./port-master-loader');
+    const [nFirst, nSecond] = [portLookupKey(a), portLookupKey(b)].sort();
+    const normNm = getSearouteNormalized().get(`${nFirst}|${nSecond}`);
+    if (normNm != null) return { nm: normNm, exact: true };
   }
 
   // Tiers 3+4 need port-master coords. Lazy require avoids circular deps
