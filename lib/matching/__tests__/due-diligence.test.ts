@@ -290,7 +290,7 @@ describe('buildDueDiligence — LOA berth row', () => {
     // (single-port failure uses the reason directly without ' / ').
     expect(row?.evidence).toContain(' / ');
     // Each reason mentions the vessel LOA — two occurrences, one per port
-    expect(row?.evidence).toMatch(/200m.*200m/s);
+    expect(row?.evidence).toMatch(/200m.*200m/);
   });
 });
 
