@@ -35,6 +35,8 @@ export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
     bunker_consumption_mt_per_day,
     bunker_price_usd_per_mt,
     gross_freight_usd,
+    commission_pct,
+    commission_usd,
     bunker_usd,
     canal_usd,
     da_usd,
@@ -80,6 +82,16 @@ export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
           <span data-testid="gross-freight">{fmtUsd(gross_freight_usd)}</span>
         </div>
       </section>
+
+      {/* ── COMMISSION ─────────────────────────────────────── */}
+      {commission_usd != null && commission_usd > 0 && (
+        <div className="space-y-0.5" data-testid="cost-commission">
+          <div className="flex justify-between">
+            <span>📋 Commission {commission_pct}% TTL</span>
+            <span>{fmtUsd(-commission_usd)}</span>
+          </div>
+        </div>
+      )}
 
       {/* ── MINUS VOYAGE COSTS ─────────────────────────────── */}
       <section className="space-y-2">

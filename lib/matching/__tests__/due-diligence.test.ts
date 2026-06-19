@@ -137,13 +137,15 @@ describe('buildDueDiligence', () => {
     expect(m.categories).toHaveLength(5);
   });
 
-  it('honesty: LOA / air-draft / RightShip / KYC are ALWAYS inactive (gap rows present, not fake)', () => {
+  it('honesty: Воздушный габарит / RightShip / KYC are permanent gap rows — always inactive', () => {
     const m = buildDueDiligence(fullArgs());
-    for (const label of ['LOA под причал', 'Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
+    for (const label of ['Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
       const row = byLabel(m, label);
       expect(row).toBeDefined();
       expect(row?.state).toBe('inactive');
     }
+    // LOA is inactive in this fixture because vessel.loa is null — not because it's unimplemented.
+    // LOA behaviour is tested in the 'LOA берth row' describe block.
   });
 
   it('counter: ran = pass + caution + info, excludes inactive', () => {
@@ -275,6 +277,21 @@ describe('buildDueDiligence — LOA berth row', () => {
     expect(row?.state).toBe('inactive');
     expect(row?.evidence).toMatch(/причал/i);
   });
+
+  it('DISCH-LOA both ports fail: evidence shows both reasons, not just load', () => {
+    // Sfax maxLOA 180m; vessel 200m → fails BOTH load and discharge
+    const ws = fullWorksheet();
+    ws.vessel.loa = 200;
+    ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'LOA под причал');
+    expect(row?.state).toBe('caution');
+    // Both port failures must appear in evidence — verified by presence of separator
+    // (single-port failure uses the reason directly without ' / ').
+    expect(row?.evidence).toContain(' / ');
+    // Each reason mentions the vessel LOA — two occurrences, one per port
+    expect(row?.evidence).toMatch(/200m.*200m/);
+  });
 });
 
 // ── detail / source disclosure (demo «Подробнее») ─────────────────────────────
@@ -288,9 +305,9 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     expect(missing).toEqual([]);
   });
 
-  it('gap rows (LOA / air-draft / RightShip / KYC) → detail null AND source null', () => {
+  it('permanent gap rows (Воздушный габарит / RightShip / KYC) → detail null AND source null', () => {
     const m = buildDueDiligence(fullArgs());
-    for (const label of ['LOA под причал', 'Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
+    for (const label of ['Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
       const row = byLabel(m, label);
       expect(row?.state).toBe('inactive');
       expect(row?.detail ?? null).toBeNull();
@@ -339,6 +356,52 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     expect(row?.detail).toContain('9.2'); // estimatedLadenDraftM
     expect(row?.detail).toContain('10.5'); // portLimitM
     expect(row?.detail?.toLowerCase()).toContain('скрининг');
+  });
+
+  it('draft derivation: load row carries {dwt, cargoTons, laden, portLimit, pass}; laden mirrors STORED estimate 1:1', () => {
+    const m = buildDueDiligence(fullArgs());
+    const row = byLabel(m, 'Осадка — порт погрузки');
+    expect(row?.derivation).toBeTruthy();
+    expect(row?.derivation?.dwt).toBe(35000);
+    expect(row?.derivation?.cargoTons).toBe(30000);
+    // parity: never recompute over a stored value — laden === stored estimatedLadenDraftM 1:1
+    expect(row?.derivation?.laden).toBe(9.2);
+    expect(row?.derivation?.portLimit).toBe(10.5);
+    expect(row?.derivation?.pass).toBe(true);
+  });
+
+  it('draft derivation: cargoTons uses weightMtEffective (worst-case max) over nominal weightMt', () => {
+    const ws = fullWorksheet();
+    ws.cargo.weightMtEffective = 32000;
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    expect(byLabel(m, 'Осадка — порт погрузки')?.derivation?.cargoTons).toBe(32000);
+  });
+
+  it('draft derivation: discharge row recomputes laden from DWT+cargo when stored estimate absent (engine-parity ceil)', () => {
+    const m = buildDueDiligence(fullArgs());
+    const row = byLabel(m, 'Осадка — порт выгрузки');
+    const fullLoad = 0.4991 * Math.pow(35000, 0.2991);
+    const ratio = Math.min(30000 / 35000, 1);
+    const expected = Math.ceil(fullLoad * Math.pow(ratio, 0.3) * 10) / 10;
+    expect(row?.derivation?.laden).toBe(expected);
+    expect(row?.derivation?.portLimit).toBeNull(); // destDraft has no stored portLimitM
+    expect(row?.derivation?.pass).toBe(true);
+  });
+
+  it('draft derivation: null + «нет данных» honesty when DWT/cargo missing (no laden steps possible)', () => {
+    const ws = fullWorksheet();
+    ws.vessel.dwtSummer = null;
+    ws.hardFilters.draft = { pass: true }; // no stored estimate either
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'Осадка — порт погрузки');
+    expect(row?.derivation == null).toBe(true);
+    expect(row?.detail?.toLowerCase()).toContain('нет данных');
+  });
+
+  it('draft derivation: never feeds counter (display-only parity)', () => {
+    const m = buildDueDiligence(fullArgs());
+    expect(m.counter.ran).toBe(flat(m).filter((c) => c.state !== 'inactive').length);
+    expect(m.counter.pass + m.counter.caution + m.counter.info).toBe(m.counter.ran);
   });
 
   it('worked-calc age: detail shows refYear − built arithmetic', () => {

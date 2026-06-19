@@ -3542,7 +3542,11 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "Port of Gothenburg facts"
+    "sourceNote": "Port of Gothenburg facts",
+    "aliases": [
+      "G\u00f6teborg",
+      "Goteborg"
+    ]
   },
   {
     "unlocode": "SESTO",
@@ -10777,5 +10781,82 @@
     "hasShoreCranes": true,
     "berthType": "terminal",
     "note": "Saudi Arabian Gulf industrial port (portgap)"
+  },
+  {
+    "unlocode": "RUTMN",
+    "name": "Taman",
+    "country": "RU",
+    "lat": 45.21,
+    "lon": 36.7,
+    "maxDraftM": 15,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "aliases": [
+      "Port Taman",
+      "Volna"
+    ],
+    "dataConfidence": "low",
+    "sourceNote": "public port handbook / approximate coords \u2014 backfill follow-up (#fix-port-names)"
+  },
+  {
+    "unlocode": "NOHVK",
+    "name": "Halsvik",
+    "country": "NO",
+    "lat": 60.97,
+    "lon": 4.93,
+    "maxDraftM": 18,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "aliases": [
+      "Sl\u00f8v\u00e5g",
+      "Slovag",
+      "Gulen"
+    ],
+    "dataConfidence": "low",
+    "sourceNote": "public port handbook / approximate coords \u2014 backfill follow-up (#fix-port-names)"
+  },
+  {
+    "unlocode": "NOHAU",
+    "name": "Haugesund",
+    "country": "NO",
+    "lat": 59.41,
+    "lon": 5.27,
+    "maxDraftM": 10,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "dataConfidence": "low",
+    "sourceNote": "public port handbook / approximate coords \u2014 backfill follow-up (#fix-port-names)"
+  },
+  {
+    "unlocode": "IDJKT",
+    "name": "Jakarta",
+    "country": "ID",
+    "lat": -6.1,
+    "lon": 106.88,
+    "maxDraftM": 14,
+    "hasShoreCranes": true,
+    "berthType": "terminal",
+    "aliases": [
+      "Tanjung Priok"
+    ],
+    "dataConfidence": "low",
+    "sourceNote": "public port handbook / approximate coords \u2014 backfill follow-up (#fix-port-names)"
+  },
+  {
+    "unlocode": "VNSGN",
+    "name": "Ho Chi Minh",
+    "country": "VN",
+    "lat": 10.76,
+    "lon": 106.79,
+    "maxDraftM": 11,
+    "hasShoreCranes": true,
+    "berthType": "river",
+    "aliases": [
+      "Saigon",
+      "Cat Lai",
+      "Ho Chi Minh City"
+    ],
+    "dataConfidence": "low",
+    "sourceNote": "public port handbook / approximate coords \u2014 backfill follow-up (#fix-port-names)"
   }
 ]

@@ -16,7 +16,7 @@
  */
 
 import PORTS_JSON from '@/data/ports/port-master.json';
-import { loadPortMasterFromJson } from './port-master-loader';
+import { loadPortMasterFromJson, portLookupKey } from './port-master-loader';
 import { PortRegion, getPortRegion } from './port-regions';
 import type { KnownPort } from './port-distances';
 
@@ -76,7 +76,7 @@ export function getPortMaster(rawName: string | null | undefined): PortMaster | 
   const canonical = normalizePortName(rawName);
   if (!canonical) return null;
   const map = loadPortMasterFromJson(PORTS_JSON as unknown as PortMaster[]);
-  const entry = map.get(canonical.toLowerCase()) ?? null;
+  const entry = map.get(portLookupKey(canonical)) ?? null;
   if (!entry) return null;
   const region = getPortRegion(canonical as KnownPort) ?? undefined;
   return { ...entry, region };

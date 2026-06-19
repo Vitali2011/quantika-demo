@@ -9,7 +9,26 @@
 
 import type { PortMaster } from './port-master';
 
-/** Map keyed by `name.toLowerCase()` plus a secondary `byUnlocode` index. */
+/**
+ * Canonical lookup key shared by the port-master Map and the searoute Tier-2
+ * lookup. Collapses the space/accent divergence that silently lost coordinates:
+ * `normalizePortName` emits concatenated canonical tokens ("BandarAbbas"),
+ * while port-master names and searoute keys carry spaces/diacritics
+ * ("Bandar Abbas", "Gdańsk"). Lowercase + NFD-strip diacritics + drop every
+ * non-alphanumeric collapses all three forms to one key ("bandarabbas",
+ * "gdansk"). Verified to introduce zero new key collisions across the full
+ * port-master corpus (the only dups — Tripoli, Cartagena — already collided
+ * under `name.toLowerCase()`).
+ */
+export function portLookupKey(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+/** Map keyed by `portLookupKey(name)` plus a secondary `byUnlocode` index. */
 export class PortMasterIndex extends Map<string, PortMaster> {
   private readonly unlocodeMap: Map<string, PortMaster>;
 
@@ -28,8 +47,18 @@ export class PortMasterIndex extends Map<string, PortMaster> {
         throw new Error(`Duplicate UNLOCODE in port master: ${p.unlocode}`);
       }
       seenUnlocodes.add(p.unlocode);
-      this.set(p.name.toLowerCase(), p);
+      this.set(portLookupKey(p.name), p);
       this.unlocodeMap.set(p.unlocode.toUpperCase(), p);
+    }
+    // Second pass: index aliases, but never overwrite a real name key — a real
+    // port named "JNPT" must win over another port that lists "JNPT" as an
+    // alias. This is what makes alias-only ports (Marghera→Venice, Lagos→Apapa,
+    // Dubai→Jebel Ali) resolvable, since `normalizePortName` keeps them canonical.
+    for (const p of entries) {
+      for (const alias of p.aliases ?? []) {
+        const key = portLookupKey(alias);
+        if (key && !this.has(key)) this.set(key, p);
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 import { cfForFuel } from './ets';
 import { isEuCountry } from '@/lib/validation/sanctions';
+import { EUR_USD_FALLBACK } from './fx-rate';
 
 export interface BunkerCandidateInput {
   port: string;
@@ -40,14 +41,14 @@ export interface BunkerComparisonInput {
   vesselDayRateUsd: number;
   /** EU ETS EUA price in EUR/tCO2. If omitted, carbon cost = 0 and euaUsedFallback = true. */
   euaPriceEur?: number;
+  /** EUR→USD for carbon-cost conversion. Resolve via getEurToUsd() at the async caller
+   *  and inject. Omitted → EUR_USD_FALLBACK (estimated). */
+  eurToUsdRate?: number;
 }
 
 function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
-
-// EUR/USD rate — matches lib/economics/voyage-calculator.ts and lib/currency.ts
-const EUR_TO_USD = 1.08;
 
 // Ceuta is a Spanish territory (ES prefix) but outside the maritime EU ETS scope
 const NON_EU_ETS_OVERRIDE = new Set(['ESCEU']);
@@ -70,13 +71,14 @@ export function isEuEtsPort(locode: string): boolean {
  *   effectiveDeviationNm = max(0, deviationNm)
  *   deviationFuelUsd = devNm * (dailyConsT / (speedKn * 24)) * priceUsdPerMt
  *   timeCostUsd      = devNm / speedKn / 24 * vesselDayRateUsd
- *   carbonCostUsd    = euaPriceEur * EUR_TO_USD * Cf * liftTonnes  (EU ports only; 0 if euaPriceEur not provided)
+ *   carbonCostUsd    = euaPriceEur * eurToUsd * Cf * liftTonnes  (EU ports only; 0 if euaPriceEur not provided)
  *   effectiveUsdPerMt = (priceUsdPerMt * liftTonnes + deviationFuelUsd + timeCostUsd + carbonCostUsd) / liftTonnes
  *
  * Invariant: effectiveUsdPerMt = priceUsdPerMt + deviationFuelUsd/lift + timeCostUsd/lift + carbonUsdPerMt
  */
 export function computeBunkerComparison(input: BunkerComparisonInput): BunkerCandidateResult[] {
   const { candidates, vesselSpeedKn, dailyConsMtPerDay, liftTonnes, vesselDayRateUsd, euaPriceEur } = input;
+  const eurToUsd = input.eurToUsdRate ?? EUR_USD_FALLBACK;
 
   if (vesselSpeedKn <= 0 || dailyConsMtPerDay <= 0 || liftTonnes <= 0) return [];
 
@@ -92,7 +94,7 @@ export function computeBunkerComparison(input: BunkerComparisonInput): BunkerCan
     let carbonUsdPerMt = 0;
     if (!euaUsedFallback && isEuEtsPort(c.port)) {
       const cf = cfForFuel(c.grade);
-      carbonCostUsd = round2(euaPriceEur * EUR_TO_USD * cf * liftTonnes);
+      carbonCostUsd = round2(euaPriceEur * eurToUsd * cf * liftTonnes);
       carbonUsdPerMt = round2(carbonCostUsd / liftTonnes);
     }
 

@@ -25,8 +25,8 @@ import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
 import type { EcaZone } from '@/lib/knowledge/eca/parser';
 import type { ResolvedPort } from '@/lib/ports/resolve';
 import type { DataQuality } from '@/lib/data-quality/types';
+import { EUR_USD_FALLBACK } from './fx-rate';
 
-const EUR_TO_USD = 1.08;
 const ESTIMATED_DAYS_FALLBACK = 1;
 
 function safeNum(n: unknown): number {
@@ -64,6 +64,9 @@ export interface TceInputs {
   bunkerPriceUsdPerMt: number;
   /** EUA price EUR. Pass 0 when no EU routing. */
   euaPriceEur: number;
+  /** EUR→USD rate for EU-cost conversion (ETS, FuelEU). Resolve via getEurToUsd()
+   *  at the async caller and inject. Omitted → EUR_USD_FALLBACK (estimated). */
+  eurToUsdRate?: number;
 
   // Pre-resolved costs (canal / DA modules run upstream)
   canalUsd: number;
@@ -152,6 +155,9 @@ export function computeTce(inputs: TceInputs): TceResult {
   const valueUsd = safeNum(inputs.valueUsd);
   const euLegPercent = safeNum(inputs.euLegPercent);
   const euaPrice = safeNum(inputs.euaPriceEur);
+  // EUR→USD for EU-cost conversion (ETS + FuelEU). Single source: fx-rate.ts.
+  // Caller injects the live/as-of rate; fall back to the estimated constant.
+  const eurToUsd = inputs.eurToUsdRate ?? EUR_USD_FALLBACK;
   const daysInHraRaw = inputs.daysInHra;
   const daysInHra = typeof daysInHraRaw === 'number' && Number.isFinite(daysInHraRaw)
     ? daysInHraRaw
@@ -229,7 +235,7 @@ export function computeTce(inputs: TceInputs): TceResult {
     destEu: inputs.destEu,
   });
   const etsEur = etsResult.amountEur;
-  const etsUsd = Math.round(etsEur * EUR_TO_USD);
+  const etsUsd = Math.round(etsEur * eurToUsd);
   const etsApplicable = etsResult.applicable;
 
   // ── FuelEU Maritime (audit A.5, flag-gated) ───────────────────────────
@@ -248,6 +254,7 @@ export function computeTce(inputs: TceInputs): TceResult {
       fuelType,
       consumptionMtPerDay: consumption,
       voyageDays: duration,
+      eurToUsdRate: eurToUsd,
     });
     fueleuUsd = Math.round(fe.penaltyUsd * share);
   }
