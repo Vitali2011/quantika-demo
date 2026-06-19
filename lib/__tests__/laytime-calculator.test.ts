@@ -474,3 +474,33 @@ describe('calculateLaytime FHEX and FHINC modes', () => {
     expect(result.usedLaytimeHours).toBeCloseTo(5 * 24, 1);
   });
 });
+
+// ── breakdown vs usedLaytimeHours reconciliation (W1-6) ──
+// Contract: the daily breakdown carries GROSS counted hours, while
+// usedLaytimeHours is NET (gross − weatherDelayHours). The exact gap
+// between the two must equal weatherDelayHours so the UI can render a
+// single "weather delay deducted" reconciliation line and have the days
+// add up to the header value.
+describe('calculateLaytime breakdown vs usedLaytimeHours reconciliation', () => {
+  test('SHINC 6-day range with weatherDelayHours=36: gross days − weather = used', () => {
+    const input: LaytimeInput = {
+      allowedLaytimeDays: 5,
+      mode: 'SHINC',
+      commencedAt: '2026-05-12T00:00:00Z',
+      completedAt: '2026-05-18T00:00:00Z', // 6 days = 144h gross
+      weatherDelayHours: 36,
+    };
+    const result = calculateLaytime(input);
+
+    const grossSum = result.breakdown
+      .filter((e) => !e.excluded)
+      .reduce((sum, e) => sum + e.hours, 0);
+
+    // (1) header value is net of the weather deduction
+    expect(result.usedLaytimeHours).toBeCloseTo(144 - 36, 1); // 108h
+    // (2) the breakdown stays gross (unchanged contract)
+    expect(grossSum).toBeCloseTo(144, 1);
+    // (3) the gap between days and header is exactly the weather delay
+    expect(grossSum - input.weatherDelayHours!).toBeCloseTo(result.usedLaytimeHours, 1);
+  });
+});
