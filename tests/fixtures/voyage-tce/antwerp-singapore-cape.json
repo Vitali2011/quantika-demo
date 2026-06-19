@@ -14,7 +14,8 @@
     },
     "cargo": {
       "quantityMt": 70000,
-      "freightRateUsdPerMt": 28
+      "freightRateUsdPerMt": 28,
+      "commissionPct": 3.75
     },
     "bunkerPriceUsdPerMt": 590,
     "euaPriceEur": 80,
