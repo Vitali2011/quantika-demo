@@ -29,6 +29,28 @@ import { getPortMaster } from '@/lib/sailing/port-master';
 
 export type DDState = 'pass' | 'caution' | 'info' | 'inactive';
 
+/**
+ * Numeric, JSON-serializable payload for the "Осадка в грузу" rows so the client
+ * DDCheckRow can render the FULL laden-draft derivation (steps 1-3 + berth margin)
+ * inside «Подробнее». Display-only: `pass` echoes the STORED hardFilters.draft.pass
+ * verdict, and `laden` mirrors the STORED estimatedLadenDraftM 1:1 when present
+ * (recomputed with the engine formula only as a fallback). Intermediates
+ * (fullLoadDraftM / ratio) are recomputed on the client from `dwt`/`cargoTons` —
+ * never persisted, never fed back into the gate (parity invariant).
+ */
+export interface DraftDerivation {
+  /** worksheet.vessel.dwtSummer */
+  dwt: number;
+  /** cargo.weightMtEffective ?? cargo.weightMt — worst-case max the engine used. */
+  cargoTons: number;
+  /** Stored estimatedLadenDraftM (1:1) or engine-parity recompute when absent. */
+  laden: number;
+  /** Stored hardFilters.*.portLimitM (NOT a live getPortMaster call). Null when absent. */
+  portLimit: number | null;
+  /** Stored hardFilters.*.pass — display verdict only. */
+  pass: boolean;
+}
+
 export interface DDCheck {
   label: string;
   state: DDState;
@@ -45,6 +67,12 @@ export interface DDCheck {
   detail?: string | null;
   /** Short source badge (Equasis / Paris MoU / Расчёт TCE / …). Null on gap rows. */
   source?: string | null;
+  /**
+   * Draft rows only — numeric inputs so the client renders the full laden-draft
+   * formula in «Подробнее». Null when DWT/cargo are missing (no derivation possible)
+   * or on non-draft rows. Purely presentational — never read by `counter` (parity).
+   */
+  derivation?: DraftDerivation | null;
 }
 
 export interface DDCategory {
@@ -164,7 +192,32 @@ function draftDetail(
     const margin = Math.round((h.portLimitM - h.estimatedLadenDraftM) * 10) / 10;
     return `${base}\nРасчёт: осадка в грузу ~${h.estimatedLadenDraftM}m vs лимит причала ${h.portLimitM}m → запас ${margin}m.\n${caveat}`;
   }
-  return `${base}\n${caveat}`;
+  if (h?.estimatedLadenDraftM != null) {
+    return `${base}\nРасчёт: осадка в грузу ~${h.estimatedLadenDraftM}m; лимит причала не задан в реестре портов.\n${caveat}`;
+  }
+  // No laden estimate stored → screening could not compute draft-in-cargo.
+  return `${base}\nНет данных DWT/груза для расчёта осадки в грузу — проверка по заявленной статической осадке судна.\n${caveat}`;
+}
+
+/**
+ * Numeric derivation payload for a draft row. Returns null when DWT/cargo are
+ * absent (no step-by-step possible → row falls back to static-draft honesty copy).
+ * `laden` = STORED estimate 1:1 when present (parity); else engine-parity recompute.
+ */
+function buildDraftDerivation(
+  h: { pass: boolean; estimatedLadenDraftM?: number; portLimitM?: number } | undefined,
+  dwt: number | null | undefined,
+  cargoTons: number | null | undefined,
+): DraftDerivation | null {
+  if (!h) return null;
+  if (dwt == null || cargoTons == null || dwt <= 0 || cargoTons <= 0) return null;
+  let laden = h.estimatedLadenDraftM;
+  if (laden == null) {
+    const fullLoad = 0.4991 * Math.pow(dwt, 0.2991);
+    const ratio = Math.min(cargoTons / dwt, 1);
+    laden = Math.ceil(fullLoad * Math.pow(ratio, 0.3) * 10) / 10;
+  }
+  return { dwt, cargoTons, laden, portLimit: h.portLimitM ?? null, pass: h.pass };
 }
 
 /** "LOA под причал" detail — what the gate is + screening caveat. */
@@ -346,6 +399,12 @@ function buildVesselPort(args: BuildDDArgs): DDCategory {
   const fbDraft = findComponent(args.fitBreakdown, 'draft');
   const fbCranes = findComponent(args.fitBreakdown, 'cranes');
 
+  // Formula inputs for the laden-draft derivation (display-only). cargoTons uses the
+  // worst-case effective max — the same value the engine fed estimateLadenDraft.
+  const dwt = args.worksheet?.vessel?.dwtSummer ?? null;
+  const cargoTons =
+    args.worksheet?.cargo?.weightMtEffective ?? args.worksheet?.cargo?.weightMt ?? null;
+
   const draftEvidence = (
     h: { reason?: string; estimatedLadenDraftM?: number; portLimitM?: number } | undefined,
   ): string | null => {
@@ -368,6 +427,7 @@ function buildVesselPort(args: BuildDDArgs): DDCategory {
       evidence: draftEvidence(h),
       detail: active ? draftDetail(h) : null,
       source: active ? SRC.draft : null,
+      derivation: active ? buildDraftDerivation(h, dwt, cargoTons) : null,
     };
   };
 

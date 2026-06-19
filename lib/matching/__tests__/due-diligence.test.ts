@@ -341,6 +341,52 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     expect(row?.detail?.toLowerCase()).toContain('скрининг');
   });
 
+  it('draft derivation: load row carries {dwt, cargoTons, laden, portLimit, pass}; laden mirrors STORED estimate 1:1', () => {
+    const m = buildDueDiligence(fullArgs());
+    const row = byLabel(m, 'Осадка — порт погрузки');
+    expect(row?.derivation).toBeTruthy();
+    expect(row?.derivation?.dwt).toBe(35000);
+    expect(row?.derivation?.cargoTons).toBe(30000);
+    // parity: never recompute over a stored value — laden === stored estimatedLadenDraftM 1:1
+    expect(row?.derivation?.laden).toBe(9.2);
+    expect(row?.derivation?.portLimit).toBe(10.5);
+    expect(row?.derivation?.pass).toBe(true);
+  });
+
+  it('draft derivation: cargoTons uses weightMtEffective (worst-case max) over nominal weightMt', () => {
+    const ws = fullWorksheet();
+    ws.cargo.weightMtEffective = 32000;
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    expect(byLabel(m, 'Осадка — порт погрузки')?.derivation?.cargoTons).toBe(32000);
+  });
+
+  it('draft derivation: discharge row recomputes laden from DWT+cargo when stored estimate absent (engine-parity ceil)', () => {
+    const m = buildDueDiligence(fullArgs());
+    const row = byLabel(m, 'Осадка — порт выгрузки');
+    const fullLoad = 0.4991 * Math.pow(35000, 0.2991);
+    const ratio = Math.min(30000 / 35000, 1);
+    const expected = Math.ceil(fullLoad * Math.pow(ratio, 0.3) * 10) / 10;
+    expect(row?.derivation?.laden).toBe(expected);
+    expect(row?.derivation?.portLimit).toBeNull(); // destDraft has no stored portLimitM
+    expect(row?.derivation?.pass).toBe(true);
+  });
+
+  it('draft derivation: null + «нет данных» honesty when DWT/cargo missing (no laden steps possible)', () => {
+    const ws = fullWorksheet();
+    ws.vessel.dwtSummer = null;
+    ws.hardFilters.draft = { pass: true }; // no stored estimate either
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'Осадка — порт погрузки');
+    expect(row?.derivation == null).toBe(true);
+    expect(row?.detail?.toLowerCase()).toContain('нет данных');
+  });
+
+  it('draft derivation: never feeds counter (display-only parity)', () => {
+    const m = buildDueDiligence(fullArgs());
+    expect(m.counter.ran).toBe(flat(m).filter((c) => c.state !== 'inactive').length);
+    expect(m.counter.pass + m.counter.caution + m.counter.info).toBe(m.counter.ran);
+  });
+
   it('worked-calc age: detail shows refYear − built arithmetic', () => {
     const m = buildDueDiligence(fullArgs());
     const row = byLabel(m, 'Vessel age');
