@@ -287,6 +287,10 @@ export interface MatchEconomicsInput {
    *  The detail page sets this true (app/api/voyage/tce/route.ts:373) so that
    *  stored TCE and live TCE agree on war-zone routes. Defaults to true. */
   excludeWarRiskFromDailyTce?: boolean;
+  /** Address + brokerage commission percent (TTL) deducted from gross freight.
+   *  Absent/0 → no deduction (legacy). computeStoredMatchEconomics passes
+   *  cargo.commissionPercent ?? 3.75 (founder fallback). */
+  commissionPct?: number;
 }
 
 /**
@@ -368,6 +372,7 @@ export function buildMatchEconomics(input: MatchEconomicsInput): EconomicsResult
     originEu,
     destEu,
     excludeWarRiskFromDailyTce: input.excludeWarRiskFromDailyTce ?? false,
+    commissionPct: input.commissionPct,
   });
 
   const warLaden = calculateWarRiskPremium({

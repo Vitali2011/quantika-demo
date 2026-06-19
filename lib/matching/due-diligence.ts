@@ -289,7 +289,8 @@ function tceDetail(tce: number, breakeven: number | null): string {
   const base =
     'TCE (Time Charter Equivalent) — дневная доходность рейса за вычетом портовых сборов и бункера. Сравниваем с точкой безубыточности судовладельца: выше → рейс прибыльный, ниже → убыток.';
   const caveat =
-    'War-risk показан в breakdown отдельной строкой — в это число он НЕ входит.';
+    'War-risk показан в breakdown отдельной строкой — в это число он НЕ входит. ' +
+    'Комиссия (адрес + брокераж, ставка из письма либо 3.75% TTL по умолчанию) ВЫЧТЕНА из фрахта — TCE здесь net-of-commission.';
   if (breakeven != null) {
     const diff = tce - breakeven;
     const sign = diff >= 0 ? '+' : '−';

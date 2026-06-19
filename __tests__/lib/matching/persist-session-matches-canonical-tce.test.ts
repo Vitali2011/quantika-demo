@@ -79,6 +79,11 @@ const CARGO: ParsedCargo = {
   weightMt: { value: 5000, confidence: 'confirmed' },
   cargoType: 'GRAIN',
   freightRateUsd: null,
+  // #1046: these tests assert sentinel-removal + tce/net_voyage SIGN agreement on a
+  // thin-margin voyage — orthogonal to commission. Explicit 0% keeps the margin intact
+  // so the 3.75% founder default (commission-in-TCE) doesn't shove it into the breakeven
+  // noise floor. Commission deduction itself is covered by compute-tce-commission.test.ts.
+  commissionPercent: 0,
   missingInfo: [],
 } as unknown as ParsedCargo;
 
@@ -208,6 +213,9 @@ function expectedLive(
 
   const tceResult = calculateTCE({
     ...canonicalInputs,
+    // #1046: mirror the SUT's founder commission fallback (cargo.commissionPercent ?? 3.75)
+    // explicitly — NOT via computeStoredMatchEconomics, to keep this oracle non-circular.
+    cargo: { ...canonicalInputs.cargo, commissionPct: cargo.commissionPercent ?? 3.75 },
     excludeWarRiskFromDailyTce: true,
   });
 
