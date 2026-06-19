@@ -91,6 +91,7 @@ lib/sample-data/etms-emails.json
 .claude/worktrees/
 .claude/.specs/
 .claude/start-preview.sh
+.claude/wf-*.mjs
 .pipeline/
 .worktrees/
 .test-review-*/
