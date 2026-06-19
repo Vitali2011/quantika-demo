@@ -129,6 +129,46 @@ describe('resolveFreightRate — tier-2 math gives sane $/mt', () => {
   });
 });
 
+describe('resolveFreightRate — tier-2 plausibility clamp (part-cargo)', () => {
+  // A whole-vessel day-rate divided by a small PART-cargo tonnage yields an absurd
+  // $/mt (vessel/parcel-size mismatch). e.g. 3000 mt booked on a 70k-dwt panamax over
+  // a 9000 nm voyage: 15000 $/day × 64 RT days ÷ 3000 mt = 320 $/mt, ~5-10× real dry-bulk
+  // voyage freight. It must NOT be presented as authoritative 'Market (Baltic)'.
+  const partCargo: ResolveFreightInput = {
+    cargoType: 'GRAIN',
+    vesselDwt: 70000,
+    quantityMt: 3000,
+    distanceNm: 9000,
+    speedKts: 12,
+  };
+  const panamaxDayRate = { usdPerDay: 15000, date: '2026-05-09', indexCode: 'BPI_TC' };
+
+  it('raw tier-2 math would exceed the plausibility ceiling', () => {
+    const ladenDays = estimateVoyageDays(partCargo.distanceNm, partCargo.speedKts);
+    const days = ladenDays * 2 + 2;
+    const rawRate = (panamaxDayRate.usdPerDay * days) / partCargo.quantityMt;
+    expect(rawRate).toBeGreaterThan(200);
+  });
+
+  it('implausible part-cargo $/mt downgrades from baltic to estimated', () => {
+    const r = resolveFreightRate({ ...partCargo, balticDayRate: panamaxDayRate });
+    expect(r.source).toBe('estimated');
+  });
+
+  it('downgraded value is the sane estimate (< ceiling), not the absurd figure', () => {
+    const r = resolveFreightRate({ ...partCargo, balticDayRate: panamaxDayRate });
+    expect(r.value).toBeLessThan(200);
+    const est = estimateFreightRate(partCargo.cargoType, partCargo.distanceNm, partCargo.vesselDwt);
+    expect(r.value).toBe(est.rate);
+  });
+
+  it('plausible full-cargo rate at/under the ceiling stays baltic', () => {
+    // base = 45000 mt full cargo → tier-2 lands in the $1-40/mt band, well under ceiling.
+    const r = resolveFreightRate({ ...base, balticDayRate: balticInput });
+    expect(r.source).toBe('baltic');
+  });
+});
+
 describe('resolveFreightRate — tier-2 ballast-aware duration', () => {
   it('uses ballastDays+ladenDays+2 when ballastDistanceNm provided', () => {
     const ballastNm = 800;
