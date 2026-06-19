@@ -4,7 +4,7 @@
  * Due-Diligence check row — THIN 'use client' leaf (hybrid disclosure).
  *
  * Renders one pre-built DDCheck: state icon + label + evidence (always visible),
- * plus a «Подробнее» chevron that reveals the server-built `detail` (worked-calc /
+ * plus a "Details" chevron that reveals the server-built `detail` (worked-calc /
  * plain-language explanation) and a `source` badge.
  *
  * RSC boundary (recon Q3): this is the ONLY interactive piece. It MUST NOT import
@@ -35,7 +35,7 @@ export interface DDCheckRowProps {
   evidence: string | null;
   detail?: string | null;
   source?: string | null;
-  /** Draft rows: numeric inputs → full laden-draft formula rendered in «Подробнее». */
+  /** Draft rows: numeric inputs → full laden-draft formula rendered in "Details". */
   derivation?: DraftDerivation | null;
 }
 
@@ -56,18 +56,18 @@ function DraftDerivationSteps({ d }: { d: DraftDerivation }) {
   return (
     <div className="text-xs text-ds-text-muted space-y-0.5" data-testid="dd-draft-derivation">
       <div>
-        DWT {fmt(d.dwt)} mt · груз {fmt(d.cargoTons)} mt (верхн. граница) · загрузка {loadPct}%
+        DWT {fmt(d.dwt)} mt · cargo {fmt(d.cargoTons)} mt (upper bound) · load factor {loadPct}%
       </div>
-      <div className="font-mono">→ 1) осадка полная: 0.4991 × {fmt(d.dwt)}^0.2991 = {fullLoad.toFixed(2)} m</div>
+      <div className="font-mono">→ 1) full-load draft: 0.4991 × {fmt(d.dwt)}^0.2991 = {fullLoad.toFixed(2)} m</div>
       <div className="font-mono">→ 2) × ({fmt(d.cargoTons)}&thinsp;/&thinsp;{fmt(d.dwt)})^0.3 = {raw.toFixed(2)} m</div>
-      <div className="font-mono text-ds-text">→ 3) округление вверх = {d.laden.toFixed(1)} m</div>
+      <div className="font-mono text-ds-text">→ 3) round up = {d.laden.toFixed(1)} m</div>
       {margin != null ? (
         <div className={`font-mono ${d.pass ? 'text-emerald-600' : 'text-red-500'}`}>
-          → vs лимит причала {d.portLimit!.toFixed(1)} m · запас {margin >= 0 ? '+' : '−'}{Math.abs(margin).toFixed(1)} m {d.pass ? '✓' : '✗'}
+          → vs berth limit {d.portLimit!.toFixed(1)} m · margin {margin >= 0 ? '+' : '−'}{Math.abs(margin).toFixed(1)} m {d.pass ? '✓' : '✗'}
         </div>
       ) : (
         <div className="text-ds-text-muted">
-          → лимит причала не задан в реестре портов{d.pass ? ' · проходит (нет данных)' : ''}
+          → berth limit not in port directory{d.pass ? ' · passes (no data)' : ''}
         </div>
       )}
     </div>
@@ -100,7 +100,7 @@ export function DDCheckRow({ label, state, evidence, detail, source, derivation 
             data-testid="dd-check-toggle"
           >
             {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-            {open ? 'Свернуть' : 'Подробнее'}
+            {open ? 'Collapse' : 'Details'}
           </button>
         )}
 
@@ -117,7 +117,7 @@ export function DDCheckRow({ label, state, evidence, detail, source, derivation 
             {derivation && <DraftDerivationSteps d={derivation} />}
             {source && (
               <span className="inline-block text-xs text-ds-text-subtle bg-ds-surface-subtle border border-ds-border/60 px-1.5 py-0.5 rounded">
-                Источник: {source}
+                Source: {source}
               </span>
             )}
           </div>

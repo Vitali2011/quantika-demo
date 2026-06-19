@@ -17,15 +17,15 @@ describe('DDCheckRow', () => {
       <DDCheckRow
         label="TCE vs breakeven"
         state="pass"
-        evidence="TCE $9,600/day — $1,400/day выше breakeven"
-        detail={'TCE — дневная доходность.\nРасчёт: TCE $9,600/сут − breakeven $8,200/сут = +$1,400/сут → выше breakeven.\nWar-risk показан в breakdown отдельно.'}
-        source="Расчёт TCE"
+        evidence="TCE $9,600/day — $1,400/day above breakeven"
+        detail={'TCE — daily voyage return.\nCalc: TCE $9,600/day − breakeven $8,200/day = +$1,400/day → above breakeven.\nWar-risk shown separately in the breakdown.'}
+        source="TCE calculation"
       />,
     );
 
     // label + evidence visible immediately
     expect(screen.getByText('TCE vs breakeven')).toBeInTheDocument();
-    expect(screen.getByText(/выше breakeven/)).toBeInTheDocument();
+    expect(screen.getByText(/above breakeven/)).toBeInTheDocument();
     // detail body NOT in DOM before toggle
     expect(screen.queryByTestId('dd-check-detail')).not.toBeInTheDocument();
 
@@ -33,8 +33,8 @@ describe('DDCheckRow', () => {
     await user.click(screen.getByTestId('dd-check-toggle'));
     const body = screen.getByTestId('dd-check-detail');
     expect(body).toBeInTheDocument();
-    expect(body).toHaveTextContent('Расчёт: TCE $9,600/сут');
-    expect(body).toHaveTextContent('Источник: Расчёт TCE');
+    expect(body).toHaveTextContent('Calc: TCE $9,600/day');
+    expect(body).toHaveTextContent('Source: TCE calculation');
 
     // toggle label flips and collapses
     await user.click(screen.getByTestId('dd-check-toggle'));
@@ -43,7 +43,7 @@ describe('DDCheckRow', () => {
 
   it('no detail → no toggle button (gap rows stay flat, never fake-disclose)', () => {
     render(
-      <DDCheckRow label="RightShip score" state="inactive" evidence="не подключено" detail={null} source={null} />,
+      <DDCheckRow label="RightShip score" state="inactive" evidence="not connected" detail={null} source={null} />,
     );
     expect(screen.getByText('RightShip score')).toBeInTheDocument();
     expect(screen.queryByTestId('dd-check-toggle')).not.toBeInTheDocument();
@@ -54,28 +54,28 @@ describe('DDCheckRow', () => {
     const user = userEvent.setup();
     render(
       <DDCheckRow
-        label="Осадка — порт погрузки"
+        label="Laden draft — load port"
         state="pass"
-        evidence="Осадка в грузу ~9.2m vs лимит причала 10.5m"
+        evidence="Laden draft ~9.2m vs berth draft limit 10.5m"
         detail="base explanation"
-        source="Исходное письмо + port-master.json"
+        source="Circular + port-master.json"
         derivation={{ dwt: 35000, cargoTons: 30000, laden: 9.2, portLimit: 10.5, pass: true }}
       />,
     );
     await user.click(screen.getByTestId('dd-check-toggle'));
     const der = screen.getByTestId('dd-draft-derivation');
     expect(der).toHaveTextContent('DWT 35,000 mt');
-    expect(der).toHaveTextContent('загрузка 86%'); // 30000/35000
+    expect(der).toHaveTextContent('load factor 86%'); // 30000/35000
     expect(der).toHaveTextContent('0.4991 × 35,000^0.2991');
-    expect(der).toHaveTextContent('округление вверх = 9.2 m');
-    expect(der).toHaveTextContent(/запас .*1\.3 m/); // 10.5 − 9.2
+    expect(der).toHaveTextContent('round up = 9.2 m');
+    expect(der).toHaveTextContent(/margin .*1\.3 m/); // 10.5 − 9.2
   });
 
   it('draft derivation: null portLimit → registry-gap line, no margin', async () => {
     const user = userEvent.setup();
     render(
       <DDCheckRow
-        label="Осадка — порт выгрузки"
+        label="Laden draft — discharge port"
         state="pass"
         evidence="e"
         detail="d"
@@ -84,7 +84,7 @@ describe('DDCheckRow', () => {
       />,
     );
     await user.click(screen.getByTestId('dd-check-toggle'));
-    expect(screen.getByTestId('dd-draft-derivation')).toHaveTextContent('не задан');
+    expect(screen.getByTestId('dd-draft-derivation')).toHaveTextContent('not in port directory');
   });
 
   it('no derivation → no steps block; plain detail still toggles', async () => {
@@ -102,6 +102,6 @@ describe('DDCheckRow', () => {
     );
     await user.click(screen.getByTestId('dd-check-toggle'));
     expect(screen.getByTestId('dd-check-detail')).toHaveTextContent('just an explanation');
-    expect(screen.queryByText(/Источник:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Source:/)).not.toBeInTheDocument();
   });
 });

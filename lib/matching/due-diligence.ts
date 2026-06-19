@@ -9,8 +9,8 @@
  * presentation re-derivations on the SAME stored vessel/cargo snapshot the page
  * already uses — allowed; they do not touch scoring / regen.
  *
- * Honesty invariant: any null / absent source → `inactive` («не подключено / нет
- * данных»), NEVER a fake `pass`. The hero counter counts active checks only
+ * Honesty invariant: any null / absent source → `inactive` ("not connected / no
+ * data"), NEVER a fake `pass`. The hero counter counts active checks only
  * (pass / caution / info) — inactive rows are excluded.
  */
 
@@ -29,9 +29,9 @@ import { portCanHandleLOA } from '@/lib/sailing/port-master';
 export type DDState = 'pass' | 'caution' | 'info' | 'inactive';
 
 /**
- * Numeric, JSON-serializable payload for the "Осадка в грузу" rows so the client
+ * Numeric, JSON-serializable payload for the "Laden draft" rows so the client
  * DDCheckRow can render the FULL laden-draft derivation (steps 1-3 + berth margin)
- * inside «Подробнее». Display-only: `pass` echoes the STORED hardFilters.draft.pass
+ * inside "Details". Display-only: `pass` echoes the STORED hardFilters.draft.pass
  * verdict, and `laden` mirrors the STORED estimatedLadenDraftM 1:1 when present
  * (recomputed with the engine formula only as a fallback). Intermediates
  * (fullLoadDraftM / ratio) are recomputed on the client from `dwt`/`cargoTons` —
@@ -56,7 +56,7 @@ export interface DDCheck {
   /** Living evidence — a real number / fact from the stored snapshot. Null when inactive. */
   evidence: string | null;
   /**
-   * Plain-language demo disclosure («Подробнее»): what the check is, what we found,
+   * Plain-language demo disclosure ("Details"): what the check is, what we found,
    * and — for quantitative checks (has_calc) — a worked-calc line (inputs → op →
    * result) built from STORED fields only. Honesty caveats are baked in where the
    * engine number is not a 1:1 literal (war-risk excluded from TCE; nominal vs max
@@ -64,11 +64,11 @@ export interface DDCheck {
    * never read by `counter` / `fitPercent` (parity invariant).
    */
   detail?: string | null;
-  /** Short source badge (Equasis / Paris MoU / Расчёт TCE / …). Null on gap rows. */
+  /** Short source badge (Equasis / Paris MoU / TCE calculation / …). Null on gap rows. */
   source?: string | null;
   /**
    * Draft rows only — numeric inputs so the client renders the full laden-draft
-   * formula in «Подробнее». Null when DWT/cargo are missing (no derivation possible)
+   * formula in "Details". Null when DWT/cargo are missing (no derivation possible)
    * or on non-draft rows. Purely presentational — never read by `counter` (parity).
    */
   derivation?: DraftDerivation | null;
@@ -157,16 +157,16 @@ function num(n: number): string {
 
 /** Source badges per check (recon Q2 map). */
 const SRC = {
-  draft: 'Исходное письмо + port-master.json',
-  loa: 'Исходное письмо + port-master.json',
-  letter: 'Исходное письмо',
-  l5c: 'L5C-матрица',
+  draft: 'Circular + port-master.json',
+  loa: 'Circular + port-master.json',
+  letter: 'Vessel circular',
+  l5c: 'L5C matrix',
   imsbc: 'IMSBC-Code',
-  tce: 'Расчёт TCE',
-  freight: 'Baltic-сид / исходное письмо',
-  fit: 'Расчёт фит-%',
+  tce: 'TCE calculation',
+  freight: 'Baltic index / vessel circular',
+  fit: 'Fit-% model',
   parisMou: 'Paris MoU',
-  iacs: 'Реестр IACS',
+  iacs: 'IACS register',
   equasis: 'Equasis',
   pandi: 'IG P&I clubs',
   sanctions: 'OFAC/EU',
@@ -180,23 +180,23 @@ const BALLAST_RADIUS_NM: Record<string, number> = {
   capesize: 4000,
 };
 
-/** "Осадка в грузу" worked-calc from stored hardFilters.draft / destDraft. */
+/** "Laden draft" worked-calc from stored hardFilters.draft / destDraft. */
 function draftDetail(
   h: { estimatedLadenDraftM?: number; portLimitM?: number } | undefined,
 ): string {
   const base =
-    'Проверяем, войдёт ли судно под причал: расчётную осадку судна в грузу сравниваем с допустимым лимитом причала из реестра портов.';
+    'Checking whether the vessel fits the berth: estimated laden draft is compared against the berth draft limit from the port directory.';
   const caveat =
-    'Оценка осадки по DWT и загрузке (скрининг), считается от верхней границы груза — не точный расчёт осадки.';
+    'Draft estimate derived from DWT and load factor (screening); computed from the upper cargo range bound — not a precision draft calculation.';
   if (h?.estimatedLadenDraftM != null && h?.portLimitM != null) {
     const margin = Math.round((h.portLimitM - h.estimatedLadenDraftM) * 10) / 10;
-    return `${base}\nРасчёт: осадка в грузу ~${h.estimatedLadenDraftM}m vs лимит причала ${h.portLimitM}m → запас ${margin}m.\n${caveat}`;
+    return `${base}\nCalc: laden draft ~${h.estimatedLadenDraftM}m vs berth limit ${h.portLimitM}m → margin ${margin}m.\n${caveat}`;
   }
   if (h?.estimatedLadenDraftM != null) {
-    return `${base}\nРасчёт: осадка в грузу ~${h.estimatedLadenDraftM}m; лимит причала не задан в реестре портов.\n${caveat}`;
+    return `${base}\nCalc: laden draft ~${h.estimatedLadenDraftM}m; no berth limit in port directory.\n${caveat}`;
   }
   // No laden estimate stored → screening could not compute draft-in-cargo.
-  return `${base}\nНет данных DWT/груза для расчёта осадки в грузу — проверка по заявленной статической осадке судна.\n${caveat}`;
+  return `${base}\nNo DWT/cargo data for laden-draft estimate — check uses vessel's stated max draft.\n${caveat}`;
 }
 
 /**
@@ -220,33 +220,33 @@ function buildDraftDerivation(
   return { dwt, cargoTons, laden, portLimit: h.portLimitM ?? null, pass: h.pass };
 }
 
-/** "LOA под причал" detail — what the gate is + screening caveat. */
+/** "LOA vs berth" detail — what the gate is + screening caveat. */
 function loaDetail(vesselLoaM: number, limitStr: string | null): string {
   const base =
-    'Проверяем, влезет ли судно по длине (LOA) под причал: длину судна сравниваем с максимальной длиной у причала из реестра портов.';
+    "Checking whether the vessel fits the berth by length (LOA): vessel LOA is compared against the berth's maximum LOA from the port directory.";
   const caveat =
-    'Лимит LOA причала — из реестра портов (есть не у всех портов; черноморские внутренние порты пока без данных). Не учитывает индивидуальные ограничения конкретного терминала.';
+    'Berth LOA limit sourced from port directory (not available for all ports; some Black Sea inland ports currently without data). Does not account for individual terminal restrictions.';
   if (limitStr) {
-    return `${base}\nРасчёт: LOA судна ${vesselLoaM}m vs лимит причала ${limitStr}.\n${caveat}`;
+    return `${base}\nCalc: vessel LOA ${vesselLoaM}m vs berth limit ${limitStr}.\n${caveat}`;
   }
   return `${base}\n${caveat}`;
 }
 
 /**
- * Task #8 — LOA-под-причал berth-gate row. Re-derives the check on the SAME stored
+ * Task #8 — LOA-vs-berth berth-gate row. Re-derives the check on the SAME stored
  * snapshot (worksheet.vessel.loa + port-master maxLOA), like checkCompatibility —
  * parity-safe and robust to pre-gate persisted matches. Honesty: any missing data
  * → inactive (never fake-pass). Graceful pass everywhere data is absent.
  */
 function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
-  const LABEL = 'LOA под причал';
+  const LABEL = 'LOA vs berth';
   const vesselLoa = args.worksheet?.vessel?.loa ?? null;
   const loadPort = args.worksheet?.cargo?.loadPort ?? null;
   const dischPort = args.worksheet?.cargo?.dischargePort ?? null;
 
   // Honesty: vessel LOA not parsed from the circular → inactive, never fake-pass.
   if (vesselLoa == null) {
-    return { label: LABEL, state: 'inactive', evidence: 'LOA судна нет в исходном письме — нужно уточнить', detail: null, source: null };
+    return { label: LABEL, state: 'inactive', evidence: 'Vessel LOA missing from circular — needs confirmation', detail: null, source: null };
   }
 
   const loadResult = portCanHandleLOA(loadPort, vesselLoa);
@@ -259,15 +259,15 @@ function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
     return {
       label: LABEL,
       state: 'inactive',
-      evidence: `LOA судна ${vesselLoa}m; нет данных по причалу — нужно уточнить`,
+      evidence: `Vessel LOA ${vesselLoa}m; no berth data — needs confirmation`,
       detail: null,
       source: null,
     };
   }
 
   const limitStr = [
-    loadLimit != null ? `погрузка max ${loadLimit}m` : null,
-    dischLimit != null ? `выгрузка max ${dischLimit}m` : null,
+    loadLimit != null ? `load max ${loadLimit}m` : null,
+    dischLimit != null ? `disch max ${dischLimit}m` : null,
   ].filter(Boolean).join(' / ');
 
   const loadFail = !loadResult.ok ? loadResult : null;
@@ -280,9 +280,9 @@ function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
       const reasons = [loadFail.reason, dischFail.reason].filter(Boolean);
       evidence = reasons.length > 0
         ? reasons.join(' / ')
-        : `LOA судна ${vesselLoa}m превышает лимит обоих причалов`;
+        : `Vessel LOA ${vesselLoa}m exceeds both berth limits`;
     } else {
-      evidence = anyFail.reason ?? `LOA судна ${vesselLoa}m превышает лимит причала`;
+      evidence = anyFail.reason ?? `Vessel LOA ${vesselLoa}m exceeds berth limit`;
     }
     return {
       label: LABEL,
@@ -295,56 +295,56 @@ function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
   return {
     label: LABEL,
     state: 'pass',
-    evidence: `LOA судна ${vesselLoa}m vs лимит причала (${limitStr})`,
+    evidence: `Vessel LOA ${vesselLoa}m vs berth limit (${limitStr})`,
     detail: loaDetail(vesselLoa, limitStr || null),
     source: SRC.loa,
   };
 }
 
-/** "Утилизация DWT" worked-calc from stored bracketData "X / Y mt". */
+/** "DWT utilisation" worked-calc from stored bracketData "X / Y mt". */
 function utilDetail(c: FitBreakdownComponent | undefined): string {
-  const base = 'Утилизация — какую долю грузоподъёмности судна занимает груз.';
+  const base = "DWT utilisation — what share of the vessel's carrying capacity the cargo occupies.";
   const caveat =
-    'Вместимость = DWCC (полезная грузоподъёмность), если задана, иначе DWT. Вес груза — номинал из письма; осадка и объём считаются от верхней границы диапазона.';
+    'Capacity = DWCC (deadweight cargo capacity) when specified, otherwise DWT. Cargo weight is the nominal figure from the circular; draft and volume are computed from the upper bound of the range.';
   const m = c?.bracketData?.match(/([\d,]+)\s*\/\s*([\d,]+)\s*mt/i);
   if (m) {
     const cargo = Number(m[1].replace(/,/g, ''));
     const cap = Number(m[2].replace(/,/g, ''));
     if (cargo > 0 && cap > 0) {
       const pct = Math.round((cargo / cap) * 100);
-      return `${base}\nРасчёт: груз ${num(cargo)} mt ÷ вместимость ${num(cap)} mt = ${pct}% → ${c!.rationale}\n${caveat}`;
+      return `${base}\nCalc: cargo ${num(cargo)} mt ÷ capacity ${num(cap)} mt = ${pct}% → ${c!.rationale}\n${caveat}`;
     }
   }
   return `${base}\n${caveat}`;
 }
 
-/** "Объём груза под трюмы" worked-calc from stored bracketData "N% of grain". */
+/** "Cargo volume vs holds" worked-calc from stored bracketData "N% of grain". */
 function volumeDetail(c: FitBreakdownComponent | undefined): string {
   const base =
-    'Проверяем, поместится ли груз по ОБЪЁМУ: вес × удельный погрузочный объём (stowage factor) сравниваем с зерновой вместимостью трюмов.';
+    'Checking whether the cargo fits by VOLUME: weight × stowage factor compared against grain capacity of the holds.';
   const caveat =
-    'Stowage factor берётся из письма; если не указан — оценка по типу груза.';
+    'Stowage factor taken from the circular; if absent, estimated by cargo type.';
   const m = c?.bracketData?.match(/([\d.]+)\s*%/);
   if (m) {
-    return `${base}\nРасчёт: груз занимает ~${m[1]}% объёма трюмов (зерновая вместимость).\n${caveat}`;
+    return `${base}\nCalc: cargo occupies ~${m[1]}% of hold volume (grain capacity).\n${caveat}`;
   }
   return `${base}\n${caveat}`;
 }
 
-/** "Балласт-переход" worked-calc from stored bracketData "~N nm" + vesselClass radius. */
+/** "Ballast leg" worked-calc from stored bracketData "~N nm" + vesselClass radius. */
 function ballastDetail(
   c: FitBreakdownComponent | undefined,
   vesselClass: string | undefined,
 ): string {
   const base =
-    'Балластный переход — расстояние от текущей позиции судна до порта погрузки (судно идёт без груза).';
+    "Ballast leg — distance from the vessel's current position to the load port (vessel sailing without cargo).";
   const caveat =
-    'Бункер балластного перехода учтён в строке TCE, отдельно здесь не показан. Дистанция — lookup по таблице портов, приблизительно.';
+    'Ballast-leg bunker is included in the TCE figure and not shown separately here. Distance is a port-table lookup — approximate.';
   const m = c?.bracketData?.match(/~?\s*([\d,]+)\s*nm/i);
   const cls = vesselClass?.toLowerCase();
   const r = cls ? BALLAST_RADIUS_NM[cls] : undefined;
   if (m && r) {
-    return `${base}\nРасчёт: переход ~${m[1]} nm vs радиус класса ~${num(r)} nm (${cls}) → ${c!.rationale}\n${caveat}`;
+    return `${base}\nCalc: ballast leg ~${m[1]} nm vs class radius ~${num(r)} nm (${cls}) → ${c!.rationale}\n${caveat}`;
   }
   return `${base}\n${caveat}`;
 }
@@ -352,15 +352,15 @@ function ballastDetail(
 /** "TCE vs breakeven" worked-calc from stored tce / breakeven columns. */
 function tceDetail(tce: number, breakeven: number | null): string {
   const base =
-    'TCE (Time Charter Equivalent) — дневная доходность рейса за вычетом портовых сборов и бункера. Сравниваем с точкой безубыточности судовладельца: выше → рейс прибыльный, ниже → убыток.';
+    "TCE (Time Charter Equivalent) — daily voyage return net of port costs and bunker. Compared against the owner's breakeven: above → voyage profitable, below → loss-making.";
   const caveat =
-    'War-risk показан в breakdown отдельной строкой — в это число он НЕ входит. ' +
-    'Комиссия (адрес + брокераж, ставка из письма либо 3.75% TTL по умолчанию) ВЫЧТЕНА из фрахта — TCE здесь net-of-commission.';
+    'War-risk premium is shown separately in the breakdown — it is NOT included in this figure. ' +
+    'Commission (address + brokerage, rate from circular or 3.75% TTL default) has been DEDUCTED from freight — TCE shown here is net-of-commission.';
   if (breakeven != null) {
     const diff = tce - breakeven;
     const sign = diff >= 0 ? '+' : '−';
-    const verdict = diff >= 0 ? 'выше breakeven' : 'ниже breakeven';
-    return `${base}\nРасчёт: TCE ${usd(tce)}/сут − breakeven ${usd(breakeven)}/сут = ${sign}${usd(Math.abs(diff))}/сут → ${verdict}.\n${caveat}`;
+    const verdict = diff >= 0 ? 'above breakeven' : 'below breakeven';
+    return `${base}\nCalc: TCE ${usd(tce)}/day − breakeven ${usd(breakeven)}/day = ${sign}${usd(Math.abs(diff))}/day → ${verdict}.\n${caveat}`;
   }
   return `${base}\n${caveat}`;
 }
@@ -368,9 +368,9 @@ function tceDetail(tce: number, breakeven: number | null): string {
 /** "Vessel age" worked-calc from stored vessel.built + refYear. */
 function ageDetail(built: number | null | undefined, refYear: number, rationale: string): string {
   const base =
-    'Возраст судна: год отсчёта минус год постройки. До 15 лет — современное, 15–22 — зрелое (выше риск обслуживания), свыше 22 — повышенный риск задержаний и off-hire.';
+    'Vessel age: reference year minus build year. Under 15 years — modern; 15–22 — mature (higher maintenance risk); over 22 — elevated detention and off-hire risk.';
   if (built != null) {
-    return `${base}\nРасчёт: ${refYear} − ${built} = ${refYear - built} лет → ${rationale}`;
+    return `${base}\nCalc: ${refYear} − ${built} = ${refYear - built} years → ${rationale}`;
   }
   return base;
 }
@@ -380,27 +380,27 @@ const VETTING_LOOKUP: Record<string, { detail: string; source: string }> = {
   flag: {
     source: SRC.parisMou,
     detail:
-      'Флаг судна сверяется со списком Paris MoU (межгосударственный меморандум по портовому контролю). Серый/чёрный список флага = повышенный риск задержаний судна в портах.',
+      'Vessel flag is checked against the Paris MoU list (inter-governmental Memorandum of Understanding on Port State Control). Grey/black-listed flag = elevated risk of port detentions.',
   },
   class: {
     source: SRC.iacs,
     detail:
-      'Классификационное общество судна проверяется на членство в IACS (ассоциация ведущих классов). Класс вне IACS — повышенный технический риск.',
+      'Classification society is checked for IACS membership (International Association of Classification Societies). Non-IACS class = elevated technical risk.',
   },
   pandi: {
     source: SRC.pandi,
     detail:
-      'Страховщик ответственности (P&I) судна проверяется на членство в International Group — пуле ведущих клубов с надёжным покрытием.',
+      'P&I insurer is checked for membership in the International Group — the pool of leading clubs with robust coverage.',
   },
   psc: {
     source: SRC.equasis,
     detail:
-      'История задержаний судна портовым контролем (PSC) по базе Equasis. Свежие задержания = повышенный риск инспекций.',
+      "Vessel's port-state-control (PSC) detention history from Equasis. Recent detentions = elevated inspection risk.",
   },
   cii: {
     source: SRC.equasis,
     detail:
-      'Рейтинг углеродной интенсивности (CII, A–E) из Equasis. A/B/C — в норме, D — внимание, E — повышенный риск эксплуатационных ограничений.',
+      'Carbon Intensity Indicator (CII, A–E) from Equasis. A/B/C — within norms; D — attention; E — elevated risk of operational restrictions.',
   },
 };
 
@@ -422,7 +422,7 @@ function buildVesselPort(args: BuildDDArgs): DDCategory {
   ): string | null => {
     if (!h) return null;
     if (h.estimatedLadenDraftM != null && h.portLimitM != null) {
-      return `Осадка в грузу ~${h.estimatedLadenDraftM}m vs лимит причала ${h.portLimitM}m`;
+      return `Laden draft ~${h.estimatedLadenDraftM}m vs berth draft limit ${h.portLimitM}m`;
     }
     return h.reason ?? componentEvidence(fbDraft);
   };
@@ -448,22 +448,22 @@ function buildVesselPort(args: BuildDDArgs): DDCategory {
 
   return {
     key: 'vessel-port',
-    label: 'Судно ↔ порт',
+    label: 'Vessel ↔ port',
     icon: 'ship',
     checks: [
-      draftRow('Осадка — порт погрузки', hf?.draft),
-      draftRow('Осадка — порт выгрузки', hf?.destDraft),
+      draftRow('Laden draft — load port', hf?.draft),
+      draftRow('Laden draft — discharge port', hf?.destDraft),
       {
-        label: 'Краны / грузовое оборудование',
+        label: 'Cranes / cargo gear',
         state: craneState,
         evidence: hf?.crane?.reason ?? componentEvidence(fbCranes),
         detail: craneActive
-          ? 'Проверяем, есть ли у судна собственные краны/деррики на случай порта без береговой перегрузочной техники. Данные — из письма-циркуляра судна.'
+          ? 'Checking whether the vessel has its own cranes/derricks for ports without shore gear. Source: vessel circular.'
           : null,
         source: craneActive ? SRC.letter : null,
       },
       buildLoaBerthRow(args),
-      INACTIVE('Воздушный габарит', 'нет данных'),
+      INACTIVE('Air draught clearance', 'no data'),
     ],
   };
 }
@@ -473,19 +473,19 @@ function buildCargoHolds(args: BuildDDArgs): DDCategory {
   const fbCargoType = findComponent(args.fitBreakdown, 'cargoType');
   const imsbc = args.worksheet?.hardFilters?.imsbc;
 
-  const HOLD_LABEL = 'Чистота трюмов / прошлый груз';
+  const HOLD_LABEL = 'Hold cleanliness / prior cargo';
   // Founder-locked honesty copy when the circular never carried last cargoes (~96%).
-  // The inactive row STILL explains itself — never a glued «нет данных», never fake-pass.
+  // The inactive row STILL explains itself — never a glued "no data", never fake-pass.
   const holdNoData: DDCheck = {
     label: HOLD_LABEL,
     state: 'inactive',
-    evidence: 'Данных нет в исходном письме — нужно уточнить',
+    evidence: 'Not in circular — confirm with owner/broker',
     detail:
-      'Прошлый груз не указан в письме-циркуляре судна (типично для ~96% циркуляров). При наличии данных мы сверяем совместимость с текущим грузом по L5C-матрице (риск перекрёстного загрязнения, требования к зачистке трюмов). Здесь — требуется уточнить у судовладельца/брокера.',
+      'Prior cargo not listed in the vessel circular (typical for ~96% of circulars). When available, we check compatibility with the current cargo via the L5C matrix (cross-contamination risk, hold-cleaning requirements). Action: confirm with owner/broker.',
     source: SRC.l5c,
   };
   const holdBase =
-    'Смотрим последние грузы судна и проверяем совместимость с текущим грузом по L5C-матрице (риск перекрёстного загрязнения, требования к зачистке трюмов). Источник — поле прошлых грузов из письма судна.';
+    "Checking vessel's last cargoes for compatibility with the current cargo via the L5C matrix (cross-contamination risk, hold-cleaning requirements). Source: prior-cargo field from vessel circular.";
 
   // Hold cleanliness — re-derived from the SAME stored vessel/cargo snapshot.
   // Honesty: missing last cargoes OR missing cargo description → inactive, never pass.
@@ -501,47 +501,47 @@ function buildCargoHolds(args: BuildDDArgs): DDCategory {
       const r = checkCompatibility(prev, args.cargoDescription);
       if (!r.compatible) {
         const reasons = r.blocking_pairs.map((b) => `${b.previous}: ${b.reason}`).join('; ');
-        holdCheck = { label: HOLD_LABEL, state: 'caution', evidence: reasons || 'несовместимый прошлый груз', detail: holdBase, source: SRC.l5c };
+        holdCheck = { label: HOLD_LABEL, state: 'caution', evidence: reasons || 'incompatible prior cargo', detail: holdBase, source: SRC.l5c };
       } else if (r.requires_extra_clean) {
-        holdCheck = { label: HOLD_LABEL, state: 'caution', evidence: `Прошлый груз: ${prev.join(', ')} — требуется доп. зачистка`, detail: holdBase, source: SRC.l5c };
+        holdCheck = { label: HOLD_LABEL, state: 'caution', evidence: `Prior cargo: ${prev.join(', ')} — extra cleaning required`, detail: holdBase, source: SRC.l5c };
       } else {
-        holdCheck = { label: HOLD_LABEL, state: 'pass', evidence: `Прошлый груз: ${prev.join(', ')} — совместимо`, detail: holdBase, source: SRC.l5c };
+        holdCheck = { label: HOLD_LABEL, state: 'pass', evidence: `Prior cargo: ${prev.join(', ')} — compatible`, detail: holdBase, source: SRC.l5c };
       }
     }
   }
 
   const imsbcCheck: DDCheck = imsbc
     ? {
-        label: 'IMSBC группа',
+        label: 'IMSBC group',
         state: imsbc.pass === false || imsbc.warning ? 'caution' : 'info',
         evidence: imsbc.reason ?? null,
         detail:
-          'Сверяем груз с Кодексом IMSBC (морская перевозка навалочных грузов): группа A/B/C, требования к перевозке и ограничения судна.',
+          'Checking cargo against the IMSBC Code (International Maritime Solid Bulk Cargoes): Group A/B/C classification, carriage requirements, and vessel restrictions.',
         source: SRC.imsbc,
       }
-    : INACTIVE('IMSBC группа', 'нет данных');
+    : INACTIVE('IMSBC group', 'no data');
 
   const volumeState = componentState(fbVolume);
   const cargoTypeState = componentState(fbCargoType);
 
   return {
     key: 'cargo-holds',
-    label: 'Груз ↔ трюмы',
+    label: 'Cargo ↔ holds',
     icon: 'package',
     checks: [
       {
-        label: 'Объём груза под трюмы',
+        label: 'Cargo volume vs holds',
         state: volumeState,
         evidence: componentEvidence(fbVolume),
         detail: volumeState !== 'inactive' ? volumeDetail(fbVolume) : null,
         source: volumeState !== 'inactive' ? SRC.letter : null,
       },
       {
-        label: 'Тип груза ↔ тип судна',
+        label: 'Cargo type ↔ vessel type',
         state: cargoTypeState,
         evidence: componentEvidence(fbCargoType),
         detail: cargoTypeState !== 'inactive'
-          ? 'Сверяем тип груза с типом и конструкцией судна (балкер/твиндекер и т.п.) на принципиальную совместимость. Данные — из письма.'
+          ? 'Checking cargo type compatibility with vessel type and design (bulker/tweendecker etc.). Source: vessel circular.'
           : null,
         source: cargoTypeState !== 'inactive' ? SRC.letter : null,
       },
@@ -559,7 +559,7 @@ function buildEconomics(args: BuildDDArgs): DDCategory {
   // TCE vs breakeven — stored single source (list==detail parity).
   let tceCheck: DDCheck;
   if (args.tceUsdPerDay == null) {
-    tceCheck = INACTIVE('TCE vs breakeven', 'нет данных');
+    tceCheck = INACTIVE('TCE vs breakeven', 'no data');
   } else if (args.breakevenTce == null) {
     tceCheck = {
       label: 'TCE vs breakeven',
@@ -573,7 +573,7 @@ function buildEconomics(args: BuildDDArgs): DDCategory {
     tceCheck = {
       label: 'TCE vs breakeven',
       state: diff >= 0 ? 'pass' : 'caution',
-      evidence: `TCE ${usd(args.tceUsdPerDay)}/day — ${usd(Math.abs(diff))}/day ${diff >= 0 ? 'выше' : 'ниже'} breakeven`,
+      evidence: `TCE ${usd(args.tceUsdPerDay)}/day — ${usd(Math.abs(diff))}/day ${diff >= 0 ? 'above' : 'below'} breakeven`,
       detail: tceDetail(args.tceUsdPerDay, args.breakevenTce),
       source: SRC.tce,
     };
@@ -583,16 +583,16 @@ function buildEconomics(args: BuildDDArgs): DDCategory {
   let freightCheck: DDCheck;
   const src = args.freightRateSource;
   if (!src) {
-    freightCheck = INACTIVE('Фрахт vs Baltic', 'нет данных');
+    freightCheck = INACTIVE('Freight vs Baltic', 'no data');
   } else {
     const estimated = src === 'baltic' || src === 'estimated';
-    const note = args.consumptionEstimated ? ' · расход оценён' : '';
+    const note = args.consumptionEstimated ? ' · consumption estimated' : '';
     freightCheck = {
-      label: 'Фрахт vs Baltic',
+      label: 'Freight vs Baltic',
       state: estimated ? 'caution' : 'info',
-      evidence: `Ставка фрахта: ${src}${estimated ? ' (оценка)' : ''}${note}`,
+      evidence: `Freight rate: ${src}${estimated ? ' (estimate)' : ''}${note}`,
       detail:
-        'Откуда взята ставка фрахта: вручную из письма (manual/parsed) или оценка по индексу Baltic / сиду. Оценочная ставка → число приблизительное, помечается «оценка».',
+        'Freight rate source: manually entered from the circular (manual/parsed) or estimated from the Baltic index / seed. Estimated rate → approximate figure, flagged as "(estimate)".',
       source: SRC.freight,
     };
   }
@@ -604,28 +604,28 @@ function buildEconomics(args: BuildDDArgs): DDCategory {
 
   return {
     key: 'economics',
-    label: 'Экономика рейса',
+    label: 'Voyage economics',
     icon: 'coin',
     checks: [
       tceCheck,
       {
-        label: 'Экономика рейса (фит)',
+        label: 'Voyage economics (fit)',
         state: fbEconState,
         evidence: componentEvidence(fbEconomics),
         detail: fbEconState !== 'inactive'
-          ? 'Доля экономики рейса в итоговом фит-%: насколько рейс выгоден относительно альтернатив для этого класса судна.'
+          ? 'Voyage economics contribution to the overall fit-%: how profitable this voyage is relative to alternatives for this vessel class.'
           : null,
         source: fbEconState !== 'inactive' ? SRC.tce : null,
       },
       {
-        label: 'Утилизация DWT',
+        label: 'DWT utilisation',
         state: fbUtilState,
         evidence: componentEvidence(fbUtil),
         detail: fbUtilState !== 'inactive' ? utilDetail(fbUtil) : null,
         source: fbUtilState !== 'inactive' ? SRC.tce : null,
       },
       {
-        label: 'Балласт-переход',
+        label: 'Ballast leg',
         state: fbBallastState,
         evidence: componentEvidence(fbBallast),
         detail: fbBallastState !== 'inactive' ? ballastDetail(fbBallast, vesselClass) : null,
@@ -652,7 +652,7 @@ function buildVetting(args: BuildDDArgs): DDCategory {
         : f.verdict === 'caution' || f.verdict === 'warn' ? 'caution'
         : 'inactive'; // unknown → honesty: no data on this vessel
       if (state === 'inactive') {
-        checks.push({ label: f.label, state, evidence: 'нет данных по судну', detail: null, source: null });
+        checks.push({ label: f.label, state, evidence: 'no vessel data', detail: null, source: null });
         continue;
       }
       // age is the one quantitative vetting factor (refYear − built); the rest are lookups.
@@ -668,11 +668,11 @@ function buildVetting(args: BuildDDArgs): DDCategory {
     // No live vessel snapshot — fall back to the rolled-up vetting component.
     const rollState = componentState(fbVetting);
     checks.push({
-      label: 'Ветинг судна (сводно)',
+      label: 'Vessel vetting (summary)',
       state: rollState,
       evidence: componentEvidence(fbVetting),
       detail: rollState !== 'inactive'
-        ? 'Сводная оценка ветинга судна (флаг, класс, возраст, P&I, PSC, CII) — детализация по судну недоступна в этом снэпшоте.'
+        ? 'Rolled-up vessel vetting assessment (flag, class, age, P&I, PSC, CII) — per-factor breakdown not available for this snapshot.'
         : null,
       source: rollState !== 'inactive' ? SRC.equasis : null,
     });
@@ -680,12 +680,12 @@ function buildVetting(args: BuildDDArgs): DDCategory {
 
   // Timing readiness — fb timing component, or readiness verdict as a fallback.
   const timingDetail =
-    'Готовность судна к laycan: сопоставляем дату освобождения и переход до порта погрузки с окном laycan груза. Данные — из письма.';
+    "Vessel readiness for laycan: we compare the open date and ballast passage to the load port against the cargo's laycan window. Source: vessel circular.";
   let timingCheck: DDCheck;
   if (fbTiming) {
     const ts = componentState(fbTiming);
     timingCheck = {
-      label: 'Готовность / тайминг',
+      label: 'Readiness / timing',
       state: ts,
       evidence: componentEvidence(fbTiming),
       detail: ts !== 'inactive' ? timingDetail : null,
@@ -693,30 +693,30 @@ function buildVetting(args: BuildDDArgs): DDCategory {
     };
   } else if (args.worksheet?.readiness?.verdict) {
     timingCheck = {
-      label: 'Готовность / тайминг',
+      label: 'Readiness / timing',
       state: 'info',
-      evidence: `Готовность: ${args.worksheet.readiness.verdict}`,
+      evidence: `Readiness: ${args.worksheet.readiness.verdict}`,
       detail: timingDetail,
       source: SRC.letter,
     };
   } else {
-    timingCheck = INACTIVE('Готовность / тайминг', 'нет данных');
+    timingCheck = INACTIVE('Readiness / timing', 'no data');
   }
 
   const classState = componentState(fbClass);
   checks.push({
-    label: 'Класс судна (фит)',
+    label: 'Vessel class (fit)',
     state: classState,
     evidence: componentEvidence(fbClass),
     detail: classState !== 'inactive'
-      ? 'Насколько класс судна (handysize/supramax/panamax/capesize) подходит под параметры груза и рейса — вклад в итоговый фит-%.'
+      ? 'How well the vessel class (handysize/supramax/panamax/capesize) matches cargo and voyage parameters — its contribution to the overall fit-%.'
       : null,
     source: classState !== 'inactive' ? SRC.fit : null,
   });
   checks.push(timingCheck);
-  checks.push(INACTIVE('RightShip score', 'не подключено'));
+  checks.push(INACTIVE('RightShip score', 'not connected'));
 
-  return { key: 'vetting', label: 'Ветинг судна', icon: 'shield-check', checks };
+  return { key: 'vetting', label: 'Vessel vetting', icon: 'shield-check', checks };
 }
 
 function buildCompliance(args: BuildDDArgs): DDCategory {
@@ -725,15 +725,15 @@ function buildCompliance(args: BuildDDArgs): DDCategory {
 
   let sanctionsCheck: DDCheck;
   if (!sanctions) {
-    sanctionsCheck = INACTIVE('Санкции судна (OFAC/EU)', 'нет данных');
+    sanctionsCheck = INACTIVE('Vessel sanctions (OFAC/EU)', 'no data');
   } else {
     const clean = sanctions.risk === 'NONE' || sanctions.risk === 'LOW';
     sanctionsCheck = {
-      label: 'Санкции судна (OFAC/EU)',
+      label: 'Vessel sanctions (OFAC/EU)',
       state: !clean || sanctions.blocking ? 'caution' : 'pass',
       evidence: sanctions.reason ?? `Sanctions risk: ${sanctions.risk}`,
       detail:
-        'Проверяем судно, его владельца и управляющую компанию по санкционным спискам OFAC (США) и ЕС. Красный флаг блокирует рейс. Данные — из санкционного слоя системы на момент матчинга.',
+        'Checking vessel, owner, and manager against OFAC (US) and EU sanctions lists. A blocking flag prevents the voyage. Data from the sanctions layer as of the matching timestamp.',
       source: SRC.sanctions,
     };
   }
@@ -745,20 +745,20 @@ function buildCompliance(args: BuildDDArgs): DDCategory {
         state: warState,
         evidence: war.reason ?? null,
         detail: warState !== 'inactive'
-          ? 'Проверяем, проходит ли позиция судна или рейс через зоны военного риска по спискам JWC (Joint War Committee). Попадание в зону = надбавка war-risk и повышенный риск. Стоимость war-risk показана в breakdown TCE отдельно.'
+          ? 'Checking whether the vessel position or voyage passes through JWC (Joint War Committee) war-risk zones. Entry into a zone = war-risk surcharge and elevated risk. War-risk cost is shown separately in the TCE breakdown.'
           : null,
         source: warState !== 'inactive' ? SRC.jwc : null,
       }
-    : INACTIVE('War-risk / JWC', 'нет данных');
+    : INACTIVE('War-risk / JWC', 'no data');
 
   return {
     key: 'compliance',
-    label: 'Комплаенс / риск',
+    label: 'Compliance / risk',
     icon: 'scale',
     checks: [
       sanctionsCheck,
       warCheck,
-      INACTIVE('KYC чартерера', 'не подключено'),
+      INACTIVE('Charterer KYC', 'not connected'),
     ],
   };
 }
