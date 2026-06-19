@@ -14,6 +14,7 @@
  */
 
 import { calculateTCE, type VoyageInput, type TCEBreakdown } from './voyage-calculator';
+import { estimateRoundTripDays } from './voyage-days';
 import { callAiText } from '@/lib/ai-provider';
 
 // βf3-06: LLM reason timeout — cap the AI explain call so cold-start ≤5s.
@@ -134,13 +135,6 @@ function lookupDistances(origin: string, destination: string): DistancePair {
   return DISTANCE_TABLE[key] ?? DEFAULT_DISTANCE;
 }
 
-function durationDays(distanceNm: number, speedKts: number): number {
-  if (!Number.isFinite(distanceNm) || !Number.isFinite(speedKts) || speedKts <= 0) {
-    return 0;
-  }
-  return Math.round((distanceNm / (speedKts * 24)) * 10) / 10;
-}
-
 const SUEZ_CANAL_DUES_USD = 480_000; // matches scenario narrative
 const HRA_DAYS_FOR_SUEZ = 4; // approx Bab-el-Mandeb + Red Sea exposure
 
@@ -169,7 +163,12 @@ function buildLeg(
   { vessel, cargo, marketRates, daResolver }: CompareInput,
 ): RouteCompareLeg {
   const speed = vessel.speedKts > 0 ? vessel.speedKts : 13;
-  const dur = durationDays(distanceNm, speed);
+  // Audit #7: use the canonical round-trip formula (ladenDays*2 + 2 port days),
+  // the SAME one compute-tce.ts uses for the match card, so the modal bunker burn
+  // and TCE/day match the card instead of being ~2x off (one-way vs round-trip).
+  // estimateRoundTripDays falls back to 12 kn on bad speed; speed is already
+  // clamped to 13 above, so the 12-kn fallback only triggers on non-finite speed.
+  const dur = estimateRoundTripDays(distanceNm, speed);
 
   // safeResolve: NaN/negative → 0; resolver throw → 0.
   // Math.max(0, NaN) === NaN, so Number.isFinite guard is required.
