@@ -62,11 +62,20 @@ describe('A.5 bit-identity with flag off (vs main@40966379)', () => {
     it(`flag unset → identical numerics [${name}]`, () => {
       const next = computeTce(inputs);
       const prev = oldTce.computeTce(inputs);
-      // Old breakdown lacks fueleu keys; new must add exactly those and nothing else.
+      // Old breakdown lacks fueleu + commission keys; new adds exactly those.
+      // commission_pct/commission_usd/net_freight_usd added by PR #1046 — test inputs
+      // carry no commissionPct so all three are zero-value no-ops vs the fixture.
       const nb: Record<string, unknown> = { ...next.breakdown };
       const pb: Record<string, unknown> = { ...prev.breakdown };
       expect(nb.fueleu_usd).toBe(0);
       delete nb.fueleu_usd;
+      // PR #1046: commission fields with commPct=0 are no-ops vs old fixture
+      expect(nb.commission_pct).toBe(0);
+      expect(nb.commission_usd).toBe(0);
+      expect(nb.net_freight_usd).toBe(nb.gross_freight_usd);
+      delete nb.commission_pct;
+      delete nb.commission_usd;
+      delete nb.net_freight_usd;
       const nApp = { ...(nb.applicable as Record<string, unknown>) };
       expect(nApp.fueleu).toBe(false);
       delete nApp.fueleu;
