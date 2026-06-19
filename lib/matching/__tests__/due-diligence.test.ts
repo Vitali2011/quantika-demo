@@ -288,7 +288,7 @@ describe('buildDueDiligence — LOA berth row', () => {
     expect(row?.state).toBe('caution');
     // Both port failures must appear in evidence — verified by presence of separator
     // (single-port failure uses the reason directly without ' / ').
-    expect(row?.evidence?.includes(' / ')).toBe(true);
+    expect(row?.evidence).toContain(' / ');
     // Each reason mentions the vessel LOA — two occurrences, one per port
     expect(row?.evidence).toMatch(/200m.*200m/s);
   });
