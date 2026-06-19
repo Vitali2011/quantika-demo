@@ -41,6 +41,21 @@ export interface ResolvedFreightRate {
 const PARSED_CONFIDENCE = 0.9;
 const BALTIC_CONFIDENCE = 0.5;
 
+/**
+ * Plausibility ceiling for the tier-2 Baltic per-mt rate ($/mt). The tier-2 math
+ * divides a WHOLE-vessel day-rate by the booked tonnage; for a small PART-cargo
+ * (e.g. 3000 mt on a 70k-dwt panamax) the denominator is far below the vessel's
+ * capacity, inflating $/mt to 320–533 — a vessel/parcel-size mismatch artifact,
+ * not market truth. Dry-bulk voyage freight has historically peaked around
+ * $80–120/mt even in extreme markets (2008 capesize iron-ore spike); full-cargo
+ * tier-2 rates land in the $1–40/mt band. $200/mt sits well above any real bulk
+ * voyage rate (so legitimate long-haul / small-parcel rates are not downgraded)
+ * yet below the part-cargo artifact. Above it, we suppress the figure and fall
+ * through to the tier-3 estimate so the badge downgrades from authoritative
+ * 'Market (Baltic)' to '≈ Estimate'.
+ */
+const TIER2_MAX_USD_PER_MT = 200;
+
 const isPositive = (n: number | null | undefined): n is number =>
   n != null && Number.isFinite(n) && n > 0;
 
@@ -81,7 +96,10 @@ export function resolveFreightRate(input: ResolveFreightInput): ResolvedFreightR
     }
     if (days > 0) {
       const value = round2((baltic.usdPerDay * days) / input.quantityMt);
-      if (value > 0) {
+      // Plausibility clamp: an implausibly high $/mt is a part-cargo artifact (whole-
+      // vessel day-rate ÷ small parcel). Suppress it and fall through to the tier-3
+      // estimate rather than badge it as authoritative 'Market (Baltic)'.
+      if (value > 0 && value <= TIER2_MAX_USD_PER_MT) {
         return { value, source: 'baltic', confidence: BALTIC_CONFIDENCE, balticDate: baltic.date, balticSource: baltic.source };
       }
     }
