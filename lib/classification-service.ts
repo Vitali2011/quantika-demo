@@ -62,7 +62,7 @@ export function deriveEmailStatus(params: {
   const { requiresReply, isUnanswered, hoursWithout } = params;
   if (!requiresReply) return 'INFO_ONLY';
   if (!isUnanswered) return 'RESPONDED';
-  if (hoursWithout >= UNANSWERED_THRESHOLD_HOURS / 24) return 'NEEDS_ACTION';
+  if (hoursWithout >= UNANSWERED_THRESHOLD_HOURS) return 'NEEDS_ACTION';
   return 'PENDING';
 }
 
