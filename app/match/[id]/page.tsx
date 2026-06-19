@@ -379,7 +379,10 @@ export default async function MatchDetailPage({ params }: Props) {
                       ...(cargo.originPort ? [{ label: 'Load Port', value: cargo.originPort }] : []),
                       ...(cargo.destinationPort ? [{ label: 'Discharge Port', value: cargo.destinationPort }] : []),
                       ...(laycanDisplay
-                    ? [{ label: 'Laycan', value: { value: laycanDisplay, confidence: 'confirmed' as const, sourceText: cargo.preferredDates?.sourceText } }]
+                    // #1024: laycanDisplay is synthesized/shifted — do NOT carry
+                    // sourceText (the original email date quote), else a false [¹]
+                    // citation renders. Defense-in-depth over Fix A in hydrate.
+                    ? [{ label: 'Laycan', value: { value: laycanDisplay, confidence: 'confirmed' as const } }]
                     : cargo.preferredDates
                       ? [{ label: 'Laycan', value: cargo.preferredDates }]
                       : []),

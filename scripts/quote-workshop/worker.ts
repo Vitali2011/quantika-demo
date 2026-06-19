@@ -3,12 +3,37 @@
  * Serial drain: claims one job, calls callClaudeCliRaw (blocking spawnSync), notifies Next, repeat.
  * Exits when queue is empty.
  */
+import type Database from 'better-sqlite3';
 import { getStore } from '@/lib/session-store';
 import { callClaudeCliRaw } from '@/lib/ai-provider';
 import { claimNextJob, completeJob, failJob, reapStaleJobs, heartbeatJob } from '@/lib/quote-jobs/store';
 import { buildQuotePrompt } from '@/lib/quote-jobs/prompt';
+import { getMatch } from '@/lib/matching/matches-repository';
 import { isRagEnabled } from '@/lib/knowledge/flags';
 import { today } from '@/lib/clock';
+import type { ParsedCargo } from '@/lib/types';
+
+/**
+ * #1034: a multi-cargo email yields several parsedCargos that share one emailId,
+ * distinguished only by itemIndex. Resolving by emailId ALONE returns item 0
+ * regardless of which item the match is for. Mirror the (emailId|itemIndex)
+ * keying used by persist-session-matches.ts:50 and app/match/[id]/page.tsx:85 —
+ * read the target item index from the job's match (migration 049 stores match_id).
+ */
+export function selectParsedCargo(
+  db: Database.Database,
+  session: { parsedCargos?: ParsedCargo[] } | null | undefined,
+  job: { email_id: string; match_id: string | null },
+): ParsedCargo | undefined {
+  let targetItemIndex = 0;
+  if (job.match_id && /^[0-9]+$/.test(job.match_id)) {
+    const m = getMatch(db, Number(job.match_id));
+    if (m?.cargo_item_index != null) targetItemIndex = m.cargo_item_index;
+  }
+  return (session?.parsedCargos ?? []).find(
+    (r) => r.emailId === job.email_id && r.itemIndex === targetItemIndex,
+  );
+}
 
 const MODEL = process.env.DRAFT_QUOTE_CLI_MODEL ?? 'claude-sonnet-4-6';
 const BUDGET = Number(process.env.DRAFT_QUOTE_CLI_BUDGET_USD) || 0.20;
@@ -37,7 +62,7 @@ async function main() {
     if (!job) break;
 
     const session = store.getSession(job.session_id);
-    const parsedCargo = (session?.parsedCargos ?? []).find((r: { emailId: string }) => r.emailId === job.email_id);
+    const parsedCargo = selectParsedCargo(db, session, job);
     if (!parsedCargo) {
       failJob(db, job.id, 'session or parsed cargo no longer available');
       await notify(job.session_id, { id: job.id, status: 'error', email_id: job.email_id, error: 'session expired' });
@@ -73,4 +98,9 @@ async function main() {
   }
 }
 
-main().then(() => process.exit(0)).catch((e) => { console.error('[quote-worker] fatal:', e); process.exit(1); });
+// Entry guard: `npm run quote:workshop` (tsx) drains the queue; under jest
+// (NODE_ENV=test) the module is imported to unit-test selectParsedCargo, so we
+// must NOT spawn the drain loop / process.exit on import.
+if (process.env.NODE_ENV !== 'test') {
+  main().then(() => process.exit(0)).catch((e) => { console.error('[quote-worker] fatal:', e); process.exit(1); });
+}

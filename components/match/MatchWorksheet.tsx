@@ -98,9 +98,12 @@ export function MatchWorksheet({ worksheet }: Props) {
       // #1021: surface the recovered net CBM figure when present.
       cargoPort: c.volumeCbm != null ? `${c.volumeCbm.toLocaleString('en-US')} cbm` : '—',
       // #1022: no false "✅ OK" when there is nothing to verify volume against.
+      // CBM-only cargo that overflows the holds surfaces as a soft warning
+      // (checkVolume → {pass:true, warning:true}) — defer to verdictBadge so the
+      // amber ⚠️ shows instead of a green OK (cold-QA MEDIUM follow-up).
       verdict: volumeTrulyAbsent
         ? '⚠️ Volume not verified'
-        : verdictBadge(hf.volume.pass, hf.volume.reason),
+        : verdictBadge(hf.volume.pass, hf.volume.reason, hf.volume.warning),
     },
     {
       label: '🚢 Type',

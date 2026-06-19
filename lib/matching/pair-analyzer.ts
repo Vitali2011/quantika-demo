@@ -129,6 +129,7 @@ function analyzePair(c: ParsedCargo, v: ParsedVessel, refYear: number, today: Da
       : resolveCargoWeight(c),
     cargoDescription: cfValue(c.cargoDescription),
     stowageFactor: c.stowageFactor,
+    volumeCbm: c.volumeCbm,
     vesselType: v.vesselType,
     geared: v.geared,
     draftMax: cfValue(v.draftMax),
