@@ -441,6 +441,10 @@ export interface MatchHardFilters {
   voyage?: HardFilterCheck;
   flagClass?: HardFilterCheck;
   warPositionVoyage?: HardFilterCheck;
+  /** Task #8 — vessel LOA vs origin/destination port berth max LOA. Graceful pass
+   *  on missing data; absent in pre-this-PR persisted matches. */
+  loaBerth?: HardFilterCheck;
+  destLoaBerth?: HardFilterCheck;
   /** #1023 SOFT gate — required vessel-DWT band check. NOT a hard filter:
    *  out-of-band vessel still matches but is penalised + flagged downstream. */
   vesselDwtRange?: VesselDwtRangeCheck;
@@ -480,6 +484,8 @@ export interface MatchWorksheet {
     lastCargoes: string | null;
     dwtSummer: number | null;
     dwcc: number | null;
+    /** Task #8 — vessel overall length (m), for the LOA-под-причал DD row. Absent pre-this-PR. */
+    loa?: number | null;
   };
   cargo: {
     weightMt: number | null;

@@ -491,6 +491,7 @@ export function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel:
       lastCargoes: vessel?.lastCargoes ?? null,
       dwtSummer: vesselDwt,
       dwcc: vessel ? (cfValue(vessel.dwcc) ?? null) : null,
+      loa: vessel?.loa ?? null,
     },
     cargo: {
       weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,

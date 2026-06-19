@@ -13,7 +13,7 @@
  *   - All checks are pure functions; no IO, no side effects.
  */
 
-import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from './port-master';
+import { getPortMaster, portCanHandleDraft, portCanHandleLOA, portHasShoreCranes } from './port-master';
 import { CargoType, Range, isRange } from '../types';
 import { estimateLadenDraft } from './laden-draft';
 import { checkImsbcLoadability } from './imsbc-check';
@@ -73,6 +73,18 @@ function checkDraftLaden(
     };
   }
   return { pass: true, estimatedLadenDraftM: estimate.ladenDraftM, portLimitM };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// LOA berth check — "is the vessel short enough to berth at the port?"
+//   Mirrors checkDraft: a PORT-side constraint (distinct from checkVesselDimensions,
+//   which enforces the CARGO-stated max LOA). Graceful pass on any missing input.
+// ────────────────────────────────────────────────────────────────────────────
+
+export function checkLOA(port: string | null | undefined, vesselLoaM: number | null | undefined): FilterResult {
+  const r = portCanHandleLOA(port, vesselLoaM);
+  if (!r.ok) return { pass: false, reason: r.reason };
+  return { pass: true };
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -600,6 +612,10 @@ export interface HardFilterResult {
     voyage?: FilterResult;
     flagClass?: FilterResult;
     warPositionVoyage?: FilterResult;
+    /** Task #8 — vessel LOA vs ORIGIN port berth max LOA (graceful pass on missing data). */
+    loaBerth?: FilterResult;
+    /** Task #8 — vessel LOA vs DESTINATION port berth max LOA. */
+    destLoaBerth?: FilterResult;
     /** #1023 SOFT gate — out-of-band vessel does NOT add to failures; drives penalty+flag downstream. */
     vesselDwtRange?: VesselDwtRangeResult;
   };
@@ -624,6 +640,9 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   });
   const destDraft = checkDraftLaden(input.destinationPort ?? null, input.draftMax, laden, effectiveCargoTons);
   const destCrane = checkCrane(input.destinationPort ?? null, input.geared, input.cargoType);
+  // Task #8 — LOA-под-причал berth gate (origin + destination). Graceful pass on missing data.
+  const loaBerth = checkLOA(input.originPort, input.vesselLoa ?? null);
+  const destLoaBerth = checkLOA(input.destinationPort ?? null, input.vesselLoa ?? null);
   const cargoWeight = checkCargoWeight({
     weightMt: input.weightMt,
     dwtSummer: input.dwtSummer,
@@ -689,6 +708,8 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
   if (!voyage.pass && voyage.reason) failures.push(voyage.reason);
   if (!flagClass.pass && flagClass.reason) failures.push(flagClass.reason);
   if (!warPositionVoyage.pass && warPositionVoyage.reason) failures.push(warPositionVoyage.reason);
+  if (!loaBerth.pass && loaBerth.reason) failures.push(loaBerth.reason);
+  if (!destLoaBerth.pass && destLoaBerth.reason) failures.push(destLoaBerth.reason);
 
   return {
     pass: failures.length === 0,
@@ -696,6 +717,7 @@ export function runHardFilters(input: HardFilterInput): HardFilterResult {
     checks: {
       draft, crane, volume, cargoVessel, destDraft, destCrane, cargoWeight, imsbc,
       vesselAge, dimensions, gearRequired, voyage, flagClass, warPositionVoyage,
+      loaBerth, destLoaBerth,
       vesselDwtRange,
     },
   };
