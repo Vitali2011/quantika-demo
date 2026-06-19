@@ -24,6 +24,8 @@ import type {
 } from '@/lib/types';
 import { computeVesselVetting } from '@/lib/sailing/vessel-vetting';
 import { checkCompatibility, parseLastCargoes } from '@/lib/cargo/l5c-matrix';
+import { checkLOA } from '@/lib/sailing/match-filters';
+import { getPortMaster } from '@/lib/sailing/port-master';
 
 export type DDState = 'pass' | 'caution' | 'info' | 'inactive';
 
@@ -163,6 +165,75 @@ function draftDetail(
     return `${base}\nРасчёт: осадка в грузу ~${h.estimatedLadenDraftM}m vs лимит причала ${h.portLimitM}m → запас ${margin}m.\n${caveat}`;
   }
   return `${base}\n${caveat}`;
+}
+
+/** "LOA под причал" detail — what the gate is + screening caveat. */
+function loaDetail(vesselLoaM: number, limitStr: string | null): string {
+  const base =
+    'Проверяем, влезет ли судно по длине (LOA) под причал: длину судна сравниваем с максимальной длиной у причала из реестра портов.';
+  const caveat =
+    'Лимит LOA причала — из реестра портов (есть не у всех портов; черноморские внутренние порты пока без данных). Не учитывает индивидуальные ограничения конкретного терминала.';
+  if (limitStr) {
+    return `${base}\nРасчёт: LOA судна ${vesselLoaM}m vs лимит причала ${limitStr}.\n${caveat}`;
+  }
+  return `${base}\n${caveat}`;
+}
+
+/**
+ * Task #8 — LOA-под-причал berth-gate row. Re-derives the check on the SAME stored
+ * snapshot (worksheet.vessel.loa + port-master maxLOA), like checkCompatibility —
+ * parity-safe and robust to pre-gate persisted matches. Honesty: any missing data
+ * → inactive (never fake-pass). Graceful pass everywhere data is absent.
+ */
+function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
+  const LABEL = 'LOA под причал';
+  const vesselLoa = args.worksheet?.vessel?.loa ?? null;
+  const loadPort = args.worksheet?.cargo?.loadPort ?? null;
+  const dischPort = args.worksheet?.cargo?.dischargePort ?? null;
+
+  // Honesty: vessel LOA not parsed from the circular → inactive, never fake-pass.
+  if (vesselLoa == null) {
+    return { label: LABEL, state: 'inactive', evidence: 'LOA судна нет в исходном письме — нужно уточнить', detail: null, source: null };
+  }
+
+  const loadLimit = getPortMaster(loadPort)?.maxLOA ?? null;
+  const dischLimit = getPortMaster(dischPort)?.maxLOA ?? null;
+
+  // No berth LOA on either port → can't verify (graceful pass at the gate) → inactive on the panel.
+  if (loadLimit == null && dischLimit == null) {
+    return {
+      label: LABEL,
+      state: 'inactive',
+      evidence: `LOA судна ${vesselLoa}m; нет данных по причалу — нужно уточнить`,
+      detail: null,
+      source: null,
+    };
+  }
+
+  const load = checkLOA(loadPort, vesselLoa);
+  const disch = checkLOA(dischPort, vesselLoa);
+  const fail = !load.pass ? load : !disch.pass ? disch : null;
+  const limitStr = [
+    loadLimit != null ? `погрузка max ${loadLimit}m` : null,
+    dischLimit != null ? `выгрузка max ${dischLimit}m` : null,
+  ].filter(Boolean).join(' / ');
+
+  if (fail) {
+    return {
+      label: LABEL,
+      state: 'caution',
+      evidence: fail.reason ?? `LOA судна ${vesselLoa}m превышает лимит причала`,
+      detail: loaDetail(vesselLoa, limitStr || null),
+      source: SRC.draft,
+    };
+  }
+  return {
+    label: LABEL,
+    state: 'pass',
+    evidence: `LOA судна ${vesselLoa}m vs лимит причала (${limitStr})`,
+    detail: loaDetail(vesselLoa, limitStr || null),
+    source: SRC.draft,
+  };
 }
 
 /** "Утилизация DWT" worked-calc from stored bracketData "X / Y mt". */
@@ -318,7 +389,7 @@ function buildVesselPort(args: BuildDDArgs): DDCategory {
           : null,
         source: craneActive ? SRC.letter : null,
       },
-      INACTIVE('LOA под причал', 'не подключено'),
+      buildLoaBerthRow(args),
       INACTIVE('Воздушный габарит', 'нет данных'),
     ],
   };

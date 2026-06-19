@@ -116,6 +116,39 @@ export function portCanHandleDraft(
   return { ok: true, portDraftM: master.maxDraftM, vesselDraftM };
 }
 
+export interface LOACheckResult {
+  ok: boolean;
+  portLoaM: number | null;
+  reason?: string;
+}
+
+/**
+ * Check whether a vessel's overall length (LOA) fits a port's berth max LOA.
+ * Mirrors {@link portCanHandleDraft}: ok=true on any missing input — a missing
+ * data point is never a failure (graceful pass). The Black Sea inner ports
+ * (Odesa, Mykolaiv, Kherson, Novorossiysk) currently lack `maxLOA` in
+ * port-master.json, so they pass honestly until backfilled.
+ */
+export function portCanHandleLOA(
+  port: string | null | undefined,
+  vesselLoaM: number | null | undefined,
+): LOACheckResult {
+  const master = getPortMaster(port);
+  if (!master) return { ok: true, portLoaM: null, reason: 'port unknown — LOA not verified' };
+  if (vesselLoaM == null || !Number.isFinite(vesselLoaM) || vesselLoaM <= 0) {
+    return { ok: true, portLoaM: master.maxLOA ?? null, reason: 'vessel LOA unknown — not verified' };
+  }
+  if (master.maxLOA == null) return { ok: true, portLoaM: null, reason: 'port berth max LOA unknown — not verified' };
+  if (vesselLoaM > master.maxLOA) {
+    return {
+      ok: false,
+      portLoaM: master.maxLOA,
+      reason: `vessel LOA ${vesselLoaM}m exceeds berth max LOA ${master.maxLOA}m${master.name ? ` at ${master.name}` : ''}`,
+    };
+  }
+  return { ok: true, portLoaM: master.maxLOA };
+}
+
 /**
  * Returns true if port has shore cranes, false if it does not, null if unknown.
  * Caller should treat null as "can't verify — don't block match, but warn".

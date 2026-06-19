@@ -1,4 +1,4 @@
-import { getPortMaster, portCanHandleDraft, portHasShoreCranes } from '../port-master';
+import { getPortMaster, portCanHandleDraft, portCanHandleLOA, portHasShoreCranes } from '../port-master';
 
 describe('getPortMaster', () => {
   it('returns master data for Karasu', () => {
@@ -226,5 +226,39 @@ describe('port-master TRNEM alias — Nemrut Limani Bay → TRALI (Aliaga)', () 
   it('TRNEM entry has correct maxDraftM (14 m)', () => {
     const m = getPortMaster('TRNEM');
     expect(m!.maxDraftM).toBe(14);
+  });
+});
+
+describe('portCanHandleLOA (Task #8 — LOA berth gate)', () => {
+  // Sfax (TNSFA) has maxLOA 180m in port-master.json.
+  it('blocks a vessel LOA over the port berth max', () => {
+    const r = portCanHandleLOA('Sfax', 185);
+    expect(r.ok).toBe(false);
+    expect(r.portLoaM).toBe(180);
+    expect(r.reason).toMatch(/LOA/i);
+  });
+
+  it('passes a vessel LOA within the port berth max', () => {
+    const r = portCanHandleLOA('Sfax', 150);
+    expect(r.ok).toBe(true);
+    expect(r.portLoaM).toBe(180);
+  });
+
+  it('graceful pass: unknown port → ok=true, portLoaM null', () => {
+    const r = portCanHandleLOA('Atlantis', 250);
+    expect(r.ok).toBe(true);
+    expect(r.portLoaM).toBeNull();
+  });
+
+  it('graceful pass: vessel LOA unknown → ok=true (cannot verify, not fail)', () => {
+    const r = portCanHandleLOA('Sfax', null);
+    expect(r.ok).toBe(true);
+  });
+
+  it('graceful pass: port has no maxLOA field → ok=true, portLoaM null', () => {
+    // Odesa is in port-master but has no maxLOA (Black Sea backfill pending).
+    const r = portCanHandleLOA('Odesa', 250);
+    expect(r.ok).toBe(true);
+    expect(r.portLoaM).toBeNull();
   });
 });

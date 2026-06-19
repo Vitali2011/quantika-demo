@@ -230,6 +230,53 @@ describe('buildDueDiligence', () => {
   });
 });
 
+// ── LOA-под-причал berth gate (Task #8) ──────────────────────────────────────
+
+describe('buildDueDiligence — LOA berth row', () => {
+  it('active PASS: vessel LOA within restrictive port berth max', () => {
+    // Sfax maxLOA 180m; load Sfax, vessel 150m → fits.
+    const ws = fullWorksheet();
+    ws.vessel.loa = 150;
+    ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'LOA под причал');
+    expect(row?.state).toBe('pass');
+    expect(row?.evidence).toContain('150');
+    expect(row?.detail).toBeTruthy();
+    expect(row?.source).toBeTruthy();
+  });
+
+  it('active CAUTION: vessel LOA exceeds restrictive port berth max', () => {
+    const ws = fullWorksheet();
+    ws.vessel.loa = 200; // > Sfax 180
+    ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'LOA под причал');
+    expect(row?.state).toBe('caution');
+    expect(row?.evidence).toMatch(/LOA/i);
+  });
+
+  it('honesty: vessel LOA absent → inactive «нет данных в письме», never fake-pass', () => {
+    const ws = fullWorksheet(); // no loa on fixture vessel
+    ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'LOA под причал');
+    expect(row?.state).toBe('inactive');
+    expect(row?.evidence).toMatch(/письм/i);
+  });
+
+  it('honesty: vessel LOA present but no berth data on the ports → inactive «нет данных по причалу»', () => {
+    const ws = fullWorksheet();
+    ws.vessel.loa = 150;
+    // Odesa has no maxLOA (backfill pending); Alexandria likewise.
+    ws.cargo = { ...ws.cargo, loadPort: 'Odesa', dischargePort: 'Alexandria' };
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'LOA под причал');
+    expect(row?.state).toBe('inactive');
+    expect(row?.evidence).toMatch(/причал/i);
+  });
+});
+
 // ── detail / source disclosure (demo «Подробнее») ─────────────────────────────
 
 describe('buildDueDiligence — detail + source disclosure', () => {
