@@ -46,3 +46,30 @@
 5. **VALUE_CHECK** на каждое value-несущее изменение перед DONE; merge/deploy — go фаундера.
 
 Wave 1 идёт сразу. Wave 2 — после ответов фаундера на развилки.
+
+---
+
+## Результат исполнения Wave 1 (2026-06-20)
+
+Конвейер: recon (Sonnet) → TDD-фикс (Opus, последовательно) → adversarial cold-QA →
+Round-2 доработка забракованных → ground-truth прогон всех тронутых тестов на HEAD.
+Все фиксы на ветке `claude/eager-kapitsa-f082db`. **Финальный прогон: 628 passed, 0 failed**
+(затронутые зоны), tsc + eslint зелёные на каждом коммите. Merge/deploy — за фаундером.
+
+| #                         | Статус  | Commit                  | Примечание                                                                       |
+| ------------------------- | ------- | ----------------------- | -------------------------------------------------------------------------------- |
+| W1-1 compare-routes DA    | ✅ done | `fb36c48e`              | корень бит (resolvePort перед getPortDa); тест ловит баг (revert-проверка)       |
+| W1-2 quote dedup match_id | ✅ done | `8b89572a` + `96f1b924` | миграция 054 + дедуп по match_id; имя миграции и lock-тест приведены к конвенции |
+| W1-3 Draft Quote item     | ✅ done | `f83f55cc` → `333cfba6` | Round-2: item-aware `getMatchBySlugAndItem` + канонический `cargo.itemIndex`     |
+| W1-4 ageInDays demoNow    | ✅ done | `1ed7197a`              | `demoNow()` в server-логике + клиент-бейдже                                      |
+| W1-5 laytime валидация    | ✅ done | `f71216a0`              | отрицательный weatherDelayHours → 400 + guard калькулятора                       |
+| W1-6 laytime breakdown    | ✅ done | `14fe2b81` → `3aa0a04d` | Round-2: `appliedWeatherDeduction` из снимка + clamp сходится                    |
+| W1-7 commission %         | ✅ done | `9bc54215` → `dcf97203` | Round-2: структурные `commissionAddressPct+BrokerPct`, sanity-clamp >15%         |
+
+### Хвосты (follow-up, отдельной сессией — не блок Wave 1)
+
+- **W1-1**: нет fallback на vague-регионы/passthrough неизвестных LOCODE (как detail/list-путь) → для расплывчатых концов DA остаётся 0 (то же направление, что и до фикса, не хуже). Low.
+- **W1-3**: код-корень верен, но нет regression-теста на call-site `cargo.itemIndex` в page.tsx (откат аргумента прошёл бы тесты); pre-existing: при одном грузе на несколько судов matchIdForItem берёт первый match, не best-fit. Low.
+- **W1-4 sibling**: тот же demo-clock-drift в `app/api/market/benchmark/route.ts:55,84` (TMI/EUA staleness на `Date.now()`). Тот же класс.
+- **W1-6 / W1-7**: остаточные edge — render-level guard сильнее contract-теста (W1-6); tier-3 текст-fallback fails-safe в null на contrived-фразах (W1-7). Low.
+- **Корневые классы** (из «Спорных» аудита): CI-гейт name→UNLOCODE reconciliation + чеклист two-write-paths закрыли бы латентные мины (port-da, WhatsApp, sentinel-scan) скопом.
