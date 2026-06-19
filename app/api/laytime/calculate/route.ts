@@ -100,6 +100,20 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Validate weatherDelayHours if provided
+  if (body.weatherDelayHours !== undefined) {
+    if (
+      typeof body.weatherDelayHours !== 'number' ||
+      !Number.isFinite(body.weatherDelayHours) ||
+      body.weatherDelayHours < 0
+    ) {
+      return NextResponse.json(
+        { error: 'weatherDelayHours must be a finite number >= 0' },
+        { status: 400 }
+      );
+    }
+  }
+
   try {
     const laytimeResult: LaytimeResult = calculateLaytime(body);
 

@@ -190,7 +190,7 @@ describe('calculateLaytime boundary cases', () => {
     expect(() => calculateLaytime(input)).toThrow(RangeError);
   });
 
-  test('accepts negative weatherDelayHours without throwing', () => {
+  test('throws RangeError on negative weatherDelayHours', () => {
     const input: LaytimeInput = {
       allowedLaytimeDays: 5,
       mode: 'SHINC',
@@ -198,7 +198,7 @@ describe('calculateLaytime boundary cases', () => {
       completedAt: '2026-05-17T00:00:00Z',
       weatherDelayHours: -10,
     };
-    expect(() => calculateLaytime(input)).not.toThrow();
+    expect(() => calculateLaytime(input)).toThrow(RangeError);
   });
 
   // Input Contract: Invalid date strings

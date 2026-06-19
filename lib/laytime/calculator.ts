@@ -69,8 +69,8 @@ export function calculateLaytime(input: LaytimeInput): LaytimeResult {
     throw new RangeError('allowedLaytimeDays must be greater than 0');
   }
 
-  if (weatherDelayHours !== undefined && !Number.isFinite(weatherDelayHours)) {
-    throw new RangeError('weatherDelayHours must be a finite number');
+  if (weatherDelayHours !== undefined && (!Number.isFinite(weatherDelayHours) || weatherDelayHours < 0)) {
+    throw new RangeError('weatherDelayHours must be a finite number >= 0');
   }
 
   const commencedDate = new Date(commencedAt);
