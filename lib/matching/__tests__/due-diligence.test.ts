@@ -137,13 +137,15 @@ describe('buildDueDiligence', () => {
     expect(m.categories).toHaveLength(5);
   });
 
-  it('honesty: LOA / air-draft / RightShip / KYC are ALWAYS inactive (gap rows present, not fake)', () => {
+  it('honesty: Воздушный габарит / RightShip / KYC are permanent gap rows — always inactive', () => {
     const m = buildDueDiligence(fullArgs());
-    for (const label of ['LOA под причал', 'Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
+    for (const label of ['Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
       const row = byLabel(m, label);
       expect(row).toBeDefined();
       expect(row?.state).toBe('inactive');
     }
+    // LOA is inactive in this fixture because vessel.loa is null — not because it's unimplemented.
+    // LOA behaviour is tested in the 'LOA берth row' describe block.
   });
 
   it('counter: ran = pass + caution + info, excludes inactive', () => {
@@ -275,6 +277,21 @@ describe('buildDueDiligence — LOA berth row', () => {
     expect(row?.state).toBe('inactive');
     expect(row?.evidence).toMatch(/причал/i);
   });
+
+  it('DISCH-LOA both ports fail: evidence shows both reasons, not just load', () => {
+    // Sfax maxLOA 180m; vessel 200m → fails BOTH load and discharge
+    const ws = fullWorksheet();
+    ws.vessel.loa = 200;
+    ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
+    const m = buildDueDiligence(fullArgs({ worksheet: ws }));
+    const row = byLabel(m, 'LOA под причал');
+    expect(row?.state).toBe('caution');
+    // Both port failures must appear in evidence — verified by presence of separator
+    // (single-port failure uses the reason directly without ' / ').
+    expect(row?.evidence).toContain(' / ');
+    // Each reason mentions the vessel LOA — two occurrences, one per port
+    expect(row?.evidence).toMatch(/200m.*200m/);
+  });
 });
 
 // ── detail / source disclosure (demo «Подробнее») ─────────────────────────────
@@ -288,9 +305,9 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     expect(missing).toEqual([]);
   });
 
-  it('gap rows (LOA / air-draft / RightShip / KYC) → detail null AND source null', () => {
+  it('permanent gap rows (Воздушный габарит / RightShip / KYC) → detail null AND source null', () => {
     const m = buildDueDiligence(fullArgs());
-    for (const label of ['LOA под причал', 'Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
+    for (const label of ['Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
       const row = byLabel(m, label);
       expect(row?.state).toBe('inactive');
       expect(row?.detail ?? null).toBeNull();

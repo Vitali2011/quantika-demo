@@ -24,8 +24,7 @@ import type {
 } from '@/lib/types';
 import { computeVesselVetting } from '@/lib/sailing/vessel-vetting';
 import { checkCompatibility, parseLastCargoes } from '@/lib/cargo/l5c-matrix';
-import { checkLOA } from '@/lib/sailing/match-filters';
-import { getPortMaster } from '@/lib/sailing/port-master';
+import { portCanHandleLOA } from '@/lib/sailing/port-master';
 
 export type DDState = 'pass' | 'caution' | 'info' | 'inactive';
 
@@ -159,6 +158,7 @@ function num(n: number): string {
 /** Source badges per check (recon Q2 map). */
 const SRC = {
   draft: 'Исходное письмо + port-master.json',
+  loa: 'Исходное письмо + port-master.json',
   letter: 'Исходное письмо',
   l5c: 'L5C-матрица',
   imsbc: 'IMSBC-Code',
@@ -249,8 +249,10 @@ function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
     return { label: LABEL, state: 'inactive', evidence: 'LOA судна нет в исходном письме — нужно уточнить', detail: null, source: null };
   }
 
-  const loadLimit = getPortMaster(loadPort)?.maxLOA ?? null;
-  const dischLimit = getPortMaster(dischPort)?.maxLOA ?? null;
+  const loadResult = portCanHandleLOA(loadPort, vesselLoa);
+  const dischResult = portCanHandleLOA(dischPort, vesselLoa);
+  const loadLimit = loadResult.portLoaM ?? null;
+  const dischLimit = dischResult.portLoaM ?? null;
 
   // No berth LOA on either port → can't verify (graceful pass at the gate) → inactive on the panel.
   if (loadLimit == null && dischLimit == null) {
@@ -263,21 +265,31 @@ function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
     };
   }
 
-  const load = checkLOA(loadPort, vesselLoa);
-  const disch = checkLOA(dischPort, vesselLoa);
-  const fail = !load.pass ? load : !disch.pass ? disch : null;
   const limitStr = [
     loadLimit != null ? `погрузка max ${loadLimit}m` : null,
     dischLimit != null ? `выгрузка max ${dischLimit}m` : null,
   ].filter(Boolean).join(' / ');
 
-  if (fail) {
+  const loadFail = !loadResult.ok ? loadResult : null;
+  const dischFail = !dischResult.ok ? dischResult : null;
+  const anyFail = loadFail || dischFail;
+
+  if (anyFail) {
+    let evidence: string;
+    if (loadFail && dischFail) {
+      const reasons = [loadFail.reason, dischFail.reason].filter(Boolean);
+      evidence = reasons.length > 0
+        ? reasons.join(' / ')
+        : `LOA судна ${vesselLoa}m превышает лимит обоих причалов`;
+    } else {
+      evidence = anyFail.reason ?? `LOA судна ${vesselLoa}m превышает лимит причала`;
+    }
     return {
       label: LABEL,
       state: 'caution',
-      evidence: fail.reason ?? `LOA судна ${vesselLoa}m превышает лимит причала`,
+      evidence,
       detail: loaDetail(vesselLoa, limitStr || null),
-      source: SRC.draft,
+      source: SRC.loa,
     };
   }
   return {
@@ -285,7 +297,7 @@ function buildLoaBerthRow(args: BuildDDArgs): DDCheck {
     state: 'pass',
     evidence: `LOA судна ${vesselLoa}m vs лимит причала (${limitStr})`,
     detail: loaDetail(vesselLoa, limitStr || null),
-    source: SRC.draft,
+    source: SRC.loa,
   };
 }
 
