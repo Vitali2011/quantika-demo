@@ -26,6 +26,7 @@ import type { EcaZone } from '@/lib/knowledge/eca/parser';
 import type { ResolvedPort } from '@/lib/ports/resolve';
 import type { DataQuality } from '@/lib/data-quality/types';
 import { EUR_USD_FALLBACK } from './fx-rate';
+import { now } from '@/lib/clock';
 
 const ESTIMATED_DAYS_FALLBACK = 1;
 
@@ -231,6 +232,10 @@ export function computeTce(inputs: TceInputs): TceResult {
     euLegPercent,
     vlsfoBurnMt,
     euaPrice,
+    // Phase-in year anchored to the app clock: demo-frozen date under demo-mode,
+    // real year otherwise. UTC to avoid tz boundary flips. Keeps TCE deterministic
+    // — same match no longer drifts across a calendar year boundary. (audit #6)
+    year: now().getUTCFullYear(),
     originEu: inputs.originEu,
     destEu: inputs.destEu,
   });
