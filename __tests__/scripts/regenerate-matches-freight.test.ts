@@ -196,6 +196,20 @@ describe('buildWorksheet — cargo data-truth fields flow through (#1021 #1023)'
     expect(ws!.cargo.minVesselDwtMt).toBeNull();
     expect(ws!.cargo.maxVesselDwtMt).toBeNull();
   });
+
+  // Divergence audit finding 12: full-regen worksheet must carry worst-case
+  // weightMtEffective like the live engine (real-matches.ts) and rebuildWorksheets,
+  // else range-cargo util% silently drops to nominal and loses "max w/ option".
+  test('range cargo → weightMtEffective carries worst-case (resolveCargoWeight), not nominal', () => {
+    const ws = buildWorksheet(makeMatch(), cargoWithNewFields, undefined);
+    expect(ws!.cargo.weightMt).toBe(5000); // nominal (cfValue)
+    expect(ws!.cargo.weightMtEffective).toBe(5500); // worst-case (weightMtMax)
+  });
+
+  test('absent cargo → weightMtEffective null (no crash)', () => {
+    const ws = buildWorksheet(makeMatch(), undefined, undefined);
+    expect(ws!.cargo.weightMtEffective).toBeNull();
+  });
 });
 
 describe('breakeven_tce_usd_per_day — persisted via createMatch (#959)', () => {
