@@ -11,7 +11,7 @@ import type { Migration } from './types';
  */
 const migration054: Migration = {
   version: 54,
-  name: '054-quote-jobs-dedupe-by-match',
+  name: 'quote-jobs-dedupe-by-match',
   up(db) {
     db.exec(`
       DROP INDEX IF EXISTS idx_quote_jobs_active_dedupe;
