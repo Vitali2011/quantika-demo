@@ -44,8 +44,8 @@ describe('calculateTCE — fixtures', () => {
     const { input, expected } = loadFixture(name);
     const { breakdown, daily_tce_usd } = calculateTCE(input);
 
-    // single object check (1 expect): all 10 numeric fields
-    expect({
+    // single object check (1 expect): all numeric fields present in expected
+    const received: Record<string, unknown> = {
       bunker_usd: breakdown.bunker_usd,
       canal_usd: breakdown.canal_usd,
       da_usd: breakdown.da_usd,
@@ -56,7 +56,13 @@ describe('calculateTCE — fixtures', () => {
       total_costs_usd: breakdown.total_costs_usd,
       net_voyage_usd: breakdown.net_voyage_usd,
       daily_tce_usd: breakdown.daily_tce_usd,
-    }).toEqual(expected);
+    };
+    if ('commission_pct' in expected) {
+      received.commission_pct = breakdown.commission_pct;
+      received.commission_usd = breakdown.commission_usd;
+      received.net_freight_usd = breakdown.net_freight_usd;
+    }
+    expect(received).toEqual(expected);
 
     // tolerance check (1 expect)
     const drift = Math.abs(daily_tce_usd - expected.daily_tce_usd) / Math.max(1, expected.daily_tce_usd);
@@ -128,5 +134,37 @@ describe('calculateTCE — B1 derivation inputs (transparent math)', () => {
     const { breakdown } = calculateTCE(B1_INPUT);
     expect(breakdown.bunker_consumption_mt_per_day).toBe(28);
     expect(breakdown.bunker_price_usd_per_mt).toBe(550);
+  });
+});
+
+describe('calculateTCE — commission deduction (PR #1046)', () => {
+  const BASE_INPUT: VoyageInput = {
+    vessel: { dwt: 55000, valueUsd: 18_000_000, speedKts: 13, consumptionMtPerDay: 28 },
+    route: { originPort: 'rotterdam', destinationPort: 'singapore', distanceNm: 9000 },
+    cargo: { quantityMt: 50000, freightRateUsdPerMt: 30, commissionPct: 3.75 },
+    bunkerPriceUsdPerMt: 550,
+    euaPriceEur: 65,
+    durationDays: 20,
+    daUsd: 60000,
+  };
+
+  it('commission_usd = round(gross_freight * commPct/100)', () => {
+    const { breakdown } = calculateTCE(BASE_INPUT);
+    // 50000 * 30 = 1500000; round(1500000 * 0.0375) = 56250
+    expect(breakdown.commission_usd).toBe(Math.round(breakdown.gross_freight_usd * 0.0375));
+    expect(breakdown.commission_pct).toBe(3.75);
+  });
+
+  it('net_voyage_usd = net_freight_usd - total_costs_usd', () => {
+    const { breakdown } = calculateTCE(BASE_INPUT);
+    expect(breakdown.net_freight_usd).toBe(breakdown.gross_freight_usd - breakdown.commission_usd!);
+    expect(breakdown.net_voyage_usd).toBe(breakdown.net_freight_usd! - breakdown.total_costs_usd);
+  });
+
+  it('daily_tce_usd lower than no-commission baseline', () => {
+    const noComm: VoyageInput = { ...BASE_INPUT, cargo: { ...BASE_INPUT.cargo, commissionPct: undefined } };
+    const { daily_tce_usd: withComm } = calculateTCE(BASE_INPUT);
+    const { daily_tce_usd: withoutComm } = calculateTCE(noComm);
+    expect(withComm).toBeLessThan(withoutComm);
   });
 });

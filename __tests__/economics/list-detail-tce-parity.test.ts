@@ -387,6 +387,9 @@ describe('Workstream A5: stored list TCE ↔ live detail TCE parity (CI guard)',
 
     const detailResult = calculateTCE({
       ...canonicalInputs,
+      // #1046: stored path applies the founder 3.75% commission fallback for null-from-email
+      // cargo; mirror it here so the detail oracle stays a faithful mirror (delta≤1 invariant).
+      cargo: { ...canonicalInputs.cargo, commissionPct: 3.75 },
       excludeWarRiskFromDailyTce: true,
     });
     const detailTce = detailResult.daily_tce_usd;
@@ -531,6 +534,9 @@ describe('A5-ballast: openPosition ≠ loadPort — stored LIST ↔ detail TCE p
 
     const detailResult = calculateTCE({
       ...canonicalInputs,
+      // #1046: stored path applies the founder 3.75% commission fallback for null-from-email
+      // cargo; mirror it here so the detail oracle stays a faithful mirror (delta≤1 invariant).
+      cargo: { ...canonicalInputs.cargo, commissionPct: 3.75 },
       excludeWarRiskFromDailyTce: true,
     });
     const detailTce = detailResult.daily_tce_usd;
@@ -573,6 +579,9 @@ describe('A5-ballast: openPosition ≠ loadPort — stored LIST ↔ detail TCE p
 
     const detailResult = calculateTCE({
       ...canonicalInputs,
+      // #1046: stored path applies the founder 3.75% commission fallback for null-from-email
+      // cargo; mirror it here so the detail oracle stays a faithful mirror (delta≤1 invariant).
+      cargo: { ...canonicalInputs.cargo, commissionPct: 3.75 },
       excludeWarRiskFromDailyTce: true,
     });
     const delta = Math.abs(storedTce - detailResult.daily_tce_usd);
