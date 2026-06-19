@@ -280,7 +280,8 @@ describe('computeFitBreakdown — anchor scorecard', () => {
     const readiness: MatchReadiness = { ...READY_IDEAL, distanceNm: 205 };
     const fb = computeFitBreakdown({ cargo, vessel, readiness, sanctions: SANCTIONS_OK, hardFilters: HF_PASS });
 
-    expect(fb.fitPercent).toBe(84.5);
+    // vetting: 7 × 0.5 (all-unknown neutral) = 3.5 — was 4.2 when unknown=0.6 (Task 6)
+    expect(fb.fitPercent).toBe(83.8);
     expect(fb.components.map((c) => ({ factor: c.factor, score: c.score }))).toEqual([
       { factor: 'utilisation', score: 19 },
       { factor: 'timing',      score: 15 },
@@ -290,7 +291,7 @@ describe('computeFitBreakdown — anchor scorecard', () => {
       { factor: 'cranes',      score: 6 },
       { factor: 'volume',      score: 2.6 },
       { factor: 'draft',       score: 2 },
-      { factor: 'vetting',     score: 4.2 },
+      { factor: 'vetting',     score: 3.5 },
       { factor: 'economics',   score: 9 },
     ]);
   });
