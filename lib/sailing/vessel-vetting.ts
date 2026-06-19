@@ -2,7 +2,7 @@
  * Vessel vetting — 5 soft signals (flag / class / age / P&I / CII) for the broker-facing fit-%.
  *
  * Pure function, date-independent: age uses the caller-supplied refYear, never Date.now().
- * unknown per-factor → neutral (0.6 share) — missing data ≠ penalty (as in fit-breakdown).
+ * unknown per-factor → neutral (0.5 share) — true midpoint, missing data ≠ penalty and ≠ reward.
  * This is a SOFT signal: it lowers fit-% and surfaces badges, but does NOT gate / exclude.
  * Sanctions (hard blocking) remain in the sanctions layer — not duplicated here.
  */
@@ -22,7 +22,7 @@ export interface VettingFactor {
 }
 
 export interface VesselVettingResult {
-  /** 0..1 overall vetting score (1.0 = fully clean, 0.6 = all unknown, lower = concerns). */
+  /** 0..1 overall vetting score (1.0 = fully clean, 0.5 = all unknown/neutral, lower = concerns). */
   score: number;
   factors: VettingFactor[];
   /** Human-readable labels for caution/warn factors — for UI badges. */
@@ -38,7 +38,7 @@ export const VETTING_VERDICT_SHARE: Record<VettingVerdict, number> = {
   ok: 1.0,
   caution: 0.65,
   warn: 0.2,
-  unknown: 0.6,
+  unknown: 0.5,
 };
 
 // ── Sub-factor scorers ────────────────────────────────────────────────────────
