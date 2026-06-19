@@ -410,7 +410,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     bunkerPriceUsdPerMt,
     euaPriceEur,
     // EUR→USD as-of the (demo-frozen or real) clock date — single source: fx-rate.ts.
-    eurToUsdRate: getEurToUsd(getStore().getDb()).rate,
+    // No db arg: getEurToUsd() resolves getDb() INTERNALLY inside its own try/catch, so an
+    // unavailable FX DB degrades to the estimated constant instead of 500-ing the route.
+    // Same db source as compare-routes/route.ts (global getDb) → list and detail can't diverge.
+    eurToUsdRate: getEurToUsd().rate,
     durationDays: data.durationDays,
     euLegPercent: resolvedEuLegPercent,
     originEu: data.includeEuETS ? originEu : undefined,
