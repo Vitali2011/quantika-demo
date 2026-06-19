@@ -173,4 +173,35 @@ describe('CalculationWaterfall', () => {
     render(<CalculationWaterfall breakdown={FIXTURE} warRiskBreakdown={zeroBreakdown} />);
     expect(screen.queryByTestId('war-risk-breakdown')).not.toBeInTheDocument();
   });
+
+  it('renders commission row with amount and pct label when commission_usd > 0', () => {
+    const withCommission: TCEBreakdown = {
+      ...FIXTURE,
+      commission_pct: 3.75,
+      commission_usd: 56_250,
+      net_freight_usd: 1_443_750,
+    };
+    render(<CalculationWaterfall breakdown={withCommission} />);
+    const commRow = screen.getByTestId('cost-commission');
+    expect(commRow).toBeInTheDocument();
+    expect(commRow).toHaveTextContent('-$56,250');
+    expect(commRow).toHaveTextContent('3.75%');
+  });
+
+  it('hides commission row when commission_usd is 0', () => {
+    const noCommission: TCEBreakdown = {
+      ...FIXTURE,
+      commission_pct: 0,
+      commission_usd: 0,
+      net_freight_usd: FIXTURE.gross_freight_usd,
+    };
+    render(<CalculationWaterfall breakdown={noCommission} />);
+    expect(screen.queryByTestId('cost-commission')).not.toBeInTheDocument();
+  });
+
+  it('hides commission row when commission_usd is absent', () => {
+    const noCommission: TCEBreakdown = { ...FIXTURE };
+    render(<CalculationWaterfall breakdown={noCommission} />);
+    expect(screen.queryByTestId('cost-commission')).not.toBeInTheDocument();
+  });
 });
