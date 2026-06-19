@@ -4,7 +4,7 @@ import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { getStore } from '@/lib/session-store';
-import { getMatchBySlug } from '@/lib/matching/matches-repository';
+import { getMatchBySlugAndItem } from '@/lib/matching/matches-repository';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
 import { cfValue } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
@@ -73,7 +73,11 @@ export default async function CargoDetailPage({ params }: Props) {
   function matchIdForItem(itemIndex: number): string | undefined {
     const m = matchingVessels.find(mv => mv.cargoItemIndex === itemIndex);
     if (!m) return undefined;
-    const stored = getMatchBySlug(db, m.cargoEmailId, m.vesselEmailId, sessionId!);
+    // Resolve by the FULL item pair (migration 051 unique key) so a multi-item
+    // email where two items match one vessel still targets THIS item's row.
+    const stored = getMatchBySlugAndItem(
+      db, m.cargoEmailId, m.vesselEmailId, sessionId!, m.cargoItemIndex, m.vesselItemIndex,
+    );
     return stored ? String(stored.id) : undefined;
   }
 
@@ -317,7 +321,7 @@ export default async function CargoDetailPage({ params }: Props) {
 
                 {/* Draft quote — per item so the worker targets THIS cargo item (#W1-3) */}
                 <div className="pt-3 border-t border-[#f1f3f7]">
-                  <DraftQuoteCard emailId={id} matchId={matchIdForItem(idx)} />
+                  <DraftQuoteCard emailId={id} matchId={matchIdForItem(cargo.itemIndex)} />
                 </div>
               </div>
             </div>
