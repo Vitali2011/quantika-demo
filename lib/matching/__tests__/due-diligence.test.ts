@@ -229,3 +229,99 @@ describe('buildDueDiligence', () => {
     expect(fr?.evidence).toContain('расход оценён');
   });
 });
+
+// ── detail / source disclosure (demo «Подробнее») ─────────────────────────────
+
+describe('buildDueDiligence — detail + source disclosure', () => {
+  it('every ACTIVE check carries non-empty detail AND source', () => {
+    const m = buildDueDiligence(fullArgs());
+    const active = flat(m).filter((c) => c.state !== 'inactive');
+    expect(active.length).toBeGreaterThan(0);
+    const missing = active.filter((c) => !c.detail || !c.source).map((c) => c.label);
+    expect(missing).toEqual([]);
+  });
+
+  it('gap rows (LOA / air-draft / RightShip / KYC) → detail null AND source null', () => {
+    const m = buildDueDiligence(fullArgs());
+    for (const label of ['LOA под причал', 'Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
+      const row = byLabel(m, label);
+      expect(row?.state).toBe('inactive');
+      expect(row?.detail ?? null).toBeNull();
+      expect(row?.source ?? null).toBeNull();
+    }
+  });
+
+  it('founder honesty: null lastCargoes → hold-cleanliness inactive BUT keeps detail + «уточнить» evidence (never fake-pass)', () => {
+    const vessel = { ...fullVessel(), lastCargoes: null };
+    const m = buildDueDiligence(fullArgs({ vessel }));
+    const hold = byLabel(m, 'Чистота трюмов / прошлый груз');
+    expect(hold?.state).toBe('inactive');
+    expect(hold?.state).not.toBe('pass');
+    expect(hold?.evidence).toContain('уточнить');
+    // honesty disclosure: this special inactive row DOES explain itself
+    expect(hold?.detail).toBeTruthy();
+    expect(hold?.detail).toContain('L5C');
+  });
+
+  it('worked-calc TCE: detail shows arithmetic + war-risk honesty caveat', () => {
+    const m = buildDueDiligence(fullArgs({ tceUsdPerDay: 9600, breakevenTce: 8200 }));
+    const tce = byLabel(m, 'TCE vs breakeven');
+    expect(tce?.state).toBe('pass');
+    expect(tce?.detail).toContain('9,600');
+    expect(tce?.detail).toContain('8,200');
+    expect(tce?.detail).toContain('1,400'); // diff
+    expect(tce?.detail?.toLowerCase()).toContain('war-risk');
+    expect(tce?.source).toBe('Расчёт TCE');
+  });
+
+  it('worked-calc utilisation: detail reconciles with stored bracketData numbers', () => {
+    const fb = fullFb();
+    const util = fb.components.find((c) => c.factor === 'utilisation')!;
+    util.bracketData = '24,000 / 27,000 mt';
+    const m = buildDueDiligence(fullArgs({ fitBreakdown: fb }));
+    const row = byLabel(m, 'Утилизация DWT');
+    expect(row?.detail).toContain('24,000');
+    expect(row?.detail).toContain('27,000');
+    expect(row?.detail).toContain('89%'); // 24000/27000
+    expect(row?.detail).toContain('номинал'); // honesty caveat (nominal weight)
+  });
+
+  it('worked-calc draft: detail shows laden vs limit + screening honesty caveat', () => {
+    const m = buildDueDiligence(fullArgs());
+    const row = byLabel(m, 'Осадка — порт погрузки');
+    expect(row?.detail).toContain('9.2'); // estimatedLadenDraftM
+    expect(row?.detail).toContain('10.5'); // portLimitM
+    expect(row?.detail?.toLowerCase()).toContain('скрининг');
+  });
+
+  it('worked-calc age: detail shows refYear − built arithmetic', () => {
+    const m = buildDueDiligence(fullArgs());
+    const row = byLabel(m, 'Vessel age');
+    expect(row?.detail).toContain('2026');
+    expect(row?.detail).toContain('2015');
+    expect(row?.detail).toContain('11'); // 2026 - 2015
+  });
+
+  it('lookup checks (Paris MoU flag) → detail without arithmetic + source badge', () => {
+    const m = buildDueDiligence(fullArgs());
+    const row = byLabel(m, 'Flag (Paris MoU)');
+    expect(row?.detail).toContain('Paris MoU');
+    expect(row?.source).toBe('Paris MoU');
+  });
+
+  it('parity: adding detail/source leaves counter + fitPercent untouched', () => {
+    const m = buildDueDiligence(fullArgs());
+    // counter still reconciles to active-state rows only (detail/source never read)
+    expect(m.counter.ran).toBe(flat(m).filter((c) => c.state !== 'inactive').length);
+    expect(m.counter.pass + m.counter.caution + m.counter.info).toBe(m.counter.ran);
+    expect(m.fitPercent).toBe(87);
+  });
+
+  it('inactive fb-dependent rows → detail/source null (no fake explanation)', () => {
+    const m = buildDueDiligence(fullArgs({ fitBreakdown: null }));
+    const row = byLabel(m, 'Утилизация DWT');
+    expect(row?.state).toBe('inactive');
+    expect(row?.detail ?? null).toBeNull();
+    expect(row?.source ?? null).toBeNull();
+  });
+});
