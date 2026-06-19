@@ -1,4 +1,5 @@
 import type { DataTier } from './types';
+import { demoNow } from '../clock';
 
 interface DeriveTierInput {
   source?: string;
@@ -8,7 +9,7 @@ interface DeriveTierInput {
 }
 
 function ageInDays(asOf: string): number {
-  const ms = Date.now() - new Date(asOf).getTime();
+  const ms = demoNow() - new Date(asOf).getTime();
   return Math.floor(ms / (1000 * 60 * 60 * 24));
 }
 
