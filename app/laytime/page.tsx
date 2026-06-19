@@ -406,10 +406,10 @@ export default function LaytimePage() {
                           </span>
                         </div>
                       ))}
-                      {(input.weatherDelayHours ?? 0) > 0 && (
+                      {(result.appliedWeatherDeduction ?? 0) > 0 && (
                         <div className="flex justify-between items-center px-3 py-2 rounded-ds-sm text-sm bg-ds-warn-soft text-ds-warn font-medium">
                           <span>Weather delay deducted</span>
-                          <span>−{(input.weatherDelayHours ?? 0).toFixed(1)}h</span>
+                          <span>−{(result.appliedWeatherDeduction ?? 0).toFixed(1)}h</span>
                         </div>
                       )}
                     </div>
