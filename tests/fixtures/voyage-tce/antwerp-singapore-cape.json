@@ -14,7 +14,8 @@
     },
     "cargo": {
       "quantityMt": 70000,
-      "freightRateUsdPerMt": 28
+      "freightRateUsdPerMt": 28,
+      "commissionPct": 3.75
     },
     "bunkerPriceUsdPerMt": 590,
     "euaPriceEur": 80,
@@ -24,6 +25,7 @@
     "canalUsd": 0,
     "daUsd": 115000
   },
+  "_comment": "#1046 commission-in-TCE: cargo omits commissionPct → /api/voyage/tce applies founder 3.75% TTL default. commission_usd = round(gross 1960000 * 0.0375) = 73500. net_freight = 1960000 - 73500 = 1886500. net_voyage = net_freight - total_costs 845781 = 1040719. daily_tce = round(1040719 / 34 days) = 30609 (was 32771 gross-of-commission). Not a logic bug — value shifted by commission deduction.",
   "expected": {
     "bunker_usd": 641920,
     "canal_usd": 0,
@@ -32,8 +34,11 @@
     "ets_eur": 82278.91,
     "ets_usd": 88861,
     "gross_freight_usd": 1960000,
+    "commission_pct": 3.75,
+    "commission_usd": 73500,
+    "net_freight_usd": 1886500,
     "total_costs_usd": 845781,
-    "net_voyage_usd": 1114219,
-    "daily_tce_usd": 32771
+    "net_voyage_usd": 1040719,
+    "daily_tce_usd": 30609
   }
 }
