@@ -78,4 +78,19 @@ describe('buildTmiRows', () => {
     const mean = rows.reduce((s, r) => s + r.value, 0) / rows.length;
     expect(Math.abs(mean - 12683)).toBeLessThan(800);
   });
+
+  it('headline (last / frozen-date row) === 12683 oracle', () => {
+    // The displayed TMI benchmark is the LAST row (frozenDate). It MUST equal
+    // the canonical 12683 oracle the broker compares TCE against — not the
+    // series mean. (audit finding 16)
+    const last = rows[rows.length - 1];
+    expect(last.index_date).toBe(FROZEN_DATE);
+    expect(last.value).toBe(12683);
+  });
+
+  it('series is not flattened — keeps oscillation amplitude', () => {
+    const values = rows.map((r) => r.value);
+    const spread = Math.max(...values) - Math.min(...values);
+    expect(spread).toBeGreaterThan(500);
+  });
 });
