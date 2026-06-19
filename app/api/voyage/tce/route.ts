@@ -19,6 +19,7 @@ import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
 import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { getDistance } from '@/lib/knowledge/distances/lookup';
 import { getStore } from '@/lib/session-store';
+import { getEurToUsd } from '@/lib/economics/fx-rate-source';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { isEuCountry } from '@/lib/validation/sanctions';
@@ -408,6 +409,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     cargo: data.cargo,
     bunkerPriceUsdPerMt,
     euaPriceEur,
+    // EUR→USD as-of the (demo-frozen or real) clock date — single source: fx-rate.ts.
+    eurToUsdRate: getEurToUsd(getStore().getDb()).rate,
     durationDays: data.durationDays,
     euLegPercent: resolvedEuLegPercent,
     originEu: data.includeEuETS ? originEu : undefined,

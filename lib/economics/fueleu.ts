@@ -3,6 +3,7 @@
  * Implements Well-to-Wake GHG intensity calculation per EU Regulation 2023/1805
  * Penalty: €2400/tCO2eq for non-compliance
  */
+import { EUR_USD_FALLBACK } from './fx-rate';
 
 // GHG intensity g CO2eq/MJ (Well-to-Wake, FuelEU Maritime Annex I)
 export const FUEL_GHG_INTENSITY: Record<string, number> = {
@@ -38,14 +39,14 @@ export const FUELEU_TARGET_2030 = 80.75; // -13%
 export const FUELEU_TARGET_2035 = 62.62; // -29%
 export const FUELEU_PENALTY_EUR_PER_T_CO2EQ = 2400;
 
-// EUR/USD fallback rate (from currency.ts or hardcoded)
-const EUR_USD_FALLBACK = 1.08;
-
 export interface FuelEuInput {
   fuelType: string; // key from FUEL_GHG_INTENSITY
   consumptionMtPerDay: number; // metric tons fuel per day
   voyageDays: number;
   year?: number; // for target selection (default: current year)
+  /** EUR→USD for penalty conversion. Resolve via getEurToUsd() at the async caller
+   *  and inject. Omitted → EUR_USD_FALLBACK (estimated). */
+  eurToUsdRate?: number;
 }
 
 export interface FuelEuResult {
@@ -53,7 +54,7 @@ export interface FuelEuResult {
   ghgIntensityTarget: number; // g CO2eq/MJ target for year
   complianceGapPct: number; // positive = non-compliant, negative = over-compliant
   penaltyEur: number; // €0 if compliant
-  penaltyUsd: number; // converted at ~1.08 rate
+  penaltyUsd: number; // penaltyEur × eurToUsdRate (single-sourced; default EUR_USD_FALLBACK)
   totalEnergyMj: number;
   isCompliant: boolean;
 }
@@ -124,7 +125,7 @@ export function calculateFuelEu(input: FuelEuInput): FuelEuResult {
     complianceGapPct = (gapGPerMj / ghgIntensityTarget) * 100;
   }
 
-  const penaltyUsd = penaltyEur * EUR_USD_FALLBACK;
+  const penaltyUsd = penaltyEur * (input.eurToUsdRate ?? EUR_USD_FALLBACK);
 
   return {
     ghgIntensityActual,

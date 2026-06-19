@@ -209,6 +209,10 @@ export function computeStoredMatchEconomics(
       ballastDistanceNm: ballastDistanceNm ?? undefined,
       bunkerPriceUsdPerMt: resolvedBunkerBk,
       euaPriceEur: euaForBreakdown,
+      // NOTE: eurToUsdRate intentionally omitted here → EUR_USD_FALLBACK. The match
+      // tce_usd_per_day parity chain (matching engine computeEstimatedTce ↔ this stored
+      // recompute) must move to the sourced rate together; wiring only one side would
+      // re-introduce list≠detail divergence (#1002/#1004 class). Follow-up.
       canalUsd: canalUsdBk,
       daUsd: daUsd > 0 ? daUsd : 0,
       euLegPercent,

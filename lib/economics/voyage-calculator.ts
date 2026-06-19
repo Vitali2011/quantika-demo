@@ -44,6 +44,9 @@ export interface VoyageInput {
   };
   bunkerPriceUsdPerMt: number;
   euaPriceEur: number;
+  /** EUR→USD for EU-cost conversion (ETS/FuelEU). Resolve via getEurToUsd() and inject;
+   *  omitted → EUR_USD_FALLBACK (estimated). */
+  eurToUsdRate?: number;
   durationDays: number;
   /** EU leg percentage (0–1). Default 0 (no ETS). */
   euLegPercent?: number;
@@ -122,6 +125,7 @@ export function calculateTCE(input: VoyageInput): TCEResult {
     // Prices
     bunkerPriceUsdPerMt: safeNum(input.bunkerPriceUsdPerMt),
     euaPriceEur: safeNum(input.euaPriceEur),
+    eurToUsdRate: input.eurToUsdRate,
     // Pre-resolved costs
     canalUsd: safeNum(input.canalUsd),
     daUsd: safeNum(input.daUsd),

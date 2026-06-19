@@ -21,6 +21,7 @@ import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { computeBunkerComparison } from '@/lib/economics/bunker-comparison';
 import type { BunkerCandidateResult } from '@/lib/economics/bunker-comparison';
+import { getEurToUsd } from '@/lib/economics/fx-rate-source';
 import { isCandidateInVoyageBasins } from '@/lib/sailing/voyage-basin';
 import { estimateBunkerLift } from '@/lib/economics/bunker-lift';
 import { resolveConsMtPerDay } from '@/lib/economics/vessel-consumption';
@@ -196,6 +197,7 @@ export function resolveOnRouteBunkerCandidates(
     liftTonnes,
     vesselDayRateUsd: DEFAULT_VESSEL_DAY_RATE_USD,
     euaPriceEur,
+    eurToUsdRate: getEurToUsd(db).rate,
   });
 
   return {
