@@ -8,11 +8,11 @@
  */
 
 import {
-  Ship, Package, Coins, ShieldCheck, Scale,
-  Check, AlertTriangle, Info, Minus,
+  Ship, Package, Coins, ShieldCheck, Scale, Info,
   type LucideIcon,
 } from 'lucide-react';
-import type { DDModel, DDState } from '@/lib/matching/due-diligence';
+import type { DDModel } from '@/lib/matching/due-diligence';
+import { DDCheckRow } from './DDCheckRow';
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   ship: Ship,
@@ -21,29 +21,6 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   'shield-check': ShieldCheck,
   scale: Scale,
 };
-
-const STATE_META: Record<DDState, { Icon: LucideIcon; cls: string; row: string }> = {
-  pass: { Icon: Check, cls: 'text-emerald-600', row: 'text-ds-text' },
-  caution: { Icon: AlertTriangle, cls: 'text-amber-600', row: 'text-ds-text' },
-  info: { Icon: Info, cls: 'text-sky-600', row: 'text-ds-text' },
-  inactive: { Icon: Minus, cls: 'text-ds-text-subtle', row: 'text-ds-text-subtle italic' },
-};
-
-function CheckRow({ label, state, evidence }: { label: string; state: DDState; evidence: string | null }) {
-  const meta = STATE_META[state];
-  const { Icon } = meta;
-  return (
-    <div className="flex items-start gap-2 py-1.5">
-      <Icon className={`h-4 w-4 shrink-0 mt-0.5 ${meta.cls}`} aria-hidden />
-      <div className="min-w-0 flex-1">
-        <p className={`text-sm leading-snug ${meta.row}`}>{label}</p>
-        {evidence && (
-          <p className="text-xs text-ds-text-muted leading-snug mt-0.5 break-words">{evidence}</p>
-        )}
-      </div>
-    </div>
-  );
-}
 
 export function DueDiligencePanel({ model }: { model: DDModel }) {
   const { counter, fitPercent } = model;
@@ -89,7 +66,14 @@ export function DueDiligencePanel({ model }: { model: DDModel }) {
               </div>
               <div className="divide-y divide-ds-border/40">
                 {cat.checks.map((chk, i) => (
-                  <CheckRow key={`${cat.key}-${i}`} label={chk.label} state={chk.state} evidence={chk.evidence} />
+                  <DDCheckRow
+                    key={`${cat.key}-${i}`}
+                    label={chk.label}
+                    state={chk.state}
+                    evidence={chk.evidence}
+                    detail={chk.detail}
+                    source={chk.source}
+                  />
                 ))}
               </div>
             </div>
