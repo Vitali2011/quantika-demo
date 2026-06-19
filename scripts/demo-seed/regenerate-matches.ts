@@ -495,6 +495,10 @@ export function buildWorksheet(m: Match, cargo: ParsedCargo | undefined, vessel:
     },
     cargo: {
       weightMt: cargo ? (cfValue(cargo.weightMt) ?? null) : null,
+      // Worst-case (top-of-range) weight for util% gating — same resolver the live
+      // engine (real-matches.ts) and rebuildWorksheets use. Without this, full regen
+      // falls back to nominal and loses the "max w/ option" row (divergence audit #12).
+      weightMtEffective: cargo ? (resolveCargoWeight(cargo) ?? null) : null,
       volumeCbm: cargo ? (cargo.volumeCbm ?? null) : null,
       minVesselDwtMt: cargo ? (cargo.minVesselDwtMt ?? null) : null,
       maxVesselDwtMt: cargo ? (cargo.maxVesselDwtMt ?? null) : null,

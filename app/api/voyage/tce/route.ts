@@ -19,6 +19,7 @@ import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
 import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { getDistance } from '@/lib/knowledge/distances/lookup';
 import { getStore } from '@/lib/session-store';
+import { getEurToUsd } from '@/lib/economics/fx-rate-source';
 import { getLatestBunkerPrice } from '@/lib/market/bunker-repository';
 import { getLatestEuaPrice } from '@/lib/market/eua-repository';
 import { isEuCountry } from '@/lib/validation/sanctions';
@@ -420,6 +421,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     },
     bunkerPriceUsdPerMt,
     euaPriceEur,
+    // EUR→USD as-of the (demo-frozen or real) clock date — single source: fx-rate.ts.
+    // No db arg: getEurToUsd() resolves getDb() INTERNALLY inside its own try/catch, so an
+    // unavailable FX DB degrades to the estimated constant instead of 500-ing the route.
+    // Same db source as compare-routes/route.ts (global getDb) → list and detail can't diverge.
+    eurToUsdRate: getEurToUsd().rate,
     durationDays: data.durationDays,
     euLegPercent: resolvedEuLegPercent,
     originEu: data.includeEuETS ? originEu : undefined,

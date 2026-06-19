@@ -128,13 +128,19 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Single-sourced EUR→USD (as-of frozen/real clock) so compare-routes ETS USD matches
+  // the voyage TCE detail page. Lazy import keeps better-sqlite3 out of this route's
+  // static module graph (compare-routes-perf: import < 1000ms).
+  const { getEurToUsd } = await import('@/lib/economics/fx-rate-source');
+  const eurToUsdRate = getEurToUsd().rate;
+
   try {
     const result = await compareRoutes(
       body.origin,
       body.destination,
       body.vessel,
       body.cargo,
-      body.marketRates,
+      { ...body.marketRates, eurToUsdRate },
       daResolver,
       jwcSystemContext,
     );
