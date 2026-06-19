@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { getPortDistance, normalizePortName, KNOWN_PORTS } from '../port-distances';
 import { getPortMaster } from '../port-master';
 
@@ -1112,5 +1114,47 @@ describe('portgap: absent/aliased ports resolve to non-null distance', () => {
   });
   it('Koh Sri Chang resolves via Bangkok alias', () => {
     expect(getPortDistance('Koh Sri Chang', 'Conakry')?.nm).toBeGreaterThan(0);
+  });
+});
+
+describe('DISTANCES_NM key-order regression (fix-distance-keyorder)', () => {
+  // Every key in the hand-curated DISTANCES_NM table must be in canonical
+  // alphabetically-sorted form ("A|B" where A <= B lexicographically).
+  // If any key is in wrong order, it is never reached by getPortDistance
+  // (which sorts the pair before lookup) — silent bad-value or miss.
+  it('all DISTANCES_NM keys are in canonical sorted form (no dead keys)', () => {
+    const src = fs.readFileSync(
+      path.join(__dirname, '..', 'port-distances.ts'),
+      'utf8',
+    );
+    const keyRe = /'([^'|]+\|[^'|]+)':\s*\d+/g;
+    let m: RegExpExecArray | null;
+    const deadKeys: string[] = [];
+    while ((m = keyRe.exec(src)) !== null) {
+      const key = m[1];
+      const [a, b] = key.split('|');
+      const sorted = [a, b].sort().join('|');
+      if (sorted !== key) deadKeys.push(key);
+    }
+    expect(deadKeys).toEqual([]);
+  });
+
+  // Behavioral: Hamburg ↔ Alexandria must return the hand-curated 3500 NM
+  // (tier-1 hit), NOT the searoute JSON 3447 NM (tier-2 fallback).
+  // Before fix: key was 'Hamburg|Alexandria' — lookup produces 'Alexandria|Hamburg' — miss.
+  it('Hamburg ↔ Alexandria returns hand-curated 3500 NM exact (tier-1, not searoute 3447)', () => {
+    expect(getPortDistance('Hamburg', 'Alexandria')).toEqual({ nm: 3500, exact: true });
+  });
+
+  // Marghera ↔ Piraeus was dead AND had no searoute fallback → haversine ~600nm.
+  // After fix: key 'Marghera|Piraeus': 710 must be reached.
+  it('Marghera ↔ Piraeus returns hand-curated 710 NM exact (was dead key → haversine fallback)', () => {
+    expect(getPortDistance('Marghera', 'Piraeus')).toEqual({ nm: 710, exact: true });
+  });
+
+  // Dubai ↔ BandarAbbas: dead key 'Dubai|BandarAbbas' → no searoute fallback → null/haversine.
+  // After fix: key 'BandarAbbas|Dubai': 170 must be reached.
+  it('Dubai ↔ BandarAbbas returns hand-curated 170 NM exact (was dead key → no fallback)', () => {
+    expect(getPortDistance('Dubai', 'BandarAbbas')).toEqual({ nm: 170, exact: true });
   });
 });
