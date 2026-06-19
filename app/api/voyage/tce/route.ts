@@ -28,6 +28,10 @@ import { getPortDistance } from '@/lib/sailing/port-distances';
 
 const LOCODE_RE = /^[A-Za-z]{5}$/;
 
+/** Founder-locked default commission (TTL %) when the request omits cargo.commissionPct.
+ *  Mirrors computeStoredMatchEconomics so detail (live) TCE == stored (list) TCE. */
+const DEFAULT_COMMISSION_PCT_TTL = 3.75;
+
 /**
  * Resolve port input to a ResolvedPort.
  * - Known ports (name or LOCODE in our DB) → full resolve.
@@ -80,6 +84,9 @@ const VoyageInputSchema = z.object({
   cargo: z.object({
     quantityMt: z.number(),
     freightRateUsdPerMt: z.number(),
+    /** Address + brokerage commission percent (TTL). Absent → founder fallback 3.75%
+     *  applied below so detail TCE matches the stored (list) path. */
+    commissionPct: z.number().optional(),
   }),
   bunkerPriceUsdPerMt: z.number().optional(),
   euaPriceEur: z.number().optional(),
@@ -405,7 +412,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       originPort: originResolved.portName,
       destinationPort: destinationResolved.portName,
     },
-    cargo: data.cargo,
+    cargo: {
+      ...data.cargo,
+      // Founder fallback 3.75% TTL when the caller omits commission, so the live
+      // detail TCE matches the stored (list) path which applies the same default.
+      commissionPct: data.cargo.commissionPct ?? DEFAULT_COMMISSION_PCT_TTL,
+    },
     bunkerPriceUsdPerMt,
     euaPriceEur,
     durationDays: data.durationDays,

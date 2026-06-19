@@ -41,6 +41,9 @@ export interface VoyageInput {
   cargo: {
     quantityMt: number;
     freightRateUsdPerMt: number;
+    /** Address + brokerage commission percent (TTL) deducted from gross freight.
+     *  Absent/0 → no deduction. Detail-path callers pass cargo.commissionPercent ?? 3.75. */
+    commissionPct?: number;
   };
   bunkerPriceUsdPerMt: number;
   euaPriceEur: number;
@@ -77,6 +80,12 @@ export interface TCEBreakdown {
   /** FuelEU Maritime GHG penalty (audit A.5). 0 unless FUELEU_ENABLED + EU leg. */
   fueleu_usd: number;
   gross_freight_usd: number;
+  /** Commission rate (TTL %) deducted from gross freight. 0 when no commission. Optional for BC. */
+  commission_pct?: number;
+  /** Address + brokerage commission USD deducted from gross freight. 0 when none. Optional for BC. */
+  commission_usd?: number;
+  /** Gross freight net of commission (gross_freight_usd − commission_usd). Optional for BC. */
+  net_freight_usd?: number;
   total_costs_usd: number;
   net_voyage_usd: number;
   daily_tce_usd: number;
@@ -119,6 +128,7 @@ export function calculateTCE(input: VoyageInput): TCEResult {
     distanceNm: safeNum(input.route?.distanceNm),
     freightRateUsdPerMt: safeNum(input.cargo?.freightRateUsdPerMt),
     quantityMt: safeNum(input.cargo?.quantityMt),
+    commissionPct: input.cargo?.commissionPct,
     // Prices
     bunkerPriceUsdPerMt: safeNum(input.bunkerPriceUsdPerMt),
     euaPriceEur: safeNum(input.euaPriceEur),
