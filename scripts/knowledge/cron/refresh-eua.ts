@@ -46,11 +46,18 @@ export async function main(): Promise<void> {
   try {
     console.log('[EEX] Fetching auction results from EEX hub...');
     const r = await refreshEex(db);
-    if (!r) { reportSyncFailure(db, eexId, new Error('EEX XLSX parse failed — null result')); console.warn('[EEX] ✗ Null result — structure changed'); return; }
-    eexPriceDate = r.priceDate;
-    reportSyncSuccess(db, eexId, { rowsChanged: r.rowsChanged });
-    eexOk = true;
-    console.log(`[EEX] ✓ Done: price=${r.price} date=${r.priceDate}`);
+    if (!r) {
+      // Null is EEX's normal "XLSX structure changed" signal — NOT a hard stop.
+      // Leave eexOk=false and fall through to the ICAP/TE fallback chain so the
+      // carbon price doesn't freeze. (Returning here skipped both fallbacks.)
+      reportSyncFailure(db, eexId, new Error('EEX XLSX parse failed — null result'));
+      console.warn('[EEX] ✗ Null result — structure changed; falling through to fallbacks');
+    } else {
+      eexPriceDate = r.priceDate;
+      reportSyncSuccess(db, eexId, { rowsChanged: r.rowsChanged });
+      eexOk = true;
+      console.log(`[EEX] ✓ Done: price=${r.price} date=${r.priceDate}`);
+    }
   } catch (e) {
     reportSyncFailure(db, eexId, e as Error);
     console.error('[EEX] ✗ Failed:', e);
