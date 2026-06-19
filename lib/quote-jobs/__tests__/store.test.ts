@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import migration048 from '@/lib/migrations/048-ai-quote-jobs';
 import migration049 from '@/lib/migrations/049-quote-jobs-match-id';
+import migration054 from '@/lib/migrations/054-quote-jobs-dedupe-by-match';
 import {
   enqueueQuoteJob, getQuoteJob, claimNextJob, completeJob, failJob, reapStaleJobs,
   heartbeatJob, QueueFullError, countQueued,
@@ -10,6 +11,7 @@ function db() {
   const d = new Database(':memory:');
   migration048.up(d);
   migration049.up(d);
+  migration054.up(d);
   return d;
 }
 
@@ -105,4 +107,22 @@ it('match_id defaults to null when not provided', () => {
   const d = db();
   const job = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e2' });
   expect(getQuoteJob(d, job.id)?.match_id).toBeNull();
+});
+
+it('same session+email, different match_id → two separate jobs (not deduped)', () => {
+  const d = db();
+  const a = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1', matchId: 'match-A' });
+  const b = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1', matchId: 'match-B' });
+  expect(b.id).not.toBe(a.id);
+  expect(countQueued(d)).toBe(2);
+  expect(getQuoteJob(d, a.id)?.match_id).toBe('match-A');
+  expect(getQuoteJob(d, b.id)?.match_id).toBe('match-B');
+});
+
+it('same session+email, same match_id → still deduped', () => {
+  const d = db();
+  const a = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1', matchId: 'match-A' });
+  const b = enqueueQuoteJob(d, { sessionId: 's1', emailId: 'e1', matchId: 'match-A' });
+  expect(b.id).toBe(a.id);
+  expect(countQueued(d)).toBe(1);
 });
