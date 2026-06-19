@@ -147,7 +147,7 @@ const HRA_DAYS_FOR_SUEZ = 4; // approx Bab-el-Mandeb + Red Sea exposure
 interface CompareInput {
   vessel: VoyageInput['vessel'];
   cargo: VoyageInput['cargo'];
-  marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number };
+  marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number; eurToUsdRate?: number };
   daResolver?: DaResolver;
 }
 
@@ -199,6 +199,7 @@ function buildLeg(
     cargo,
     bunkerPriceUsdPerMt: marketRates.bunkerPriceUsdPerMt,
     euaPriceEur: marketRates.euaPriceEur,
+    eurToUsdRate: marketRates.eurToUsdRate,
     durationDays: dur,
     canalUsd: viaSuez ? SUEZ_CANAL_DUES_USD : 0,
     daUsd,
@@ -292,7 +293,7 @@ export async function compareRoutes(
   destination: string,
   vessel: VoyageInput['vessel'],
   cargo: VoyageInput['cargo'],
-  marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number },
+  marketRates: { bunkerPriceUsdPerMt: number; euaPriceEur: number; eurToUsdRate?: number },
   daResolver?: DaResolver,
   jwcSystemContext?: string,
 ): Promise<RouteCompareResult> {
