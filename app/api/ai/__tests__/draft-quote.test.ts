@@ -52,11 +52,18 @@ jest.mock('@/lib/session-store', () => ({
   })),
 }));
 
+// Mock matches-repository — getMatch is used to enforce matchId ownership.
+jest.mock('@/lib/matching/matches-repository', () => ({
+  getMatch: jest.fn(),
+}));
+
 import { enqueueQuoteJob } from '@/lib/quote-jobs/store';
 import { getSession } from '@/lib/session';
+import { getMatch } from '@/lib/matching/matches-repository';
 
 const mockEnqueueQuoteJob = enqueueQuoteJob as jest.MockedFunction<typeof enqueueQuoteJob>;
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>;
+const mockGetMatch = getMatch as jest.MockedFunction<typeof getMatch>;
 
 function makeRequest(body: unknown, sessionId?: string): NextRequest {
   const headers: Record<string, string> = {
@@ -192,6 +199,8 @@ describe('POST /api/ai/draft-quote', () => {
 
   it('forwards matchId from the body into the enqueued job', async () => {
     mockGetSession.mockReturnValue(baseSession);
+    // Match owned by the requesting session — passes ownership guard.
+    mockGetMatch.mockReturnValue({ id: 54332, user_id: 'session-1' } as ReturnType<typeof getMatch>);
     const req = makeRequest({ emailId: 'email-1', matchId: '54332' }, 'session-1');
     const res = await POST(req);
     expect(res.status).toBe(202);
@@ -199,5 +208,35 @@ describe('POST /api/ai/draft-quote', () => {
       expect.anything(),
       expect.objectContaining({ emailId: 'email-1', matchId: '54332' }),
     );
+  });
+
+  // ── IDOR guard: matchId ownership ─────────────────────────────────────────
+
+  it('returns 404 and does NOT enqueue when matchId belongs to another session', async () => {
+    mockGetSession.mockReturnValue(baseSession);
+    // Match exists but is owned by a different session (IDOR attempt).
+    mockGetMatch.mockReturnValue({ id: 99999, user_id: 'other-session' } as ReturnType<typeof getMatch>);
+    const req = makeRequest({ emailId: 'email-1', matchId: '99999' }, 'session-1');
+    const res = await POST(req);
+    expect(res.status).toBe(404);
+    expect(mockEnqueueQuoteJob).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 and does NOT enqueue when matchId does not exist', async () => {
+    mockGetSession.mockReturnValue(baseSession);
+    mockGetMatch.mockReturnValue(null);
+    const req = makeRequest({ emailId: 'email-1', matchId: '12345' }, 'session-1');
+    const res = await POST(req);
+    expect(res.status).toBe(404);
+    expect(mockEnqueueQuoteJob).not.toHaveBeenCalled();
+  });
+
+  it('enqueues with no ownership check when matchId is omitted', async () => {
+    mockGetSession.mockReturnValue(baseSession);
+    const req = makeRequest({ emailId: 'email-1' }, 'session-1');
+    const res = await POST(req);
+    expect(res.status).toBe(202);
+    expect(mockGetMatch).not.toHaveBeenCalled();
+    expect(mockEnqueueQuoteJob).toHaveBeenCalled();
   });
 });

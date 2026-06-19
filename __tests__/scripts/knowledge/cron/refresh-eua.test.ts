@@ -108,6 +108,39 @@ describe('refresh-eua cron — orchestration logic', () => {
     expect(mockExit).toHaveBeenCalledWith(0);
   });
 
+  it('EEX null result (XLSX structure changed) → ICAP called as fallback → exit 0', async () => {
+    // Regression: refreshEex returning null is the normal "structure changed"
+    // signal; it must fall through to ICAP/TE, not freeze the carbon price.
+    (refreshEex as jest.Mock).mockResolvedValue(null);
+    (refreshIcap as jest.Mock).mockResolvedValue({
+      rowsChanged: 1,
+      priceDate: '2026-05-08',
+      price: 71.30,
+    });
+
+    const { main } = await import('@/scripts/knowledge/cron/refresh-eua');
+    await main();
+
+    expect(refreshIcap).toHaveBeenCalledTimes(1);
+    expect(mockExit).toHaveBeenCalledWith(0);
+  });
+
+  it('EEX null and ICAP null → TE called as tertiary fallback → exit 0', async () => {
+    (refreshEex as jest.Mock).mockResolvedValue(null);
+    (refreshIcap as jest.Mock).mockResolvedValue(null);
+    (refreshTradingEconomics as jest.Mock).mockResolvedValue({
+      rowsChanged: 1,
+      priceDate: '2026-06-01',
+      price: 65.50,
+    });
+
+    const { main } = await import('@/scripts/knowledge/cron/refresh-eua');
+    await main();
+
+    expect(refreshTradingEconomics).toHaveBeenCalledTimes(1);
+    expect(mockExit).toHaveBeenCalledWith(0);
+  });
+
   it('EEX success but stale price (>3 days ago) → ICAP called as fallback → exit 0', async () => {
     (refreshEex as jest.Mock).mockResolvedValue({
       rowsChanged: 1,
