@@ -8,6 +8,7 @@ import { logger } from '@/lib/logger';
 import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { normalizeVesselCapacityToCbm } from '@/lib/parsing/vessel-capacity-units';
+import { summarizeCommissions } from '@/lib/commission';
 import type {
   Email, Classification, ParsedCargo, ParsedVessel, ParsedFixtureRecap, Match, ScoreBreakdown, SessionData,
 } from '@/lib/types';
@@ -16,7 +17,7 @@ type DemoBlob = Pick<
   SessionData,
   'emails' | 'classifications' | 'parsedCargos' | 'parsedVessels'
   | 'parsedFixtureRecaps' | 'processedEmails' | 'matches' | 'isSampleData' | 'accountId'
-  | 'lowConfidenceMatches' | 'insufficientData'
+  | 'lowConfidenceMatches' | 'insufficientData' | 'commissionSummary'
 >;
 
 interface EmailRow {
@@ -239,12 +240,18 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
 
   const processedEmails = buildProcessedEmails(emails, classifications, dedupedCargos, dedupedVessels);
 
+  // Commission summary: the live LLM path computes this in app/api/ai/parse-recap/route.ts,
+  // but the demo/prod hydrate path never did — /commission and /summary showed 0 despite
+  // recaps carrying commission clauses (#1060). Mirror parse-recap: summarize the recaps here.
+  const commissionSummary = summarizeCommissions(parsedFixtureRecaps);
+
   return {
     emails,
     classifications,
     parsedCargos: dedupedCargos,
     parsedVessels: dedupedVessels,
     parsedFixtureRecaps,
+    commissionSummary,
     processedEmails,
     matches,
     lowConfidenceMatches,

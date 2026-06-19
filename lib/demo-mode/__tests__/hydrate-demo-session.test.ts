@@ -192,6 +192,21 @@ describe('buildDemoSessionBlob', () => {
     db.close();
   });
 
+  it('computes commissionSummary from seeded recap clauses (demo/prod hydrate path)', () => {
+    const db = makeSeedDb();
+    // A fixture recap carrying a commission clause, as the seed holds (~EUR 315k + ~USD 11k live).
+    db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
+      VALUES ('demo','e1','recap','v1','[{"emailId":"e1","itemIndex":0,"vesselName":"MV Demo","loadPort":"Rotterdam","dischPort":"Hamburg","commissionPercent":2.5,"commissionAmount":5000,"commissionCurrency":"EUR"}]',0)`).run();
+
+    const blob = buildDemoSessionBlob(db);
+
+    expect(blob.parsedFixtureRecaps).toHaveLength(1);
+    expect(blob.commissionSummary).not.toBeNull();
+    expect(blob.commissionSummary!.details).toHaveLength(1);
+    expect(blob.commissionSummary!.totalByCurrency).toEqual([{ currency: 'EUR', amount: 5000 }]);
+    db.close();
+  });
+
   it('skips a malformed result_json row but keeps the valid rows (and warns)', () => {
     const db = makeSeedDb();
     db.prepare(`INSERT INTO parsed_results (account_id, gmail_message_id, parse_type, parser_version, result_json, parsed_at)
