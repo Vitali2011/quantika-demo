@@ -25,9 +25,15 @@ function makeVesselFields(
 }
 
 describe('computeVesselVetting — unknown = neutral', () => {
-  it('all fields null → score = UNKNOWN_SHARE (0.6), no badges', () => {
+  // founder-locked 2026-06-19: unknown → 0.5 (true neutral), not 0.6 (positive bias)
+  it('VETTING_VERDICT_SHARE.unknown === 0.5 (neutral midpoint, not positive bias)', () => {
+    expect(VETTING_VERDICT_SHARE.unknown).toBe(0.5);
+  });
+
+  it('all fields null → score = UNKNOWN_SHARE (0.5), no badges', () => {
     const result = computeVesselVetting(makeVesselFields(), { refYear: REF_YEAR });
     expect(result.score).toBeCloseTo(VETTING_VERDICT_SHARE.unknown, 5);
+    expect(result.score).toBeCloseTo(0.5, 5);
     expect(result.badges).toHaveLength(0);
     expect(result.factors).toHaveLength(5);
     for (const f of result.factors) {
