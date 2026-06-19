@@ -32,10 +32,11 @@ describe('cargo laycan render — parse+format pipeline', () => {
     expect(result).toMatch(/Jun\s+25.+Jun\s+30|Jun 2[5-9]/);
   });
 
-  // "June 2019" bare month-year → whole-month range at refYear (founder 2026-06-02:
-  // month-year → range). Stale 2019 stripped like the "End June 2019" phrase case
-  // above — never a single day, never a stale-year raw passthrough.
-  it('bare "June 2019" → whole-month range at refYear (stale year stripped)', () => {
+  // "June 2019" bare month-year → whole-month range. The parser now HONOURS the
+  // stated year (audit finding 10: it parses to June 2019, not refYear June 2026),
+  // but the display omits the year, so the rendered string is the same whole-month
+  // window — never a single day, never a stale-year raw passthrough.
+  it('bare "June 2019" → whole-month range (year honoured, display omits it)', () => {
     const result = fmt('June 2019');
     expect(result).toBe('Jun 1–Jun 30');
     expect(result).not.toBe('—');
