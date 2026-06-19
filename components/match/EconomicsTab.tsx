@@ -18,6 +18,7 @@ import type { WarRiskBreakdown } from '@/lib/economics/war-risk';
 import type { TCEBreakdown } from '@/lib/economics/voyage-calculator';
 import { DataQualityBadge } from '@/components/data-quality/DataQualityBadge';
 import { deriveTier } from '@/lib/data-quality/derive';
+import { useDemoNow } from '@/lib/clock-client';
 import { FreightWaterfall } from './FreightWaterfall';
 
 interface EconomicsTabProps {
@@ -84,6 +85,8 @@ function portLabel(locode: string): string {
 
 export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm, matchDbId, storedFreightRate, freightRateSource, warRiskPremium, warRiskZones, warRiskBreakdown, warRiskBreakdownBallast, warRiskZonesBallast, storedTceUsdPerDay, ballastDistanceNm, consumptionEstimated, balticRateAsOf, storedBreakevenTce, initialBunkerPort }: EconomicsTabProps) {
   const [open, setOpen] = useState(false);
+  // Frozen demo clock for freshness/staleness (W1-4). 0 = SSR sentinel pre-hydration.
+  const nowMs = useDemoNow();
   const [bunkerPriceUsdPerMt, setBunkerPriceUsdPerMt] = useState('');
   const [overrideRate, setOverrideRate] = useState(storedFreightRate != null ? String(storedFreightRate) : '');
   const [overrideTce, setOverrideTce] = useState<number | null>(null);
@@ -756,7 +759,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
                 </button>
                 {showCalc && (
                   <div className="mt-3 rounded border border-gray-200 bg-gray-50 p-3">
-                    <CalculationWaterfall breakdown={voyageBreakdown} warRiskBreakdown={warRiskBreakdown} />
+                    <CalculationWaterfall breakdown={voyageBreakdown} warRiskBreakdown={warRiskBreakdown} nowMs={nowMs || undefined} />
                   </div>
                 )}
               </div>
@@ -793,7 +796,7 @@ export function EconomicsTab({ commissionPercent, vessel, cargo, routeDistanceNm
             )}
             {/* W6a: Baltic TC staleness badge */}
             {freightRateSource === 'baltic' && balticRateAsOf && (() => {
-              const tier = deriveTier({ source: 'static-seed', asOf: balticRateAsOf, staleAfterDays: 14 });
+              const tier = deriveTier({ source: 'static-seed', asOf: balticRateAsOf, staleAfterDays: 14, nowMs: nowMs || undefined });
               return tier !== 'live' ? (
                 <div data-testid="baltic-stale-badge" className="mt-2 rounded border border-red-200 bg-red-50 p-3 text-xs flex items-center gap-1">
                   <span className="text-gray-600">Baltic TC rate:</span>

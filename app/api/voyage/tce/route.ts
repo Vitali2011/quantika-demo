@@ -15,6 +15,7 @@ import { quoteCanal, type CanalCode, type SuezInput, type CanalInput } from '@/l
 import { getPortDa } from '@/lib/port-da/repository';
 import type { DataQuality } from '@/lib/data-quality/types';
 import { deriveTier } from '@/lib/data-quality/derive';
+import { demoNow } from '@/lib/clock';
 import { resolvePort, type ResolvedPort } from '@/lib/ports/resolve';
 import { resolveVaguePort } from '@/lib/ports/resolve-vague';
 import { getDistance } from '@/lib/knowledge/distances/lookup';
@@ -168,7 +169,7 @@ function resolveDaWithQuality(
   if (!anyResolved) return { totalUsd: total };
   const RANK_TO_CONFIDENCE = ['low', 'estimated', 'verified'] as const;
   const confidence = RANK_TO_CONFIDENCE[minConfidenceRank] ?? 'verified';
-  const tier = deriveTier({ source: confidence, verifiedSources: ['verified'] });
+  const tier = deriveTier({ source: confidence, verifiedSources: ['verified'], nowMs: demoNow() });
   return { totalUsd: total, quality: { tier, source: confidence } };
 }
 
