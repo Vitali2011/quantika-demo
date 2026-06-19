@@ -78,6 +78,23 @@ it('renders a draft after SSE quote-update done event (PI2 behavioral)', async (
   );
 });
 
+it('forwards matchId in the POST body so the worker targets the right cargo item (W1-3)', async () => {
+  (csrfFetch as jest.Mock).mockResolvedValueOnce({
+    ok: true,
+    status: 202,
+    headers: { get: () => 'application/json' },
+    json: async () => ({ jobId: 'j1', status: 'queued' }),
+  });
+  render(<DraftQuoteCard emailId="e1" matchId="42" />);
+  fireEvent.click(screen.getByRole('button', { name: /draft quote/i }));
+
+  await waitFor(() => expect(csrfFetch as jest.Mock).toHaveBeenCalled());
+  const call = (csrfFetch as jest.Mock).mock.calls[0];
+  expect(call[0]).toBe('/api/ai/draft-quote');
+  const body = JSON.parse(call[1].body as string);
+  expect(body).toMatchObject({ emailId: 'e1', matchId: '42' });
+});
+
 it('fires a toast with a friendly message on an empty-body error', async () => {
   (csrfFetch as jest.Mock).mockResolvedValueOnce({
     ok: false,

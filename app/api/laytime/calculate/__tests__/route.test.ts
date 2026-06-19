@@ -240,6 +240,38 @@ describe('POST /api/laytime/calculate', () => {
     expect(json.usedLaytimeHours).toBeLessThan(120);
   });
 
+  test('returns 400 when weatherDelayHours is negative', async () => {
+    process.env.LAYTIME_ENGINE_ENABLED = 'true';
+    const validInput: LaytimeInput = {
+      allowedLaytimeDays: 5,
+      mode: 'SHINC',
+      commencedAt: '2026-05-12T00:00:00Z',
+      completedAt: '2026-05-17T00:00:00Z',
+      weatherDelayHours: -48,
+    };
+    const req = makeRequest(validInput);
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/weatherDelayHours/);
+  });
+
+  test('returns 400 when weatherDelayHours is -0.1', async () => {
+    process.env.LAYTIME_ENGINE_ENABLED = 'true';
+    const validInput: LaytimeInput = {
+      allowedLaytimeDays: 5,
+      mode: 'SHINC',
+      commencedAt: '2026-05-12T00:00:00Z',
+      completedAt: '2026-05-17T00:00:00Z',
+      weatherDelayHours: -0.1,
+    };
+    const req = makeRequest(validInput);
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/weatherDelayHours/);
+  });
+
   // Expected Output Ranges
   test('usedLaytimeHours is non-negative in response', async () => {
     process.env.LAYTIME_ENGINE_ENABLED = 'true';

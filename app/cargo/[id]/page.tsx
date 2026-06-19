@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
+import { getStore } from '@/lib/session-store';
+import { getMatchBySlugAndItem } from '@/lib/matching/matches-repository';
 import { DraftQuoteCard } from '@/components/request/draft-quote-card';
 import { cfValue } from '@/lib/types';
 import { AnalyticsTracker } from '@/lib/analytics-tracker';
@@ -63,6 +65,21 @@ export default async function CargoDetailPage({ params }: Props) {
   const cargos = session.parsedCargos.filter(c => c.emailId === id);
   const matchingVessels = session.matches.filter(m => m.cargoEmailId === id);
   const hasMatch = matchingVessels.length > 0;
+
+  // Resolve the DB match id (migration 049) for each cargo item so the quote worker
+  // targets the right item of a multi-item email instead of always falling back to
+  // item 0, and injects the economics block (#W1-3).
+  const db = getStore().getDatabase();
+  function matchIdForItem(itemIndex: number): string | undefined {
+    const m = matchingVessels.find(mv => mv.cargoItemIndex === itemIndex);
+    if (!m) return undefined;
+    // Resolve by the FULL item pair (migration 051 unique key) so a multi-item
+    // email where two items match one vessel still targets THIS item's row.
+    const stored = getMatchBySlugAndItem(
+      db, m.cargoEmailId, m.vesselEmailId, sessionId!, m.cargoItemIndex, m.vesselItemIndex,
+    );
+    return stored ? String(stored.id) : undefined;
+  }
 
   const sanctionsBlock = (session.blockedMatches ?? []).find(
     (b) => b.cargoEmailId === id && b.sanctions?.blocking,
@@ -301,6 +318,11 @@ export default async function CargoDetailPage({ params }: Props) {
                     )}
                   </div>
                 )}
+
+                {/* Draft quote — per item so the worker targets THIS cargo item (#W1-3) */}
+                <div className="pt-3 border-t border-[#f1f3f7]">
+                  <DraftQuoteCard emailId={id} matchId={matchIdForItem(cargo.itemIndex)} />
+                </div>
               </div>
             </div>
           );
@@ -362,9 +384,6 @@ export default async function CargoDetailPage({ params }: Props) {
             </div>
           </div>
         )}
-
-        {/* Draft quote */}
-        <DraftQuoteCard emailId={id} />
 
       </div>
     </main>

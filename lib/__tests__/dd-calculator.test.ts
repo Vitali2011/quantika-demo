@@ -5,6 +5,7 @@ import type { LaytimeResult, DemurrageDespatchInput } from '../types';
 const DEMURRAGE_RESULT: LaytimeResult = {
   allowedLaytimeHours: 120,
   usedLaytimeHours: 144,
+  appliedWeatherDeduction: 0,
   demurrageOrDespatch: 'demurrage',
   netHours: 24,
   breakdown: [],
@@ -13,6 +14,7 @@ const DEMURRAGE_RESULT: LaytimeResult = {
 const DESPATCH_RESULT: LaytimeResult = {
   allowedLaytimeHours: 120,
   usedLaytimeHours: 96,
+  appliedWeatherDeduction: 0,
   demurrageOrDespatch: 'despatch',
   netHours: -24,
   breakdown: [],
@@ -21,6 +23,7 @@ const DESPATCH_RESULT: LaytimeResult = {
 const BALANCED_RESULT: LaytimeResult = {
   allowedLaytimeHours: 120,
   usedLaytimeHours: 120,
+  appliedWeatherDeduction: 0,
   demurrageOrDespatch: 'balanced',
   netHours: 0,
   breakdown: [],
@@ -269,6 +272,7 @@ describe('calculateDemurrageDespatch', () => {
     const makeResult = (netHours: number): LaytimeResult => ({
       allowedLaytimeHours: 120,
       usedLaytimeHours: 120 + netHours,
+      appliedWeatherDeduction: 0,
       demurrageOrDespatch: Math.abs(netHours) <= 0.01 ? 'balanced' : netHours > 0 ? 'demurrage' : 'despatch',
       netHours,
       breakdown: [],

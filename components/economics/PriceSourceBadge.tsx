@@ -1,5 +1,6 @@
 'use client';
 import { useMemo } from 'react';
+import { useDemoNow } from '@/lib/clock-client';
 
 interface Props {
   label: string;
@@ -11,14 +12,17 @@ interface Props {
   mode: 'manual' | 'auto' | 'auto-skip' | 'auto-fallback';
 }
 
-function ageDays(priceDate?: string): number | null {
+function ageDays(priceDate: string | undefined, nowMs: number): number | null {
   if (!priceDate) return null;
-  const ms = Date.now() - new Date(priceDate).getTime();
+  // nowMs === 0 is the SSR sentinel from useDemoNow (non-demo, pre-hydration).
+  if (nowMs === 0) return null;
+  const ms = nowMs - new Date(priceDate).getTime();
   return Math.floor(ms / (1000 * 60 * 60 * 24));
 }
 
 export function PriceSourceBadge(p: Props) {
-  const age = useMemo(() => ageDays(p.priceDate), [p.priceDate]);
+  const nowMs = useDemoNow();
+  const age = useMemo(() => ageDays(p.priceDate, nowMs), [p.priceDate, nowMs]);
 
   let borderColor = 'border-gray-300';
   let warning: string | null = null;

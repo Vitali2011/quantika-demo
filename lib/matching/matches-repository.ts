@@ -540,6 +540,32 @@ export function getMatchBySlug(
   return row ?? null;
 }
 
+/** Item-aware slug resolution. Since migration 051 the unique key is the full
+ *  (cargo_id, vessel_id, user, cargo_item_index, vessel_item_index) pair, so two
+ *  cargo items of one email matching the SAME vessel are distinct rows. Keying on
+ *  the full pair returns exactly one row — the one for THIS item — so the quote
+ *  worker drafts for the right cargo item instead of always item 0 (audit W1-3).
+ *  On legacy DBs without item columns, falls back to the coarse getMatchBySlug. */
+export function getMatchBySlugAndItem(
+  db: Database.Database,
+  cargoId: string,
+  vesselId: string,
+  userId: string,
+  cargoItemIndex: number,
+  vesselItemIndex: number,
+): StoredMatch | null {
+  if (!hasItemIndexColumns(db)) return getMatchBySlug(db, cargoId, vesselId, userId);
+  const row = db
+    .prepare(
+      `SELECT * FROM matches
+       WHERE cargo_id = ? AND vessel_id = ? AND user_id = ?
+         AND cargo_item_index = ? AND vessel_item_index = ?
+       LIMIT 1`,
+    )
+    .get(cargoId, vesselId, userId, cargoItemIndex, vesselItemIndex) as StoredMatch | undefined;
+  return row ?? null;
+}
+
 export function listMatches(db: Database.Database, opts: ListMatchesOptions): StoredMatch[] {
   const { status, sortBy, sortDir, limit, offset, topPerCargo } = opts;
   const {

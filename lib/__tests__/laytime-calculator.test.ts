@@ -190,7 +190,7 @@ describe('calculateLaytime boundary cases', () => {
     expect(() => calculateLaytime(input)).toThrow(RangeError);
   });
 
-  test('accepts negative weatherDelayHours without throwing', () => {
+  test('throws RangeError on negative weatherDelayHours', () => {
     const input: LaytimeInput = {
       allowedLaytimeDays: 5,
       mode: 'SHINC',
@@ -198,7 +198,7 @@ describe('calculateLaytime boundary cases', () => {
       completedAt: '2026-05-17T00:00:00Z',
       weatherDelayHours: -10,
     };
-    expect(() => calculateLaytime(input)).not.toThrow();
+    expect(() => calculateLaytime(input)).toThrow(RangeError);
   });
 
   // Input Contract: Invalid date strings
@@ -472,5 +472,61 @@ describe('calculateLaytime FHEX and FHINC modes', () => {
     const result = calculateLaytime(input);
     // Should NOT exclude holiday like SHINC
     expect(result.usedLaytimeHours).toBeCloseTo(5 * 24, 1);
+  });
+});
+
+// ── breakdown vs usedLaytimeHours reconciliation (W1-6) ──
+// Contract: the daily breakdown carries GROSS counted hours, while
+// usedLaytimeHours is NET (gross − weatherDelayHours). The exact gap
+// between the two must equal weatherDelayHours so the UI can render a
+// single "weather delay deducted" reconciliation line and have the days
+// add up to the header value.
+describe('calculateLaytime breakdown vs usedLaytimeHours reconciliation', () => {
+  test('SHINC 6-day range with weatherDelayHours=36: gross days − applied = used', () => {
+    const input: LaytimeInput = {
+      allowedLaytimeDays: 5,
+      mode: 'SHINC',
+      commencedAt: '2026-05-12T00:00:00Z',
+      completedAt: '2026-05-18T00:00:00Z', // 6 days = 144h gross
+      weatherDelayHours: 36,
+    };
+    const result = calculateLaytime(input);
+
+    const grossSum = result.breakdown
+      .filter((e) => !e.excluded)
+      .reduce((sum, e) => sum + e.hours, 0);
+
+    // (1) header value is net of the weather deduction
+    expect(result.usedLaytimeHours).toBeCloseTo(144 - 36, 1); // 108h
+    // (2) the breakdown stays gross (unchanged contract)
+    expect(grossSum).toBeCloseTo(144, 1);
+    // (3) appliedWeatherDeduction is the amount actually subtracted (full 36 here)
+    expect(result.appliedWeatherDeduction).toBeCloseTo(36, 1);
+    // (4) the gap between days and header equals the APPLIED deduction (snapshot, not live form)
+    expect(grossSum - result.appliedWeatherDeduction).toBeCloseTo(result.usedLaytimeHours, 1);
+  });
+
+  test('clamp case: weatherDelayHours (60) > gross (48) → applied caps at gross, used=0, reconciles', () => {
+    const input: LaytimeInput = {
+      allowedLaytimeDays: 5,
+      mode: 'SHINC',
+      commencedAt: '2026-05-12T00:00:00Z',
+      completedAt: '2026-05-14T00:00:00Z', // 2 days = 48h gross
+      weatherDelayHours: 60,
+    };
+    const result = calculateLaytime(input);
+
+    const grossSum = result.breakdown
+      .filter((e) => !e.excluded)
+      .reduce((sum, e) => sum + e.hours, 0);
+
+    // gross is 48h
+    expect(grossSum).toBeCloseTo(48, 1);
+    // used clamps at 0 (can't go negative)
+    expect(result.usedLaytimeHours).toBeCloseTo(0, 1);
+    // applied deduction is the ACTUAL amount removed: min(weather, gross) = 48, not 60
+    expect(result.appliedWeatherDeduction).toBeCloseTo(48, 1);
+    // reconciliation must hold even at the clamp boundary: 48 − 48 === 0
+    expect(grossSum - result.appliedWeatherDeduction).toBeCloseTo(result.usedLaytimeHours, 1);
   });
 });

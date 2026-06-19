@@ -799,6 +799,13 @@ export interface LaytimeInput {
 export interface LaytimeResult {
   allowedLaytimeHours: number;
   usedLaytimeHours: number;
+  /**
+   * Weather delay hours actually subtracted from gross counted time,
+   * clamped to never exceed gross (min(weatherDelayHours, grossCounted)).
+   * The UI renders the "weather delay deducted" line from this snapshot
+   * value so days − deduction always reconciles to usedLaytimeHours.
+   */
+  appliedWeatherDeduction: number;
   demurrageOrDespatch: 'demurrage' | 'despatch' | 'balanced';
   netHours: number;
   breakdown: LaytimeBreakdownEntry[];

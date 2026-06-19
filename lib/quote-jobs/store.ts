@@ -36,9 +36,9 @@ export function enqueueQuoteJob(
   opts: { maxDepth?: number } = {},
 ): QuoteJob {
   const existing = db.prepare(
-    `SELECT * FROM ai_quote_jobs WHERE session_id=? AND email_id=? AND status IN ('queued','processing')
+    `SELECT * FROM ai_quote_jobs WHERE session_id=? AND email_id=? AND COALESCE(match_id,'')=COALESCE(?,'') AND status IN ('queued','processing')
      ORDER BY created_at DESC LIMIT 1`,
-  ).get(input.sessionId, input.emailId) as QuoteJob | undefined;
+  ).get(input.sessionId, input.emailId, input.matchId ?? null) as QuoteJob | undefined;
   if (existing) return existing;
 
   const depth = countQueued(db);
@@ -53,9 +53,9 @@ export function enqueueQuoteJob(
   if (r.changes === 0) {
     // Concurrent enqueue won the race; return their in-flight row
     return db.prepare(
-      `SELECT * FROM ai_quote_jobs WHERE session_id=? AND email_id=? AND status IN ('queued','processing')
+      `SELECT * FROM ai_quote_jobs WHERE session_id=? AND email_id=? AND COALESCE(match_id,'')=COALESCE(?,'') AND status IN ('queued','processing')
        ORDER BY created_at DESC LIMIT 1`,
-    ).get(input.sessionId, input.emailId) as QuoteJob;
+    ).get(input.sessionId, input.emailId, input.matchId ?? null) as QuoteJob;
   }
 
   return getQuoteJob(db, id)!;

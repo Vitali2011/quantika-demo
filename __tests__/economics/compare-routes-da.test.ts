@@ -69,6 +69,82 @@ describe('wave-γ-4: compareRoutes daResolver wiring (BUG-05 fix)', () => {
   });
 });
 
+describe('route-level name→LOCODE resolution (W1-1 fix)', () => {
+  const ROUTE_PATH = '@/app/api/voyage/compare-routes/route';
+
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  function buildBody() {
+    return {
+      origin: 'Rotterdam',
+      destination: 'Singapore',
+      vessel,
+      cargo,
+      marketRates,
+    };
+  }
+
+  it('resolves free-text port name to LOCODE before getPortDa lookup', async () => {
+    jest.doMock('@/lib/ports/resolve', () => ({
+      resolvePort: (input: string) => {
+        const map: Record<string, string> = { rotterdam: 'NLRTM', singapore: 'SGSIN' };
+        const code = map[input.toLowerCase()];
+        return code ? { portCode: code, portName: input, country: '', lat: 0, lon: 0, aliases: [] } : null;
+      },
+    }));
+    const getPortDa = jest.fn(({ portCode }: { portCode: string }) => ({
+      totalFixedUsd: portCode === 'NLRTM' ? 42_000 : 35_000,
+      confidence: 'verified',
+    }));
+    jest.doMock('@/lib/port-da/repository', () => ({ getPortDa }));
+
+    const { POST } = await import(ROUTE_PATH);
+    const req = new Request('http://localhost/api/voyage/compare-routes', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(buildBody()),
+    });
+    const res = await POST(req as never);
+    const json = await res.json();
+
+    // getPortDa must be called with the resolved LOCODEs, never the raw names.
+    const calledCodes = getPortDa.mock.calls.map((c) => c[0].portCode);
+    expect(calledCodes).toContain('NLRTM');
+    expect(calledCodes).toContain('SGSIN');
+    expect(calledCodes).not.toContain('Rotterdam');
+    expect(calledCodes).not.toContain('Singapore');
+
+    // DA must surface as positive (origin + destination) in the breakdown.
+    expect(json.suez.breakdown.da_usd).toBeGreaterThan(0);
+    expect(json.cape.breakdown.da_usd).toBeGreaterThan(0);
+  });
+
+  it('unknown port name (resolvePort → null) yields DA 0 without throwing', async () => {
+    jest.doMock('@/lib/ports/resolve', () => ({
+      resolvePort: () => null,
+    }));
+    const getPortDa = jest.fn(() => ({ totalFixedUsd: 99_999, confidence: 'verified' }));
+    jest.doMock('@/lib/port-da/repository', () => ({ getPortDa }));
+
+    const { POST } = await import(ROUTE_PATH);
+    const body = { ...buildBody(), origin: 'UnknownPort', destination: 'AlsoUnknown' };
+    const req = new Request('http://localhost/api/voyage/compare-routes', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const res = await POST(req as never);
+    const json = await res.json();
+
+    // resolvePort returned null → getPortDa skipped → DA 0, no crash.
+    expect(getPortDa).not.toHaveBeenCalled();
+    expect(json.suez.breakdown.da_usd).toBe(0);
+    expect(json.cape.breakdown.da_usd).toBe(0);
+  });
+});
+
 describe('wave-γ-cleanup-C: defensive resolver guards', () => {
   it('resolver returning NaN → daUsd is 0, not NaN', async () => {
     const resolver: DaResolver = () => NaN;

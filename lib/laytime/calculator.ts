@@ -69,8 +69,8 @@ export function calculateLaytime(input: LaytimeInput): LaytimeResult {
     throw new RangeError('allowedLaytimeDays must be greater than 0');
   }
 
-  if (weatherDelayHours !== undefined && !Number.isFinite(weatherDelayHours)) {
-    throw new RangeError('weatherDelayHours must be a finite number');
+  if (weatherDelayHours !== undefined && (!Number.isFinite(weatherDelayHours) || weatherDelayHours < 0)) {
+    throw new RangeError('weatherDelayHours must be a finite number >= 0');
   }
 
   const commencedDate = new Date(commencedAt);
@@ -122,7 +122,12 @@ export function calculateLaytime(input: LaytimeInput): LaytimeResult {
     currentDate.setUTCHours(0, 0, 0, 0);
   }
 
-  let usedLaytimeHours = minutesCounted / 60 - weatherDelayHours;
+  const grossCountedHours = minutesCounted / 60;
+  // Actual deduction can never exceed gross counted time. Rendering this
+  // (instead of the raw weatherDelayHours) keeps the UI reconciliation line
+  // honest at the clamp boundary: grossSum − appliedWeatherDeduction === used.
+  const appliedWeatherDeduction = Math.min(weatherDelayHours, grossCountedHours);
+  let usedLaytimeHours = grossCountedHours - weatherDelayHours;
   usedLaytimeHours = Math.max(0, usedLaytimeHours);
 
   const allowedLaytimeHours = allowedLaytimeDays * 24;
@@ -141,6 +146,7 @@ export function calculateLaytime(input: LaytimeInput): LaytimeResult {
   return {
     allowedLaytimeHours,
     usedLaytimeHours,
+    appliedWeatherDeduction,
     demurrageOrDespatch,
     netHours,
     breakdown,

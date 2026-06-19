@@ -11,9 +11,12 @@ import { useQuoteJob } from '@/lib/quote-jobs/use-quote-job';
 
 interface DraftQuoteCardProps {
   emailId: string;
+  /** DB match id (migration 049) so the worker targets the right cargo item of a
+   *  multi-item email and injects the economics block (#W1-3). */
+  matchId?: string;
 }
 
-export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
+export function DraftQuoteCard({ emailId, matchId }: DraftQuoteCardProps) {
   const toast = useToast();
   const {
     state: quoteState,
@@ -21,7 +24,7 @@ export function DraftQuoteCard({ emailId }: DraftQuoteCardProps) {
     error: quoteError,
     start: startQuote,
     retry: retryQuote,
-  } = useQuoteJob(emailId, (msg) => toast.error(msg));
+  } = useQuoteJob(emailId, (msg) => toast.error(msg), matchId);
   const [replyDraft, setReplyDraft] = useState('');
   const [loadingReply, setLoadingReply] = useState(false);
   const [copied, setCopied] = useState<'quote' | 'reply' | null>(null);

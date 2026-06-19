@@ -17,6 +17,12 @@ import { deriveTier } from '@/lib/data-quality/derive';
 interface Props {
   breakdown: TCEBreakdown;
   warRiskBreakdown?: WarRiskBreakdown | null;
+  /**
+   * Frozen demo clock (ms) for freshness/staleness, supplied by the client
+   * parent via useDemoNow(). Keeps this presentational component clock-agnostic
+   * so it never pulls @/lib/clock (and better-sqlite3) into the bundle.
+   */
+  nowMs?: number;
 }
 
 /** Broker convention: negatives render as `-$X`, not `$-X` (matches VoyageBreakdownChart). */
@@ -27,7 +33,7 @@ function fmtUsd(n: number): string {
     : `$${n.toLocaleString('en-US')}`;
 }
 
-export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
+export function CalculationWaterfall({ breakdown, warRiskBreakdown, nowMs }: Props) {
   const {
     freight_rate_usd_per_mt,
     quantity_mt,
@@ -52,7 +58,7 @@ export function CalculationWaterfall({ breakdown, warRiskBreakdown }: Props) {
   } = breakdown;
 
   const warRiskRateTier = war_risk_rate_date && war_risk_usd > 0
-    ? deriveTier({ asOf: war_risk_rate_date, staleAfterDays: 90 })
+    ? deriveTier({ asOf: war_risk_rate_date, staleAfterDays: 90, nowMs })
     : null;
 
   return (

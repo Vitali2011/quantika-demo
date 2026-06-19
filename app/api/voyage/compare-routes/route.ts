@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { compareRoutes, type DaResolver } from '@/lib/economics/route-decision';
 import { getPortDa } from '@/lib/port-da/repository';
+import { resolvePort } from '@/lib/ports/resolve';
 import { isRagEnabled } from '@/lib/knowledge/flags';
 import { JWC_HRA_ZONES } from '@/lib/economics/war-risk';
 import type { RetrievedChunk } from '@/lib/knowledge/embeddings/chunks';
@@ -75,9 +76,14 @@ export async function POST(req: NextRequest) {
   // wave-γ-4 (BUG-05): wire DA resolver from port_da_estimates so the TCE
   // breakdown surfaces real disbursement costs instead of hardcoded 0.
   // Resolver returns 0 for ports not in the dataset — calculator handles that.
+  // W1-1: the resolver receives a free-text port name (body.origin/destination),
+  // but port_da_estimates is keyed by 5-char UN/LOCODE — resolve name→LOCODE
+  // first, else the lookup never matches and DA is silently 0.
   const daResolver: DaResolver = (portCode, vesselDwt) => {
     try {
-      const da = getPortDa({ portCode, vesselDwt });
+      const resolved = resolvePort(portCode);
+      if (!resolved) return 0;
+      const da = getPortDa({ portCode: resolved.portCode, vesselDwt });
       return da?.totalFixedUsd ?? 0;
     } catch {
       // DB lookup failure must not break the comparison — degrade to 0.
