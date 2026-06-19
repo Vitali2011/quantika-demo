@@ -76,7 +76,10 @@ export async function refreshTradingEconomics(
   }
 
   if (price < PRICE_MIN || price > PRICE_MAX) {
-    const existing = getLatestEuaPrice(db);
+    // Last-good range check wants the raw last-known price, not a freshness
+    // gate — bypass the EUA_STALE_DAYS default so an old-but-valid row still
+    // logs here instead of vanishing to null.
+    const existing = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
     console.warn(
       `[TE] Price ${price} EUR out of range [${PRICE_MIN}–${PRICE_MAX}] — ` +
       `keeping last-good (${existing?.price_eur_per_tco2 ?? 'none'} on ${existing?.price_date ?? 'n/a'})`,

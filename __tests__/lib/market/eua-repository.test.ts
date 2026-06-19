@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import migration024 from '@/lib/migrations/024-eua-prices-rewrite';
-import { getLatestEuaPrice, getEuaHistory, upsertEuaPrice } from '@/lib/market/eua-repository';
+import { getLatestEuaPrice, getEuaHistory, upsertEuaPrice, EUA_STALE_DAYS } from '@/lib/market/eua-repository';
 
 describe('eua-repository', () => {
   let db: Database.Database;
@@ -13,8 +13,11 @@ describe('eua-repository', () => {
 
   afterEach(() => db.close());
 
+  // Seed row (2026-05-04) is older than EUA_STALE_DAYS relative to the real
+  // clock, so retrieval-semantics tests opt out of the freshness gate with
+  // maxAgeDays: Infinity. These assert WHICH row comes back, not its freshness.
   it('getLatestEuaPrice returns spot seed row', () => {
-    const row = getLatestEuaPrice(db, 'spot');
+    const row = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
     expect(row).not.toBeNull();
     expect(row!.price_eur_per_tco2).toBe(72.65);
     expect(row!.price_date).toBe('2026-05-04');
@@ -23,7 +26,12 @@ describe('eua-repository', () => {
     expect(row!.fetched_at).toBeTruthy();
   });
 
-  it('getLatestEuaPrice defaults to spot', () => {
+  it('getLatestEuaPrice defaults to spot contract_type', () => {
+    // Fresh row so the default freshness gate passes; asserts the default
+    // contractType argument resolves to 'spot'.
+    db.prepare(
+      "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES (date('now'), 75.00, 'spot', 'fresh-source', datetime('now'))"
+    ).run();
     const row = getLatestEuaPrice(db);
     expect(row).not.toBeNull();
     expect(row!.contract_type).toBe('spot');
@@ -38,7 +46,7 @@ describe('eua-repository', () => {
     db.prepare(
       "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES ('2026-05-10', 75.00, 'spot', 'newer-source', datetime('now'))"
     ).run();
-    const row = getLatestEuaPrice(db, 'spot');
+    const row = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
     expect(row).not.toBeNull();
     expect(row!.price_date).toBe('2026-05-10');
     expect(row!.price_eur_per_tco2).toBe(75.00);
@@ -48,10 +56,38 @@ describe('eua-repository', () => {
     db.prepare(
       "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES ('2099-01-01', 9999, 'spot', 'future-source', datetime('now'))"
     ).run();
-    const row = getLatestEuaPrice(db, 'spot');
+    const row = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
     expect(row).not.toBeNull();
     expect(row!.price_date).toBe('2026-05-04');
     expect(row!.price_eur_per_tco2).toBe(72.65);
+  });
+
+  it('getLatestEuaPrice returns null for a row older than maxAgeDays', () => {
+    // Isolated contract_type with a single 30-day-old row; default gate is 7d.
+    db.prepare(
+      "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES (date('now', '-30 days'), 70.00, 'stale-test', 'stale-source', datetime('now'))"
+    ).run();
+    const row = getLatestEuaPrice(db, 'stale-test');
+    expect(row).toBeNull();
+  });
+
+  it('getLatestEuaPrice returns the row when age equals maxAgeDays (boundary)', () => {
+    // Row exactly EUA_STALE_DAYS old: price_date == threshold, so not < threshold.
+    db.prepare(
+      `INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES (date('now', '-${EUA_STALE_DAYS} days'), 71.00, 'boundary-test', 'boundary-source', datetime('now'))`
+    ).run();
+    const row = getLatestEuaPrice(db, 'boundary-test');
+    expect(row).not.toBeNull();
+    expect(row!.price_eur_per_tco2).toBe(71.00);
+  });
+
+  it('getLatestEuaPrice returns a stale row when maxAgeDays is Infinity', () => {
+    db.prepare(
+      "INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES (date('now', '-100 days'), 69.00, 'infinity-test', 'old-source', datetime('now'))"
+    ).run();
+    const row = getLatestEuaPrice(db, 'infinity-test', { maxAgeDays: Infinity });
+    expect(row).not.toBeNull();
+    expect(row!.price_eur_per_tco2).toBe(69.00);
   });
 
   it('upsertEuaPrice inserts a new row', () => {
@@ -62,7 +98,7 @@ describe('eua-repository', () => {
       source: 'test',
       fetched_at: new Date().toISOString(),
     });
-    const row = getLatestEuaPrice(db, 'spot');
+    const row = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
     expect(row).not.toBeNull();
     expect(row!.price_date).toBe('2026-05-10');
     expect(row!.price_eur_per_tco2).toBe(73.5);
