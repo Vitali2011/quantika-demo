@@ -156,6 +156,98 @@ describe('calculateCommission', () => {
     expect(result!.commissionCurrency).toBe('USD');
   });
 
+  // W1-7 round2: structural fields take priority over text scraping ----------
+
+  it('sums structural commission components (address + broker) when text absent (W1-7 r2 A)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commissionAddressPct: 1.25,
+      commissionBrokerPct: 2.5,
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(3.75);
+  });
+
+  it('uses address-only structural component when broker is null (W1-7 r2 B)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commissionAddressPct: 1.25,
+      commissionBrokerPct: null,
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(1.25);
+  });
+
+  it('prefers AI total commissionPercent over structural components (W1-7 r2 C)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commissionPercent: 5,
+      commissionAddressPct: 1.25,
+      commissionBrokerPct: 2.5,
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(5);
+  });
+
+  it('reads TTL marker from text fallback when no structural fields (W1-7 r2 D)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: '3.75% TTL on F/D/D',
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(3.75);
+  });
+
+  it('ignores demurrage percentage in text fallback (W1-7 r2 E false-positive)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: 'comm 2.5% on freight, dem 50% of demurrage',
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(2.5);
+  });
+
+  it('ignores freight percentage and sums only commission tokens (W1-7 r2 F false-positive)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: 'freight 25%, addcom 1.25% + bkge 2.5%',
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(3.75);
+  });
+
+  it('does not double-count total + breakdown in text fallback (W1-7 r2 G false-positive)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: '3.75% total (1.25% address, 2.5% bkge)',
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.commissionPercent).toBe(3.75);
+  });
+
+  it('clamps unreliable >15% commission to null (W1-7 r2 H sanity clamp)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commission: '20% on freight',
+    });
+    expect(calculateCommission(recap)).toBeNull();
+  });
+
   it('returns null for per-MT freight with no quantity', () => {
     const recap = baseRecap({
       freightRate: { value: '20', confidence: 'confirmed' },
