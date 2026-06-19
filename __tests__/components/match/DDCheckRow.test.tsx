@@ -50,6 +50,51 @@ describe('DDCheckRow', () => {
     expect(screen.queryByTestId('dd-check-detail')).not.toBeInTheDocument();
   });
 
+  it('draft derivation: full formula steps render under «Подробнее» (DWT, formula, laden, margin)', async () => {
+    const user = userEvent.setup();
+    render(
+      <DDCheckRow
+        label="Осадка — порт погрузки"
+        state="pass"
+        evidence="Осадка в грузу ~9.2m vs лимит причала 10.5m"
+        detail="base explanation"
+        source="Исходное письмо + port-master.json"
+        derivation={{ dwt: 35000, cargoTons: 30000, laden: 9.2, portLimit: 10.5, pass: true }}
+      />,
+    );
+    await user.click(screen.getByTestId('dd-check-toggle'));
+    const der = screen.getByTestId('dd-draft-derivation');
+    expect(der).toHaveTextContent('DWT 35,000 mt');
+    expect(der).toHaveTextContent('загрузка 86%'); // 30000/35000
+    expect(der).toHaveTextContent('0.4991 × 35,000^0.2991');
+    expect(der).toHaveTextContent('округление вверх = 9.2 m');
+    expect(der).toHaveTextContent(/запас .*1\.3 m/); // 10.5 − 9.2
+  });
+
+  it('draft derivation: null portLimit → registry-gap line, no margin', async () => {
+    const user = userEvent.setup();
+    render(
+      <DDCheckRow
+        label="Осадка — порт выгрузки"
+        state="pass"
+        evidence="e"
+        detail="d"
+        source={null}
+        derivation={{ dwt: 35000, cargoTons: 30000, laden: 10.9, portLimit: null, pass: true }}
+      />,
+    );
+    await user.click(screen.getByTestId('dd-check-toggle'));
+    expect(screen.getByTestId('dd-draft-derivation')).toHaveTextContent('не задан');
+  });
+
+  it('no derivation → no steps block; plain detail still toggles', async () => {
+    const user = userEvent.setup();
+    render(<DDCheckRow label="X" state="pass" evidence="e" detail="plain" source={null} />);
+    await user.click(screen.getByTestId('dd-check-toggle'));
+    expect(screen.queryByTestId('dd-draft-derivation')).not.toBeInTheDocument();
+    expect(screen.getByTestId('dd-check-detail')).toHaveTextContent('plain');
+  });
+
   it('detail present but source null → detail shows, no «Источник» badge', async () => {
     const user = userEvent.setup();
     render(

@@ -44,6 +44,15 @@ export interface TceInputs {
   // Cargo & route
   freightRateUsdPerMt: number;
   quantityMt: number;
+  /**
+   * Address + brokerage commission percent (TTL) deducted from gross freight
+   * before any cost aggregation. Absent/0 → no deduction (legacy behaviour
+   * preserved for callers that never set it). The 3.75% founder fallback for
+   * null-from-email cargo lives at the cargo-reading consumers
+   * (computeStoredMatchEconomics, /api/voyage/tce), NOT here — computeTce stays
+   * a no-silent-default pure function. Symmetric with excludeWarRiskFromDailyTce:
+   * net_freight feeds BOTH netVoyage and dailyNetVoyage so list==detail parity holds. */
+  commissionPct?: number;
   /** Laden leg distance (nm). Duration computed from this + speedKts. */
   distanceNm: number;
   /** Ballast reposition leg (nm). When set: durationDays = ballast+laden+2.
@@ -253,13 +262,21 @@ export function computeTce(inputs: TceInputs): TceResult {
 
   // ── Aggregation ───────────────────────────────────────────────────────
   const grossFreight = Math.round(quantity * rate);
+  // Commission (address + brokerage TTL) is a direct deduction from freight, NOT a
+  // voyage cost line — it reduces the freight the owner actually receives. Negative
+  // input is nonsense → clamp to 0 (mirrors freight/quantity clamps above).
+  const commPct = Math.max(0, safeNum(inputs.commissionPct));
+  const commissionUsd = commPct > 0 ? Math.round(grossFreight * (commPct / 100)) : 0;
+  const netFreight = grossFreight - commissionUsd;
   const totalCosts = bunkerUsd + canalUsd + daUsd + warRiskUsd + etsUsd + fueleuUsd;
-  const netVoyage = grossFreight - totalCosts;
+  const netVoyage = netFreight - totalCosts;
   const safeDuration = duration > 0 ? duration : ESTIMATED_DAYS_FALLBACK;
   // When excludeWarRiskFromDailyTce is set, omit war-risk from the per-day numerator
   // so stored (empty ports → $0) and detail (real ports) produce the same TCE.
+  // Commission rides netFreight on BOTH branches (symmetric, no second flag) so
+  // list and detail agree to the dollar — same convention as war-risk exclusion.
   const dailyNetVoyage = inputs.excludeWarRiskFromDailyTce
-    ? grossFreight - (bunkerUsd + canalUsd + daUsd + etsUsd + fueleuUsd)
+    ? netFreight - (bunkerUsd + canalUsd + daUsd + etsUsd + fueleuUsd)
     : netVoyage;
   const dailyTce = duration > 0 ? Math.round(dailyNetVoyage / safeDuration) : 0;
 
@@ -274,6 +291,9 @@ export function computeTce(inputs: TceInputs): TceResult {
     ets_usd: etsUsd,
     fueleu_usd: fueleuUsd,
     gross_freight_usd: grossFreight,
+    commission_pct: commPct,
+    commission_usd: commissionUsd,
+    net_freight_usd: netFreight,
     total_costs_usd: totalCosts,
     net_voyage_usd: netVoyage,
     daily_tce_usd: dailyTce,

@@ -35,6 +35,14 @@ import { DEFAULT_BUNKER_USD_PER_MT, FALLBACK_EUA_EUR_PER_TCO2 } from '@/lib/cons
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { now } from '@/lib/clock';
 
+/**
+ * Founder-locked default commission (TTL %) when the cargo email carries none.
+ * Source of rate: cargo.commissionPercent from the email WHERE present, else this
+ * fallback (3.75% TTL — the most common fixture recap rate). Applied here at the
+ * cargo-reading boundary so computeTce stays a no-silent-default pure function.
+ */
+const DEFAULT_COMMISSION_PCT_TTL = 3.75;
+
 export interface StoredMatchEconomicsInput {
   cargo: ParsedCargo;
   vessel: ParsedVessel;
@@ -148,6 +156,11 @@ export function computeStoredMatchEconomics(
   const rawCons = parseConsumption(vessel.consumption, 0);
   const consumptionEstimated = rawCons <= 0;
 
+  // Commission (address + brokerage TTL): rate from the cargo email where present,
+  // else founder fallback 3.75%. cargo.commissionPercent === 0 (explicitly free of
+  // commission) is honoured as-is (?? only catches null/undefined) → old behaviour.
+  const commissionPct = cargo.commissionPercent ?? DEFAULT_COMMISSION_PCT_TTL;
+
   // excludeWarRiskFromDailyTce: true — matches detail-page convention so
   // stored list TCE == live detail TCE (war-risk is shown as a separate line).
   // vesselValueUsd: estimateVesselValueUsd(ecoDwt) — matches detail path (EconomicsTab)
@@ -174,6 +187,7 @@ export function computeStoredMatchEconomics(
     euaPriceEur: liveEuaRow?.price_eur_per_tco2 ?? undefined,
     vesselValueUsd: estimateVesselValueUsd(ecoDwt),
     excludeWarRiskFromDailyTce: true,
+    commissionPct,
   });
 
   if (!econ) return nullResult;
@@ -219,6 +233,7 @@ export function computeStoredMatchEconomics(
       originEu,
       destEu,
       excludeWarRiskFromDailyTce: true,
+      commissionPct,
     });
     tce_breakdown = bkResult.breakdown;
   } catch {

@@ -73,6 +73,7 @@ export function DueDiligencePanel({ model }: { model: DDModel }) {
                     evidence={chk.evidence}
                     detail={chk.detail}
                     source={chk.source}
+                    derivation={chk.derivation}
                   />
                 ))}
               </div>
