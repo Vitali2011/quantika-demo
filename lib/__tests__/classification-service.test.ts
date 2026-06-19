@@ -96,14 +96,17 @@ describe('deriveEmailStatus', () => {
     expect(deriveEmailStatus({ requiresReply: true, isUnanswered: false, hoursWithout: 0 })).toBe('RESPONDED');
   });
 
-  it('returns NEEDS_ACTION when hoursWithout >= UNANSWERED_THRESHOLD_HOURS / 24', () => {
-    // UNANSWERED_THRESHOLD_HOURS = 48, so threshold = 2 days = 48h/24 = 2
-    // hoursWithout >= 2 means NEEDS_ACTION (comparison is hours >= threshold_in_days)
-    expect(deriveEmailStatus({ requiresReply: true, isUnanswered: true, hoursWithout: 3 })).toBe('NEEDS_ACTION');
+  it('returns NEEDS_ACTION when hoursWithout >= UNANSWERED_THRESHOLD_HOURS (48h SLA)', () => {
+    // UNANSWERED_THRESHOLD_HOURS = 48 — comparison is in hours, not days.
+    // A deal unanswered >= 48h breaches SLA → NEEDS_ACTION.
+    expect(deriveEmailStatus({ requiresReply: true, isUnanswered: true, hoursWithout: 48 })).toBe('NEEDS_ACTION');
+    expect(deriveEmailStatus({ requiresReply: true, isUnanswered: true, hoursWithout: 72 })).toBe('NEEDS_ACTION');
   });
 
-  it('returns PENDING when requiresReply, isUnanswered, but below threshold', () => {
-    expect(deriveEmailStatus({ requiresReply: true, isUnanswered: true, hoursWithout: 1 })).toBe('PENDING');
+  it('returns PENDING for a 1-day-unanswered deal (24h, below 48h SLA)', () => {
+    // 1 day unanswered = 24h = below the 48h threshold → still PENDING, not NEEDS_ACTION.
+    expect(deriveEmailStatus({ requiresReply: true, isUnanswered: true, hoursWithout: 24 })).toBe('PENDING');
+    expect(deriveEmailStatus({ requiresReply: true, isUnanswered: true, hoursWithout: 47 })).toBe('PENDING');
   });
 });
 
