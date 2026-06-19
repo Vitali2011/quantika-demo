@@ -177,8 +177,14 @@ describe('parseLaycan — fuzzy windows (founder 2026-06-02: no single-day colla
     expect(r.start.toISOString().slice(0, 10)).toBe('2026-06-16');
     expect(r.end.toISOString().slice(0, 10)).toBe('2026-06-30');
   });
-  it('bare month "June 2019" → whole-month window at refYear, not single day', () => {
+  it('bare month "June 2019" → whole-month window honouring the stated year, not refYear', () => {
     const r = parseLaycan('June 2019', 2026)!;
+    expect(r.start.toISOString().slice(0, 10)).toBe('2019-06-01');
+    expect(r.end.toISOString().slice(0, 10)).toBe('2019-06-30');
+    expect(r.start.getTime()).not.toBe(r.end.getTime());
+  });
+  it('bare month "June" with NO year → whole-month window falls back to refYear', () => {
+    const r = parseLaycan('June', 2026)!;
     expect(r.start.toISOString().slice(0, 10)).toBe('2026-06-01');
     expect(r.end.toISOString().slice(0, 10)).toBe('2026-06-30');
     expect(r.start.getTime()).not.toBe(r.end.getTime());

@@ -35,7 +35,11 @@ export interface EuEtsInput {
   euaPrice: number; // EUR/tCO2
   /** Fuel type for CO₂ factor lookup. Default 'VLSFO' → Cf=3.151. */
   fuelType?: string;
-  /** Calendar year for MRV phase-in. Default = current year (2026+ → 1.0). */
+  /**
+   * Calendar year for MRV phase-in. Omitted → fully-phased steady-state (1.0);
+   * the function never reads the wall-clock. Pass an explicit clock-anchored
+   * year for time-correct phase-in. (audit #6)
+   */
   year?: number;
   /**
    * EU ETS coverage factor — derived from whether voyage endpoints are in EU/EEA.
@@ -72,7 +76,11 @@ export function calculateEuEts(input: EuEtsInput): EuEtsResult {
   if (coverageFactor === 0) return { amountEur: 0, applicable: false };
 
   const cf = cfForFuel(fuelType ?? 'VLSFO');
-  const phase = phaseIn(year ?? new Date().getFullYear());
+  // Pure function: never read the wall-clock here (audit #6). When `year` is
+  // omitted, default to the 2026+ fully-phased steady-state (1.0). Production
+  // callers MUST pass an explicit clock-anchored year (demo-frozen via lib/clock)
+  // so the calc is deterministic and identical regardless of when it runs.
+  const phase = year === undefined ? 1.0 : phaseIn(year);
   const amount = vlsfoBurnMt * cf * euLegPercent * phase * euaPrice * coverageFactor;
   return {
     amountEur: Math.round(amount * 100) / 100,

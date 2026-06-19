@@ -291,12 +291,16 @@ export function parseLaycan(
 
   // Bare "<Month>" or "<Month> <year>" (no day) → whole-month window, not a
   // single day. Guards against month-only laycans ("June 2019") collapsing.
-  const monthOnly = s.match(new RegExp(`^\\s*${MONTH_RE.source}(?:[\\s,]+\\d{4})?\\s*$`, 'i'));
+  // When the year is explicitly stated, honour it (mirrors the slash/dash range
+  // branches above which respect a captured year); fall back to refYear only
+  // when no year is present.
+  const monthOnly = s.match(new RegExp(`^\\s*${MONTH_RE.source}(?:[\\s,]+(\\d{4}))?\\s*$`, 'i'));
   if (monthOnly) {
     const mi = monthIdx(monthOnly[1]);
     if (mi != null) {
-      const lastDay = new Date(Date.UTC(refYear, mi + 1, 0)).getUTCDate();
-      return { start: mkUtc(refYear, mi, 1), end: mkUtc(refYear, mi, lastDay) };
+      const yr = monthOnly[2] ? Number(monthOnly[2]) : refYear;
+      const lastDay = new Date(Date.UTC(yr, mi + 1, 0)).getUTCDate();
+      return { start: mkUtc(yr, mi, 1), end: mkUtc(yr, mi, lastDay) };
     }
   }
 
