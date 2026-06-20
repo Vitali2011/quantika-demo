@@ -79,9 +79,14 @@ export async function POST(req: NextRequest) {
   // W1-1: the resolver receives a free-text port name (body.origin/destination),
   // but port_da_estimates is keyed by 5-char UN/LOCODE — resolve name→LOCODE
   // first, else the lookup never matches and DA is silently 0.
+  // Pre-resolve both legs (no context) so each can act as the other's homonym
+  // counterpart inside the per-port resolver below.
+  const originRaw = body.origin ? resolvePort(body.origin) : null;
+  const destRaw = body.destination ? resolvePort(body.destination) : null;
   const daResolver: DaResolver = (portCode, vesselDwt) => {
     try {
-      const resolved = resolvePort(portCode);
+      const counterpart = portCode === body.origin ? destRaw : originRaw;
+      const resolved = resolvePort(portCode, counterpart ? { counterpart } : undefined);
       if (!resolved) return 0;
       const da = getPortDa({ portCode: resolved.portCode, vesselDwt });
       return da?.totalFixedUsd ?? 0;

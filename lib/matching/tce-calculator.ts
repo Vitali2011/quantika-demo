@@ -246,8 +246,11 @@ export const quoteSuezSafe = _quoteSuezSafe;
 /** Derive EU-ETS coverage flags from port names. Used by both the stored match path
  *  and the detail route to guarantee identical euLegPercent/originEu/destEu. */
 export function deriveEtsCoverage(loadPort?: string | null, dischargePort?: string | null) {
-  const rl = loadPort ? (resolvePort(loadPort) ?? resolveVaguePort(loadPort)) : null;
-  const rd = dischargePort ? (resolvePort(dischargePort) ?? resolveVaguePort(dischargePort)) : null;
+  // Pass the counterpart voyage port so a bare homonym name (Cartagena, Tripoli)
+  // resolves to the correct basin instead of the arbitrary first-wins entry.
+  const rdRaw = dischargePort ? resolvePort(dischargePort) : null;
+  const rl = loadPort ? (resolvePort(loadPort, { counterpart: rdRaw }) ?? resolveVaguePort(loadPort)) : null;
+  const rd = dischargePort ? (resolvePort(dischargePort, { counterpart: rl }) ?? resolveVaguePort(dischargePort)) : null;
   const originEu = isEuCountry(rl?.country ?? null);
   const destEu = isEuCountry(rd?.country ?? null);
   return { originEu, destEu, euLegPercent: (originEu || destEu) ? 1.0 : 0 };

@@ -35,6 +35,19 @@ export interface ResolvedPort {
   master?: PortMaster;
 }
 
+/**
+ * Optional disambiguation hint. Used ONLY to break homonym ties (ports that
+ * share a folded name but have a different LOCODE/country — e.g. Cartagena
+ * ESCAR/ES vs COCTG/CO, Tripoli LBKYE/LB vs LYTIP/LY). When omitted, resolution
+ * stays exactly first-wins so there is zero regression on unambiguous names.
+ */
+export interface ResolveContext {
+  /** Counterpart voyage port — its coords/country break the tie (nearest wins). */
+  counterpart?: { lat?: number | null; lon?: number | null; country?: string | null } | null;
+  /** Explicit ISO-3166 alpha-2 country hint (highest priority). */
+  country?: string | null;
+}
+
 export class PortNotFoundError extends Error {
   constructor(input: string) {
     super(`Port not found: "${input}"`);
@@ -59,8 +72,9 @@ interface PortEntry {
 
 type PortIndex = {
   byLocode: Map<string, PortEntry>;
-  byName: Map<string, PortEntry>;   // lowercase canonical name → entry
-  byAlias: Map<string, PortEntry>;  // lowercase alias → entry
+  byName: Map<string, PortEntry>;        // lowercase canonical name → first-wins entry
+  byNameAll: Map<string, PortEntry[]>;   // lowercase canonical name → ALL same-name entries (homonyms)
+  byAlias: Map<string, PortEntry>;       // lowercase alias → entry
   entries: PortEntry[];
 };
 
@@ -72,6 +86,7 @@ function buildIndex(): PortIndex {
   const ports = PORTS_JSON as PortEntry[];
   const byLocode = new Map<string, PortEntry>();
   const byName = new Map<string, PortEntry>();
+  const byNameAll = new Map<string, PortEntry[]>();
   const byAlias = new Map<string, PortEntry>();
 
   for (const port of ports) {
@@ -85,6 +100,11 @@ function buildIndex(): PortIndex {
     if (!byName.has(nameLower)) {
       byName.set(nameLower, port);
     }
+    // Keep EVERY same-name entry reachable for homonym tie-breaking. Insertion
+    // order is preserved, so byNameAll.get(name)[0] === byName.get(name).
+    const bucket = byNameAll.get(nameLower);
+    if (bucket) bucket.push(port);
+    else byNameAll.set(nameLower, [port]);
 
     for (const alias of port.aliases ?? []) {
       const aliasLower = foldDiacritics(alias.toLowerCase());
@@ -94,7 +114,7 @@ function buildIndex(): PortIndex {
     }
   }
 
-  _index = { byLocode, byName, byAlias, entries: ports };
+  _index = { byLocode, byName, byNameAll, byAlias, entries: ports };
   return _index;
 }
 
@@ -111,6 +131,61 @@ const LOCODE_RE = /^[A-Za-z]{5}$/;
  */
 function foldDiacritics(s: string): string {
   return s.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
+}
+
+/** Great-circle distance (km) — only a relative ordering is needed for tie-break. */
+function haversineKm(aLat: number, aLon: number, bLat: number, bLon: number): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(bLat - aLat);
+  const dLon = toRad(bLon - aLon);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+/**
+ * Break a homonym tie among `candidates` using the supplied context. Returns the
+ * chosen entry, or null when the context carries no usable signal (caller then
+ * falls back to first-wins). Priority:
+ *   1. explicit `context.country` (unique case-insensitive match)
+ *   2. counterpart coordinates → nearest candidate by great-circle distance
+ *   3. counterpart country → unique case-insensitive match
+ */
+function pickHomonym(candidates: PortEntry[], context: ResolveContext): PortEntry | null {
+  const byCountry = (iso: string | null | undefined): PortEntry | null => {
+    if (!iso) return null;
+    const want = iso.trim().toUpperCase();
+    const hits = candidates.filter((c) => (c.country ?? '').toUpperCase() === want);
+    return hits.length === 1 ? hits[0] : null;
+  };
+
+  // 1. Explicit country hint.
+  const explicit = byCountry(context.country);
+  if (explicit) return explicit;
+
+  const cp = context.counterpart;
+  if (cp) {
+    // 2. Nearest to counterpart coordinates.
+    if (typeof cp.lat === 'number' && typeof cp.lon === 'number') {
+      let best: PortEntry | null = null;
+      let bestKm = Infinity;
+      for (const c of candidates) {
+        if (typeof c.lat !== 'number' || typeof c.lon !== 'number') continue;
+        const km = haversineKm(cp.lat, cp.lon, c.lat, c.lon);
+        if (km < bestKm) {
+          bestKm = km;
+          best = c;
+        }
+      }
+      if (best) return best;
+    }
+    // 3. Counterpart country match.
+    const sameCountry = byCountry(cp.country);
+    if (sameCountry) return sameCountry;
+  }
+
+  return null;
 }
 
 function toResolvedPort(entry: PortEntry): ResolvedPort {
@@ -131,13 +206,14 @@ function toResolvedPort(entry: PortEntry): ResolvedPort {
  * Resolve a port from any format: LOCODE ("BEANR") or name/alias ("Antwerp",
  * "Antwerpen", "Rotterdam"). Returns null when the port cannot be found.
  */
-export function resolvePort(input: string): ResolvedPort | null {
+export function resolvePort(input: string, context?: ResolveContext): ResolvedPort | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
   const idx = buildIndex();
 
   // ── LOCODE path ─────────────────────────────────────────────────────────
+  // A LOCODE is unique, so it is inherently homonym-free — context is ignored.
   if (LOCODE_RE.test(trimmed)) {
     const locode = trimmed.toUpperCase();
     const entry = idx.byLocode.get(locode);
@@ -146,6 +222,17 @@ export function resolvePort(input: string): ResolvedPort | null {
   }
 
   const lower = foldDiacritics(trimmed.toLowerCase());
+
+  // ── Homonym tie-break ───────────────────────────────────────────────────
+  // Only when a context hint is supplied AND the folded name collides across
+  // multiple ports. No hint → skip entirely and keep exact first-wins below.
+  if (context) {
+    const candidates = idx.byNameAll.get(lower);
+    if (candidates && candidates.length > 1) {
+      const picked = pickHomonym(candidates, context);
+      if (picked) return toResolvedPort(picked);
+    }
+  }
 
   // ── Exact name match ────────────────────────────────────────────────────
   const byName = idx.byName.get(lower);
@@ -186,8 +273,8 @@ export function resolvePort(input: string): ResolvedPort | null {
  * Like resolvePort() but throws PortNotFoundError instead of returning null.
  * Useful in strict contexts where a missing port is a programming error.
  */
-export function resolvePortStrict(input: string): ResolvedPort {
-  const result = resolvePort(input);
+export function resolvePortStrict(input: string, context?: ResolveContext): ResolvedPort {
+  const result = resolvePort(input, context);
   if (!result) throw new PortNotFoundError(input);
   return result;
 }
