@@ -99,6 +99,75 @@ describe('calculateCommission', () => {
     expect(result!.freightCurrency).toBe('EUR');
   });
 
+  it('detects GBP currency from freight rate string (not USD)', () => {
+    const recap = baseRecap({
+      freightRate: { value: '30', confidence: 'confirmed' },
+      freightBasis: 'GBP pmt',
+      cargoQuantityMax: 3000,
+      commissionPercent: 3.75,
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.freightCurrency).toBe('GBP');
+    expect(result!.commissionCurrency).toBe('GBP');
+  });
+
+  it('detects GBP from pound sign in freight string', () => {
+    const recap = baseRecap({
+      freightRate: { value: '30', confidence: 'confirmed' },
+      freightBasis: '£ pmt',
+      cargoQuantityMax: 3000,
+      commissionPercent: 3.75,
+    });
+    const result = calculateCommission(recap);
+    expect(result!.freightCurrency).toBe('GBP');
+  });
+
+  it('detects NOK currency from freight rate string', () => {
+    const recap = baseRecap({
+      freightRate: { value: '250000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum NOK',
+      commissionPercent: 2.5,
+    });
+    const result = calculateCommission(recap);
+    expect(result!.freightCurrency).toBe('NOK');
+  });
+
+  it('detects JPY currency from yen sign in freight string', () => {
+    const recap = baseRecap({
+      freightRate: { value: '5000000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum ¥',
+      commissionPercent: 1.25,
+    });
+    const result = calculateCommission(recap);
+    expect(result!.freightCurrency).toBe('JPY');
+  });
+
+  it('falls back to USD for unknown/unspecified currency', () => {
+    const recap = baseRecap({
+      freightRate: { value: '300000', confidence: 'confirmed' },
+      freightBasis: 'lumpsum',
+      commissionPercent: 5,
+    });
+    const result = calculateCommission(recap);
+    expect(result!.freightCurrency).toBe('USD');
+  });
+
+  it('precomputed path: freightCurrency uses detected currency when AI omits commission_currency', () => {
+    // commissionAmount precomputed, commissionCurrency null, but freight string says GBP
+    const recap = baseRecap({
+      freightRate: { value: '30', confidence: 'confirmed' },
+      freightBasis: 'GBP pmt',
+      commissionPercent: 3.75,
+      commissionAmount: 3375,
+      commissionCurrency: null,
+    });
+    const result = calculateCommission(recap);
+    expect(result).not.toBeNull();
+    expect(result!.freightCurrency).toBe('GBP');
+    expect(result!.commissionCurrency).toBe('GBP');
+  });
+
   it('extracts commission percent from raw commission text', () => {
     const recap = baseRecap({
       freightRate: { value: '300000', confidence: 'confirmed' },
