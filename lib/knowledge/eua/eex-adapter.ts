@@ -1,6 +1,12 @@
 import type Database from 'better-sqlite3';
 import { inflateRawSync } from 'node:zlib';
-import { upsertEuaPrice } from '@/lib/market/eua-repository';
+import { upsertEuaPrice, getLatestEuaPrice } from '@/lib/market/eua-repository';
+
+// EUA sanity range (EUR/tCO₂). Wider than tradingeconomics-adapter [20–200] —
+// EEX is the primary auction source, so tolerate a broader plausible band but
+// still reject obviously-corrupt parses (e.g. a stray date serial or 0).
+const PRICE_MIN_EUR = 10;
+const PRICE_MAX_EUR = 250;
 
 export class EexNoAuctionFoundError extends Error {
   constructor(message: string) {
@@ -240,6 +246,16 @@ export async function refreshEex(
   }
 
   const { price, priceDate } = parsed;
+
+  if (price < PRICE_MIN_EUR || price > PRICE_MAX_EUR) {
+    const existing = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
+    console.warn(
+      `[EEX] Price ${price} EUR out of range [${PRICE_MIN_EUR}–${PRICE_MAX_EUR}] — ` +
+      `keeping last-good (${existing?.price_eur_per_tco2 ?? 'none'} on ${existing?.price_date ?? 'n/a'})`,
+    );
+    return null;
+  }
+
   upsertEuaPrice(db, {
     price_date: priceDate,
     price_eur_per_tco2: price,

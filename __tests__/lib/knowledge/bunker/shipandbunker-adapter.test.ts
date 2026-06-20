@@ -213,6 +213,26 @@ describe('shipandbunker-adapter', () => {
       expect(fetchCount).toBe(1);
     });
 
+    it('skips out-of-range price, still writes in-range prices', async () => {
+      // Two rows: Rotterdam absurdly high (>2500), Singapore normal (in range).
+      const html = `<table><tbody>
+        <tr><th id="row-nl-rtm-VLSFO" class="port"><a href="#">Rotterdam</a></th>
+          <td headers="price-VLSFO">9999.00<span></span></td></tr>
+        <tr><th id="row-sg-sin-VLSFO" class="port"><a href="#">Singapore</a></th>
+          <td headers="price-VLSFO">812.00<span></span></td></tr>
+      </tbody></table>`;
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const result = await refreshShipAndBunker(db, async () => html);
+
+      expect(result.rowsChanged).toBe(1); // only Singapore
+      const rtm = db.prepare("SELECT * FROM bunker_prices WHERE port_unlocode='NLRTM' AND source='shipandbunker'").get();
+      expect(rtm).toBeUndefined();
+      const sgsin = db.prepare("SELECT * FROM bunker_prices WHERE port_unlocode='SGSIN' AND source='shipandbunker'").get() as any;
+      expect(sgsin.price_usd_per_mt).toBeCloseTo(812.0);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('out of range'));
+      warnSpy.mockRestore();
+    });
+
     it('writes cache after successful fetch', async () => {
       const fetcher = async () => fixtureHtml;
       await refreshShipAndBunker(db, fetcher);
