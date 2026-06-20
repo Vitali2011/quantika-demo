@@ -202,6 +202,39 @@ describe('backfill-815-weights', () => {
     expect(output).toMatch(/MISSING_ROW/);
   });
 
+  it('MIXED strict abort: updatable Marmara row is rolled back (no partial writes)', () => {
+    // Seed full DB (Marmara stale → WOULD update), then delete one OTHER fixture
+    // row to force a MISSING_ROW. Strict mode must abort AND roll back the
+    // Marmara write, so "no writes performed" is literally true.
+    const otherIds = getAllFixtureEmailIds().filter((id) => id !== MARMARA_EMAIL_ID);
+    const missingId = otherIds[0];
+
+    const setup = new Database(dbPath);
+    setup
+      .prepare(`DELETE FROM parsed_results WHERE gmail_message_id=? AND parse_type='cargo'`)
+      .run(missingId);
+    setup.close();
+
+    const { stdout, stderr, exitCode } = runBackfill(dbPath);
+    const output = stdout + stderr;
+
+    expect(exitCode).not.toBe(0);
+    expect(output).toMatch(/MISSING_ROW/);
+    expect(output).toMatch(/no writes performed/);
+
+    // Marmara item 0 MUST remain stale (rolled back) — NOT 186
+    const db = new Database(dbPath, { readonly: true });
+    const row = db
+      .prepare(`SELECT result_json FROM parsed_results WHERE gmail_message_id=? AND parse_type='cargo'`)
+      .get(MARMARA_EMAIL_ID) as { result_json: string };
+    db.close();
+
+    const item0 = JSON.parse(row.result_json)[0];
+    expect(item0.weightMtMax).toBeNull();
+    expect(item0.weightMtMin).toBeNull();
+    expect(item0.weightMt).toMatchObject({ value: null });
+  });
+
   it('idempotent: second run produces 0 updates', () => {
     const r1 = runBackfill(dbPath);
     expect(r1.exitCode).toBe(0);

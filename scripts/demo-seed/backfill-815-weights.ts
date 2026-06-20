@@ -112,6 +112,14 @@ async function main() {
     byEmail.set(c.emailId, arr);
   }
 
+  // Sentinel thrown at the end of the batch when strict-mode hits a
+  // MISSING_ROW/AMBIGUOUS_MATCH. Thrown INSIDE the better-sqlite3 transaction
+  // so the whole batch rolls back — making "no writes performed" literally true
+  // (previously updateRow.run() flushed each row immediately under WAL, so the
+  // abort message was a false claim while partial writes were already committed).
+  class AbortMissingRows extends Error {}
+
+  const runBatch = () => {
   for (const [emailId, cargoes] of byEmail) {
     const row = selectRow.get(emailId) as { result_json: string } | undefined;
     if (!row) {
@@ -178,12 +186,29 @@ async function main() {
     }
   }
 
-  console.log(`[backfill-815] done — updated=${updates} skipped-already-correct=${skipped} skipped-missing=${skippedMissing} skipped-ambiguous=${skippedAmbiguous}`);
+  // Trigger rollback of every write above when strict mode saw a missing row.
+  if (missingRows > 0) throw new AbortMissingRows();
+  };
 
-  if (missingRows > 0) {
-    console.error(`[backfill-815] ABORT — ${missingRows} MISSING_ROW or AMBIGUOUS_MATCH; no writes performed`);
-    process.exit(1);
+  try {
+    // Wrap writes in a single transaction so a strict-mode abort rolls back
+    // the whole batch atomically. DRY mode opens the db read-only — no
+    // transaction needed (and none would be writable).
+    if (!DRY && updateRow) {
+      db.transaction(runBatch)();
+    } else {
+      runBatch();
+    }
+  } catch (err) {
+    if (err instanceof AbortMissingRows) {
+      console.log(`[backfill-815] done — updated=${updates} skipped-already-correct=${skipped} skipped-missing=${skippedMissing} skipped-ambiguous=${skippedAmbiguous}`);
+      console.error(`[backfill-815] ABORT — ${missingRows} MISSING_ROW or AMBIGUOUS_MATCH; no writes performed`);
+      process.exit(1);
+    }
+    throw err;
   }
+
+  console.log(`[backfill-815] done — updated=${updates} skipped-already-correct=${skipped} skipped-missing=${skippedMissing} skipped-ambiguous=${skippedAmbiguous}`);
 }
 
 main().catch((err) => {
