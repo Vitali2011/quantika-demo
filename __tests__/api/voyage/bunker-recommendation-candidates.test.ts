@@ -28,9 +28,9 @@ beforeAll(() => {
       UNIQUE(port_unlocode, fuel_grade, price_date)
     );
     -- Three on-route hubs priced; 20 others have no price → automatically excluded
-    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, '2026-06-02', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, date('now','-2 day'), 'seed', datetime('now'));
   `);
 });
 
