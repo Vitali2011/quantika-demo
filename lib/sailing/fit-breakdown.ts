@@ -601,14 +601,20 @@ const VAGUE_DESCRIPTOR_RX =
  * mis-flagged. Isolated from regionMatchesPort so widening detection here does
  * NOT affect the hard voyage-restriction gate (its other consumer).
  */
-function isEuropeanDischarge(port: string | null | undefined): boolean {
+function isEuropeanDischarge(
+  port: string | null | undefined,
+  counterpart?: string | null,
+): boolean {
   if (!port) return false;
   // Primary: a concrete port → EU iff its RESOLVED country is EU/EEA. This catches
   // named EU ports the region map omits (Monfalcone/IT, Gijón/ES, Catania/IT,
   // Thisvi/GR — founder Gate5 2026-06-03) AND correctly rejects non-EU Mediterranean
   // ports (Bejaia/DZ, Alexandria/EG) that the 'europe' region map wrongly swept in
   // via the Mediterranean basin. resolvePort folds diacritics (Constanța→Constanta).
-  const resolved = resolvePort(port);
+  // The load port (counterpart) disambiguates homonyms: Spanish Cartagena (EU)
+  // vs Colombian Cartagena (non-EU) by basin proximity.
+  const ctx = counterpart ? resolvePort(counterpart) : null;
+  const resolved = resolvePort(port, ctx ? { counterpart: ctx } : undefined);
   if (resolved) return isEuCountry(resolved.country);
   // Fallback: vague AREA descriptor (no concrete port resolves) that names an EU
   // country ("East Coast Greece port (unspecified)"). Double-gated so a non-EU
@@ -697,7 +703,7 @@ export function computeFitBreakdown(input: FitBreakdownInput): FitBreakdown {
   if (
     euDischargeAge != null &&
     euDischargeAge >= 25 &&
-    isEuropeanDischarge(cfValue(cargo.destinationPort))
+    isEuropeanDischarge(cfValue(cargo.destinationPort), cfValue(cargo.originPort))
   ) {
     caps.push({
       reason: `vessel ${euDischargeAge}yr + EU discharge — PSC/charterer age risk`,

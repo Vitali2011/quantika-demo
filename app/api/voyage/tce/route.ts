@@ -44,8 +44,12 @@ const DEFAULT_COMMISSION_PCT_TTL = 3.75;
  *   port_not_found; UI shows an amber "approximate port" note.
  * - Genuinely-unknown free-text names → null (caller should return 400).
  */
-function resolvePortOrPassthrough(input: string): { port: ResolvedPort; approximate: boolean } | null {
-  const resolved = resolvePort(input);
+function resolvePortOrPassthrough(
+  input: string,
+  counterpart?: ResolvedPort | null,
+): { port: ResolvedPort; approximate: boolean } | null {
+  // Counterpart (the other voyage leg) disambiguates bare homonym names.
+  const resolved = resolvePort(input, counterpart ? { counterpart } : undefined);
   if (resolved) return { port: resolved, approximate: false };
   // BC: allow unknown 5-char LOCODE-format strings through as synthetic port
   if (LOCODE_RE.test(input)) {
@@ -236,7 +240,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const data = parsed.data;
 
   // Resolve ports at API entry — single source of truth for downstream
-  const originR = resolvePortOrPassthrough(data.route.originPort);
+  // Seed each leg with the other as a homonym counterpart (originSeed has no
+  // context; destination then disambiguates against it; origin re-resolves against
+  // the now-known destination). For unambiguous names this is a no-op.
+  const originSeed = resolvePortOrPassthrough(data.route.originPort);
+  const destinationR = resolvePortOrPassthrough(data.route.destinationPort, originSeed?.port ?? null);
+  const originR = resolvePortOrPassthrough(data.route.originPort, destinationR?.port ?? null);
   if (!originR) {
     return NextResponse.json(
       { error: 'port_not_found', input: 'originPort', value: data.route.originPort },
@@ -244,7 +253,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
   const originResolved = originR.port;
-  const destinationR = resolvePortOrPassthrough(data.route.destinationPort);
   if (!destinationR) {
     return NextResponse.json(
       { error: 'port_not_found', input: 'destinationPort', value: data.route.destinationPort },
@@ -279,7 +287,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Guard on a resolvable ballast distance > 0 and dwt > 0, mirroring buildMatchEconomics.
     const openPosition = data.vessel.openPosition;
     if (openPosition && data.vessel.dwt > 0) {
-      const openR = resolvePortOrPassthrough(openPosition);
+      const openR = resolvePortOrPassthrough(openPosition, originResolved);
       const openName = openR?.port.portName ?? openPosition;
       const ballastLeg = getPortDistance(openName, originResolved.portName);
       if (ballastLeg && ballastLeg.nm > 0) {
