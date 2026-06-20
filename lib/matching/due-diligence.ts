@@ -173,6 +173,28 @@ const SRC = {
   jwc: 'JWC Area Lists',
 } as const;
 
+// CII has three possible provenances (vessel.ciiSource): a real IMO/Equasis rating
+// ('imo-public'), an age/type estimate ('estimated'), or an AI guess ('llm-fallback').
+// Mirror components/vessel/CiiRatingBadge.tsx — estimates must NOT claim Equasis.
+// DISPLAY-only: scoring (scoreCii / counter / fitPercent) never reads this branch.
+function ciiSourceBadge(src: string | null | undefined): string {
+  if (src === 'estimated') return 'Оценка (возраст/тип судна)';
+  if (src === 'llm-fallback') return 'Оценка ИИ';
+  return SRC.equasis; // 'imo-public', null, or absent → real Equasis rating
+}
+
+function ciiDetailCopy(src: string | null | undefined): string {
+  const tail =
+    'A/B/C — в норме, D — внимание, E — повышенный риск эксплуатационных ограничений.';
+  if (src === 'estimated') {
+    return `Рейтинг углеродной интенсивности (CII, A–E) — оценка по возрасту/типу судна (не официальный рейтинг IMO). ${tail}`;
+  }
+  if (src === 'llm-fallback') {
+    return `Рейтинг углеродной интенсивности (CII, A–E) — оценка ИИ (не официальный рейтинг IMO). ${tail}`;
+  }
+  return `Рейтинг углеродной интенсивности (CII, A–E) из Equasis. ${tail}`;
+}
+
 const BALLAST_RADIUS_NM: Record<string, number> = {
   handysize: 1500,
   supramax: 2000,
@@ -659,9 +681,15 @@ function buildVetting(args: BuildDDArgs): DDCategory {
       const detail =
         f.key === 'age'
           ? ageDetail(args.vessel.built, refYear, f.rationale)
-          : VETTING_LOOKUP[f.key]?.detail ?? null;
+          : f.key === 'cii'
+            ? ciiDetailCopy(args.vessel.ciiSource)
+            : VETTING_LOOKUP[f.key]?.detail ?? null;
       const source =
-        f.key === 'age' ? SRC.equasis : VETTING_LOOKUP[f.key]?.source ?? null;
+        f.key === 'cii'
+          ? ciiSourceBadge(args.vessel.ciiSource)
+          : f.key === 'age'
+            ? SRC.equasis
+            : VETTING_LOOKUP[f.key]?.source ?? null;
       checks.push({ label: f.label, state, evidence: f.rationale, detail, source });
     }
   } else {
