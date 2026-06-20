@@ -190,7 +190,15 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
   const cargoByKey = new Map(dedupedCargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
   const vesselByKey = new Map(dedupedVessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
 
-  function rowsToMatches(rows: MatchRow[]): Match[] {
+  // liveRecompute: run the expensive resolveRecommendedBunkerPort +
+  // computeStoredMatchEconomics ONLY for the realism-bucket rows whose economics
+  // is read by session-buckets.ts (toBucketRows reads m.economics.tceUsdPerDay).
+  // The main shortlist (matchRows) is handed to persist-session-matches.ts, which
+  // ALWAYS recomputes economics itself (ignores m.economics) — so recomputing it
+  // here too would be O(N_main) wasted work on every demo login (audit-1 LOW 8
+  // perf follow-up to #1079). Main rows keep the cheap seedEconomics; correctness
+  // is unchanged because persist-session-matches overwrites it deterministically.
+  function rowsToMatches(rows: MatchRow[], liveRecompute: boolean): Match[] {
     return rows.map((r) => {
       const tce = r.tce_usd_per_day;
       // #883: compute demo war-risk from seeded ports + dwt, mirroring the live
@@ -239,7 +247,7 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
       const cargo = cargoByKey.get(`${r.cargo_id}|${r.cargo_item_index ?? 0}`);
       const vessel = vesselByKey.get(`${r.vessel_id}|${r.vessel_item_index ?? 0}`);
       let economics = seedEconomics;
-      if (cargo && vessel) {
+      if (liveRecompute && cargo && vessel) {
         const loadPort = cfValue(cargo.originPort);
         const dischargePort = cfValue(cargo.destinationPort);
         const distance = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
@@ -271,9 +279,11 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     });
   }
 
-  const matches = rowsToMatches(matchRows);
-  const lowConfidenceMatches = rowsToMatches(reviewRows);
-  const insufficientData = rowsToMatches(insufficientRows);
+  // Main shortlist: persist-session-matches recomputes economics — skip live recompute here.
+  const matches = rowsToMatches(matchRows, false);
+  // Bucket rows: session-buckets reads m.economics — recompute live for board parity.
+  const lowConfidenceMatches = rowsToMatches(reviewRows, true);
+  const insufficientData = rowsToMatches(insufficientRows, true);
 
   const processedEmails = buildProcessedEmails(emails, classifications, dedupedCargos, dedupedVessels);
 
