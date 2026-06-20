@@ -102,44 +102,44 @@ describe('buildDueDiligence', () => {
       'vessel-port', 'cargo-holds', 'economics', 'vetting', 'compliance',
     ]);
     expect(m.counter.ran).toBeGreaterThan(0);
-    expect(byLabel(m, 'Осадка — порт погрузки')?.state).toBe('pass');
-    expect(byLabel(m, 'Объём груза под трюмы')?.state).toBe('pass');
+    expect(byLabel(m, 'Laden draft — load port')?.state).toBe('pass');
+    expect(byLabel(m, 'Cargo volume vs holds')?.state).toBe('pass');
   });
 
   it('honesty: null lastCargoes → hold-cleanliness inactive, NOT pass, excluded from counter', () => {
     const vessel = { ...fullVessel(), lastCargoes: null };
     const m = buildDueDiligence(fullArgs({ vessel }));
-    const hold = byLabel(m, 'Чистота трюмов / прошлый груз');
+    const hold = byLabel(m, 'Hold cleanliness / prior cargo');
     expect(hold?.state).toBe('inactive');
     expect(hold?.state).not.toBe('pass');
     // inactive must not be counted as a run check
     const ranLabels = flat(m).filter((c) => c.state !== 'inactive').map((c) => c.label);
-    expect(ranLabels).not.toContain('Чистота трюмов / прошлый груз');
+    expect(ranLabels).not.toContain('Hold cleanliness / prior cargo');
   });
 
   it('honesty: null cargoDescription → hold-cleanliness inactive', () => {
     const m = buildDueDiligence(fullArgs({ cargoDescription: null }));
-    expect(byLabel(m, 'Чистота трюмов / прошлый груз')?.state).toBe('inactive');
+    expect(byLabel(m, 'Hold cleanliness / prior cargo')?.state).toBe('inactive');
   });
 
   it('honesty: compatible last cargo → pass with living evidence', () => {
     const m = buildDueDiligence(fullArgs());
-    const hold = byLabel(m, 'Чистота трюмов / прошлый груз');
+    const hold = byLabel(m, 'Hold cleanliness / prior cargo');
     expect(hold?.state).toBe('pass');
     expect(hold?.evidence).toContain('wheat');
   });
 
   it('honesty: missing fitBreakdown → fb-dependent rows inactive, no crash', () => {
     const m = buildDueDiligence(fullArgs({ fitBreakdown: null }));
-    expect(byLabel(m, 'Объём груза под трюмы')?.state).toBe('inactive');
-    expect(byLabel(m, 'Экономика рейса (фит)')?.state).toBe('inactive');
-    expect(byLabel(m, 'Утилизация DWT')?.state).toBe('inactive');
+    expect(byLabel(m, 'Cargo volume vs holds')?.state).toBe('inactive');
+    expect(byLabel(m, 'Voyage economics (fit)')?.state).toBe('inactive');
+    expect(byLabel(m, 'DWT utilisation')?.state).toBe('inactive');
     expect(m.categories).toHaveLength(5);
   });
 
   it('honesty: Воздушный габарит / RightShip / KYC are permanent gap rows — always inactive', () => {
     const m = buildDueDiligence(fullArgs());
-    for (const label of ['Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
+    for (const label of ['Air draught clearance', 'RightShip score', 'Charterer KYC']) {
       const row = byLabel(m, label);
       expect(row).toBeDefined();
       expect(row?.state).toBe('inactive');
@@ -169,7 +169,7 @@ describe('buildDueDiligence', () => {
     zeroWeightComp.weight = 0;
     zeroWeightComp.score = 0;
     const m = buildDueDiligence(fullArgs({ fitBreakdown: fb }));
-    expect(byLabel(m, 'Утилизация DWT')?.state).toBe('inactive');
+    expect(byLabel(m, 'DWT utilisation')?.state).toBe('inactive');
   });
 
   it('parity: fitPercent echoes the passed value, never recomputes from fitBreakdown', () => {
@@ -193,13 +193,13 @@ describe('buildDueDiligence', () => {
 
   it('vetting: no vessel → rolled-up summary row + sub-factors absent', () => {
     const m = buildDueDiligence(fullArgs({ vessel: null }));
-    expect(byLabel(m, 'Ветинг судна (сводно)')?.state).toBe('pass');
+    expect(byLabel(m, 'Vessel vetting (summary)')?.state).toBe('pass');
     expect(byLabel(m, 'Vessel age')).toBeUndefined();
   });
 
   it('sanctions blocking → compliance flag + flagsCritical = 1', () => {
     const m = buildDueDiligence(fullArgs({ sanctions: { risk: 'HIGH', reason: 'OFAC listed', blocking: true } }));
-    const s = byLabel(m, 'Санкции судна (OFAC/EU)');
+    const s = byLabel(m, 'Vessel sanctions (OFAC/EU)');
     expect(s?.state).toBe('caution');
     expect(s?.evidence).toContain('OFAC');
     expect(m.counter.flagsCritical).toBe(1);
@@ -207,7 +207,7 @@ describe('buildDueDiligence', () => {
 
   it('sanctions clean → pass, flagsCritical = 0', () => {
     const m = buildDueDiligence(fullArgs());
-    expect(byLabel(m, 'Санкции судна (OFAC/EU)')?.state).toBe('pass');
+    expect(byLabel(m, 'Vessel sanctions (OFAC/EU)')?.state).toBe('pass');
     expect(m.counter.flagsCritical).toBe(0);
   });
 
@@ -215,7 +215,7 @@ describe('buildDueDiligence', () => {
     const m = buildDueDiligence(fullArgs({ tceUsdPerDay: 7000, breakevenTce: 8200 }));
     const tce = byLabel(m, 'TCE vs breakeven');
     expect(tce?.state).toBe('caution');
-    expect(tce?.evidence).toContain('ниже breakeven');
+    expect(tce?.evidence).toContain('below breakeven');
   });
 
   it('TCE null → inactive', () => {
@@ -225,10 +225,10 @@ describe('buildDueDiligence', () => {
 
   it('freight estimate source → caution «оценка»', () => {
     const m = buildDueDiligence(fullArgs({ freightRateSource: 'baltic', consumptionEstimated: true }));
-    const fr = byLabel(m, 'Фрахт vs Baltic');
+    const fr = byLabel(m, 'Freight vs Baltic');
     expect(fr?.state).toBe('caution');
-    expect(fr?.evidence).toContain('оценка');
-    expect(fr?.evidence).toContain('расход оценён');
+    expect(fr?.evidence).toContain('estimate');
+    expect(fr?.evidence).toContain('consumption estimated');
   });
 });
 
@@ -241,7 +241,7 @@ describe('buildDueDiligence — LOA berth row', () => {
     ws.vessel.loa = 150;
     ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
-    const row = byLabel(m, 'LOA под причал');
+    const row = byLabel(m, 'LOA vs berth');
     expect(row?.state).toBe('pass');
     expect(row?.evidence).toContain('150');
     expect(row?.detail).toBeTruthy();
@@ -253,7 +253,7 @@ describe('buildDueDiligence — LOA berth row', () => {
     ws.vessel.loa = 200; // > Sfax 180
     ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
-    const row = byLabel(m, 'LOA под причал');
+    const row = byLabel(m, 'LOA vs berth');
     expect(row?.state).toBe('caution');
     expect(row?.evidence).toMatch(/LOA/i);
   });
@@ -262,9 +262,9 @@ describe('buildDueDiligence — LOA berth row', () => {
     const ws = fullWorksheet(); // no loa on fixture vessel
     ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
-    const row = byLabel(m, 'LOA под причал');
+    const row = byLabel(m, 'LOA vs berth');
     expect(row?.state).toBe('inactive');
-    expect(row?.evidence).toMatch(/письм/i);
+    expect(row?.evidence).toMatch(/circular/i);
   });
 
   it('honesty: vessel LOA present but no berth data on the ports → inactive «нет данных по причалу»', () => {
@@ -273,9 +273,9 @@ describe('buildDueDiligence — LOA berth row', () => {
     // Odesa has no maxLOA (backfill pending); Alexandria likewise.
     ws.cargo = { ...ws.cargo, loadPort: 'Odesa', dischargePort: 'Alexandria' };
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
-    const row = byLabel(m, 'LOA под причал');
+    const row = byLabel(m, 'LOA vs berth');
     expect(row?.state).toBe('inactive');
-    expect(row?.evidence).toMatch(/причал/i);
+    expect(row?.evidence).toMatch(/berth/i);
   });
 
   it('DISCH-LOA both ports fail: evidence shows both reasons, not just load', () => {
@@ -284,7 +284,7 @@ describe('buildDueDiligence — LOA berth row', () => {
     ws.vessel.loa = 200;
     ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
-    const row = byLabel(m, 'LOA под причал');
+    const row = byLabel(m, 'LOA vs berth');
     expect(row?.state).toBe('caution');
     // Both port failures must appear in evidence — verified by presence of separator
     // (single-port failure uses the reason directly without ' / ').
@@ -307,7 +307,7 @@ describe('buildDueDiligence — detail + source disclosure', () => {
 
   it('permanent gap rows (Воздушный габарит / RightShip / KYC) → detail null AND source null', () => {
     const m = buildDueDiligence(fullArgs());
-    for (const label of ['Воздушный габарит', 'RightShip score', 'KYC чартерера']) {
+    for (const label of ['Air draught clearance', 'RightShip score', 'Charterer KYC']) {
       const row = byLabel(m, label);
       expect(row?.state).toBe('inactive');
       expect(row?.detail ?? null).toBeNull();
@@ -318,10 +318,10 @@ describe('buildDueDiligence — detail + source disclosure', () => {
   it('founder honesty: null lastCargoes → hold-cleanliness inactive BUT keeps detail + «уточнить» evidence (never fake-pass)', () => {
     const vessel = { ...fullVessel(), lastCargoes: null };
     const m = buildDueDiligence(fullArgs({ vessel }));
-    const hold = byLabel(m, 'Чистота трюмов / прошлый груз');
+    const hold = byLabel(m, 'Hold cleanliness / prior cargo');
     expect(hold?.state).toBe('inactive');
     expect(hold?.state).not.toBe('pass');
-    expect(hold?.evidence).toContain('уточнить');
+    expect(hold?.evidence).toContain('confirm');
     // honesty disclosure: this special inactive row DOES explain itself
     expect(hold?.detail).toBeTruthy();
     expect(hold?.detail).toContain('L5C');
@@ -335,7 +335,7 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     expect(tce?.detail).toContain('8,200');
     expect(tce?.detail).toContain('1,400'); // diff
     expect(tce?.detail?.toLowerCase()).toContain('war-risk');
-    expect(tce?.source).toBe('Расчёт TCE');
+    expect(tce?.source).toBe('TCE calculation');
   });
 
   it('worked-calc utilisation: detail reconciles with stored bracketData numbers', () => {
@@ -343,24 +343,24 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     const util = fb.components.find((c) => c.factor === 'utilisation')!;
     util.bracketData = '24,000 / 27,000 mt';
     const m = buildDueDiligence(fullArgs({ fitBreakdown: fb }));
-    const row = byLabel(m, 'Утилизация DWT');
+    const row = byLabel(m, 'DWT utilisation');
     expect(row?.detail).toContain('24,000');
     expect(row?.detail).toContain('27,000');
     expect(row?.detail).toContain('89%'); // 24000/27000
-    expect(row?.detail).toContain('номинал'); // honesty caveat (nominal weight)
+    expect(row?.detail).toContain('nominal'); // honesty caveat (nominal weight)
   });
 
   it('worked-calc draft: detail shows laden vs limit + screening honesty caveat', () => {
     const m = buildDueDiligence(fullArgs());
-    const row = byLabel(m, 'Осадка — порт погрузки');
+    const row = byLabel(m, 'Laden draft — load port');
     expect(row?.detail).toContain('9.2'); // estimatedLadenDraftM
     expect(row?.detail).toContain('10.5'); // portLimitM
-    expect(row?.detail?.toLowerCase()).toContain('скрининг');
+    expect(row?.detail?.toLowerCase()).toContain('screening');
   });
 
   it('draft derivation: load row carries {dwt, cargoTons, laden, portLimit, pass}; laden mirrors STORED estimate 1:1', () => {
     const m = buildDueDiligence(fullArgs());
-    const row = byLabel(m, 'Осадка — порт погрузки');
+    const row = byLabel(m, 'Laden draft — load port');
     expect(row?.derivation).toBeTruthy();
     expect(row?.derivation?.dwt).toBe(35000);
     expect(row?.derivation?.cargoTons).toBe(30000);
@@ -374,12 +374,12 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     const ws = fullWorksheet();
     ws.cargo.weightMtEffective = 32000;
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
-    expect(byLabel(m, 'Осадка — порт погрузки')?.derivation?.cargoTons).toBe(32000);
+    expect(byLabel(m, 'Laden draft — load port')?.derivation?.cargoTons).toBe(32000);
   });
 
   it('draft derivation: discharge row recomputes laden from DWT+cargo when stored estimate absent (engine-parity ceil)', () => {
     const m = buildDueDiligence(fullArgs());
-    const row = byLabel(m, 'Осадка — порт выгрузки');
+    const row = byLabel(m, 'Laden draft — discharge port');
     const fullLoad = 0.4991 * Math.pow(35000, 0.2991);
     const ratio = Math.min(30000 / 35000, 1);
     const expected = Math.ceil(fullLoad * Math.pow(ratio, 0.3) * 10) / 10;
@@ -393,9 +393,9 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     ws.vessel.dwtSummer = null;
     ws.hardFilters.draft = { pass: true }; // no stored estimate either
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
-    const row = byLabel(m, 'Осадка — порт погрузки');
+    const row = byLabel(m, 'Laden draft — load port');
     expect(row?.derivation == null).toBe(true);
-    expect(row?.detail?.toLowerCase()).toContain('нет данных');
+    expect(row?.detail?.toLowerCase()).toContain('no dwt/cargo');
   });
 
   it('draft derivation: never feeds counter (display-only parity)', () => {
@@ -429,7 +429,7 @@ describe('buildDueDiligence — detail + source disclosure', () => {
 
   it('inactive fb-dependent rows → detail/source null (no fake explanation)', () => {
     const m = buildDueDiligence(fullArgs({ fitBreakdown: null }));
-    const row = byLabel(m, 'Утилизация DWT');
+    const row = byLabel(m, 'DWT utilisation');
     expect(row?.state).toBe('inactive');
     expect(row?.detail ?? null).toBeNull();
     expect(row?.source ?? null).toBeNull();

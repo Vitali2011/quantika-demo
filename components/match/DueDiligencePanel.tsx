@@ -24,7 +24,7 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
 
 export function DueDiligencePanel({ model }: { model: DDModel }) {
   const { counter, fitPercent } = model;
-  const criticalText = counter.flagsCritical === 0 ? 'нет' : String(counter.flagsCritical);
+  const criticalText = counter.flagsCritical === 0 ? 'none' : String(counter.flagsCritical);
 
   return (
     <section
@@ -39,9 +39,9 @@ export function DueDiligencePanel({ model }: { model: DDModel }) {
             Due Diligence
           </h2>
           <p className="text-sm text-ds-text mt-1">
-            Прогнали <span className="font-semibold">{counter.ran}</span> проверок
+            Ran <span className="font-semibold">{counter.ran}</span> checks
             <span className="text-ds-text-muted">
-              {' · '}{counter.pass} ✓ · {counter.caution} ⚠{counter.info > 0 && <> · <Info className="inline h-3.5 w-3.5 align-text-bottom text-sky-600" aria-hidden /> {counter.info}</>} · критичных стопов {criticalText}
+              {' · '}{counter.pass} ✓ · {counter.caution} ⚠{counter.info > 0 && <> · <Info className="inline h-3.5 w-3.5 align-text-bottom text-sky-600" aria-hidden /> {counter.info}</>} · critical stops {criticalText}
             </span>
           </p>
         </div>
