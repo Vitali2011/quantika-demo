@@ -13,6 +13,7 @@ import {
 } from '@/lib/constants';
 import { Lock, MessageCircle, ChevronLeft } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
+import { currencySymbol } from '@/lib/currency';
 
 export default async function SummaryPage() {
   const cookieStore = await cookies();
@@ -36,7 +37,7 @@ export default async function SummaryPage() {
   const hoursSaved = (minSaved / 60).toFixed(1);
 
   const commissionTotal = commissionSummary?.totalByCurrency
-    .map(t => `${t.currency === 'EUR' ? '€' : '$'}${formatNumber(t.amount)}`)
+    .map(t => `${currencySymbol(t.currency)}${formatNumber(t.amount)}`)
     .join(' + ') || '$0';
 
   return (

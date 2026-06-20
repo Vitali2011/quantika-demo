@@ -92,6 +92,20 @@ function extractPercentFromText(text: string): number | null {
   return null;
 }
 
+/**
+ * Detect the freight currency from the combined freight rate + basis string.
+ * Multi-currency aware: anything that is not explicitly EUR/GBP/NOK/JPY defaults
+ * to USD. Replaces the old binary EUR-or-USD regex that silently mapped GBP,
+ * NOK, JPY etc. to USD. Private — calculateCommission is the only caller.
+ */
+function detectFreightCurrency(s: string): string {
+  if (/EUR|€/i.test(s)) return 'EUR';
+  if (/GBP|£|sterling/i.test(s)) return 'GBP';
+  if (/NOK\b/i.test(s)) return 'NOK';
+  if (/JPY|¥/i.test(s)) return 'JPY';
+  return 'USD';
+}
+
 export function calculateCommission(recap: ParsedFixtureRecap): CommissionResult | null {
   // Resolve commission percent by priority:
   //  (1) AI-parsed total (commissionPercent),
@@ -116,10 +130,12 @@ export function calculateCommission(recap: ParsedFixtureRecap): CommissionResult
   const rateStr = safeStr(recap.freightRate);
   const basisStr = safeStr(recap.freightBasis);
   const fullFreightStr = `${rateStr} ${basisStr}`.trim();
-  const currency = /EUR|\u20ac/i.test(fullFreightStr) ? 'EUR' : 'USD';
+  const currency = detectFreightCurrency(fullFreightStr);
 
   // If AI already computed commissionAmount, use it directly
   const precomputedAmount = safeNum(recap.commissionAmount);
+  // Fall back to the detected freight currency (not a hardcoded USD) when the AI
+  // did not supply commission_currency \u2014 otherwise GBP/NOK/JPY recaps mislabel as USD.
   const commissionCurrency = (typeof recap.commissionCurrency === 'string' && recap.commissionCurrency) || currency;
 
   if (precomputedAmount && precomputedAmount > 0) {

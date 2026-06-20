@@ -62,7 +62,7 @@ export default async function FixtureDetailPage({ params }: Props) {
     recap.dischargingRate ? `Discharging: ${safeRender(recap.dischargingRate)} ${safeRender(recap.dischargingTerms) || ''}` : '',
     recap.demurrageRate ? `Demurrage: ${safeRender(recap.demurrageRate)} ${safeRender(recap.demurragePayment) || ''}` : '',
     recap.commission ? `Commission: ${safeRender(recap.commission)}` : '',
-    recap.commissionAmount ? `Calculated: ${safeRender(recap.commissionCurrency) || '$'}${formatNumber(recap.commissionAmount)}` : '',
+    recap.commissionAmount ? `Calculated: ${safeRender(recap.commissionCurrency) || ''}${formatNumber(recap.commissionAmount)}` : '',
     recap.despatchRate ? `Despatch: ${safeRender(recap.despatchRate)}` : '',
     recap.acknowledgementDeadline ? `Ack Deadline: ${recap.acknowledgementDeadline}` : '',
     recap.vesselDraft ? `Draft: ${recap.vesselDraft}` : '',
@@ -197,7 +197,7 @@ export default async function FixtureDetailPage({ params }: Props) {
                 <CField label="Commission" field={recap.commission} />
                 {recap.commissionPercent != null && recap.commissionAmount != null && (
                   <div className="mt-2 p-2 bg-ds-success-soft rounded-ds-sm text-sm">
-                    <strong className="text-ds-success">Calculated: {safeRender(recap.commissionCurrency) || '$'}{formatNumber(recap.commissionAmount)}</strong>
+                    <strong className="text-ds-success">Calculated: {safeRender(recap.commissionCurrency) || ''}{formatNumber(recap.commissionAmount)}</strong>
                     <span className="text-ds-text-muted ml-2">({recap.commissionPercent}% on freight)</span>
                   </div>
                 )}
@@ -207,7 +207,7 @@ export default async function FixtureDetailPage({ params }: Props) {
                     <span className="font-medium text-ds-text">
                       {recap.commissionAddressPct != null && `${recap.commissionAddressPct}%`}
                       {recap.commissionAddressPct != null && recap.commissionAddressAmount != null && ' · '}
-                      {recap.commissionAddressAmount != null && `${safeRender(recap.commissionCurrency) || '$'}${formatNumber(recap.commissionAddressAmount)}`}
+                      {recap.commissionAddressAmount != null && `${safeRender(recap.commissionCurrency) || ''}${formatNumber(recap.commissionAddressAmount)}`}
                     </span>
                   </div>
                 )}
@@ -217,7 +217,7 @@ export default async function FixtureDetailPage({ params }: Props) {
                     <span className="font-medium text-ds-text">
                       {recap.commissionBrokerPct != null && `${recap.commissionBrokerPct}%`}
                       {recap.commissionBrokerPct != null && recap.commissionBrokerAmount != null && ' · '}
-                      {recap.commissionBrokerAmount != null && `${safeRender(recap.commissionCurrency) || '$'}${formatNumber(recap.commissionBrokerAmount)}`}
+                      {recap.commissionBrokerAmount != null && `${safeRender(recap.commissionCurrency) || ''}${formatNumber(recap.commissionBrokerAmount)}`}
                     </span>
                   </div>
                 )}

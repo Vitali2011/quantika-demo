@@ -126,6 +126,23 @@ export function formatCurrencyAmount(amount: number, currency: string): string {
   return `${sign}${currency} ${formatted}`;
 }
 
+// Centralized currency-code → display-symbol map. Keeps the Unicode symbol for
+// the currencies the commission/summary board renders (USD → "$", EUR → "€") so
+// the existing board stays visually identical; unknown codes fall back to the
+// code itself rather than being mislabeled as USD. Distinct from
+// formatCurrencyAmount, which renders EUR as the text "EUR" (verbose by design).
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+  NOK: "kr",
+};
+
+export function currencySymbol(code: string): string {
+  return CURRENCY_SYMBOLS[code] ?? code;
+}
+
 // Clear cache (for testing)
 export function clearCurrencyCache(): void {
   rateCache.clear();
