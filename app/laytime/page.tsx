@@ -210,8 +210,8 @@ export default function LaytimePage() {
                   >
                     <option value="SHINC">SHINC (Sundays/Holidays Included)</option>
                     <option value="SHEX">SHEX (Sundays/Holidays Excluded)</option>
-                    <option value="FHINC">FHINC (First Half Included)</option>
-                    <option value="FHEX">FHEX (First Half Excluded)</option>
+                    <option value="FHINC">FHINC (Fridays/Holidays Included)</option>
+                    <option value="FHEX">FHEX (Fridays/Holidays Excluded)</option>
                   </select>
                 </div>
 
