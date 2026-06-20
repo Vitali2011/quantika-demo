@@ -72,10 +72,17 @@ describe('eua-repository', () => {
   });
 
   it('getLatestEuaPrice returns the row when age equals maxAgeDays (boundary)', () => {
-    // Row exactly EUA_STALE_DAYS old: price_date == threshold, so not < threshold.
+    // Timezone-robust: derive the boundary date with the SAME JS-local→UTC logic
+    // the repository uses for its threshold, instead of mixing SQLite-UTC
+    // date('now','-N days') with a JS-local threshold (which flips the boundary
+    // intermittently in UTC+5 or later). Both sides now compute identically, so
+    // price_date == threshold (not < threshold) → row is returned, deterministically.
+    const threshold = new Date();
+    threshold.setDate(threshold.getDate() - EUA_STALE_DAYS);
+    const boundaryDate = threshold.toISOString().slice(0, 10);
     db.prepare(
-      `INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES (date('now', '-${EUA_STALE_DAYS} days'), 71.00, 'boundary-test', 'boundary-source', datetime('now'))`
-    ).run();
+      `INSERT INTO eua_prices (price_date, price_eur_per_tco2, contract_type, source, fetched_at) VALUES (?, 71.00, 'boundary-test', 'boundary-source', datetime('now'))`
+    ).run(boundaryDate);
     const row = getLatestEuaPrice(db, 'boundary-test');
     expect(row).not.toBeNull();
     expect(row!.price_eur_per_tco2).toBe(71.00);

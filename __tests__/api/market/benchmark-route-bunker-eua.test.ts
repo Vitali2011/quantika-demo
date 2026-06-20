@@ -104,6 +104,29 @@ describe('GET /api/market/benchmark — EUA (issue #177)', () => {
     expect(res.status).toBe(404);
   });
 
+  it('R-403-3: EUA path bypasses the repository freshness gate (regression PR#1069)', async () => {
+    // The route must call getLatestEuaPrice with { maxAgeDays: Infinity } so a
+    // stale-but-present row is returned and the route's OWN staleness check sets
+    // stale:true. Without this the gate returns null → getCurrentBenchmark null
+    // → 404 on a price the UI should show with a stale warning.
+    mockGetLatestEuaPrice.mockReturnValue({
+      price_date: '2020-01-01',
+      price_eur_per_tco2: 72.65,
+      contract_type: 'spot',
+      source: 'eex-static',
+      fetched_at: '2020-01-01T00:00:00Z',
+    });
+
+    const res = await GET(makeRequest('EUA'));
+
+    expect(res.status).toBe(200);
+    expect(mockGetLatestEuaPrice).toHaveBeenCalledWith(
+      expect.anything(),
+      'spot',
+      { maxAgeDays: Infinity },
+    );
+  });
+
   it('R-403-1: EUA stale=true when price_date is >7 days old (closes #403)', async () => {
     mockGetLatestEuaPrice.mockReturnValue({
       price_date: '2020-01-01',
