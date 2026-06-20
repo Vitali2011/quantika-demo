@@ -54,7 +54,7 @@ export const BUNKER_CANDIDATES = [
 export const DETOUR_RATIO = 0.15;
 export const DETOUR_ABS_CAP_NM = 200;
 
-/** Log a warning if any on-route candidate's price is older than this many days. */
+/** Exclude any on-route candidate whose price is older than this many days. */
 export const BUNKER_STALE_DAYS = 7;
 
 /** Vessel defaults for per-port effective $/MT math (Supramax representative). */
@@ -138,9 +138,14 @@ export function resolveOnRouteBunkerCandidates(
     const priceRow = getLatestBunkerPrice(db, candidate, grade);
     if (!priceRow) continue;
 
-    // Freshness watchdog — log stale price, no DB write, no exclusion.
+    // Freshness gate — EXCLUDE stale prices (price_date older than
+    // BUNKER_STALE_DAYS) so they never feed the effective-$/MT ranking or TCE
+    // (FIX #15, founder decision = enable filtering). Keep the warn for
+    // visibility. If this empties the on-route set, the NLRTM/default fallback
+    // below still yields a bunker port.
     if (priceRow.price_date < staleThresholdStr) {
-      console.warn(`[bunker-rec] bunker_price_stale: ${candidate} last=${priceRow.price_date}`);
+      console.warn(`[bunker-rec] bunker_price_stale: ${candidate} last=${priceRow.price_date} (excluded)`);
+      continue;
     }
 
     let deviationNm = 0;
