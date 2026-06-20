@@ -37,7 +37,9 @@ beforeAll(() => {
       fetched_at         TEXT NOT NULL,
       UNIQUE(price_date, contract_type)
     );
-    INSERT INTO eua_prices VALUES ('2026-05-04', 72.65, 'spot', 'eex-auction-static-seed', datetime('now'));
+    -- date('now') keeps the seed within the 7-day freshness gate (#1069); a
+    -- hardcoded past date would go stale vs the CI clock and null the lookup.
+    INSERT INTO eua_prices VALUES (date('now'), 72.65, 'spot', 'eex-auction-static-seed', datetime('now'));
   `);
 });
 
