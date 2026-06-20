@@ -1,5 +1,9 @@
 import type Database from 'better-sqlite3';
-import { upsertBunkerPrice } from '@/lib/market/bunker-repository';
+import { upsertBunkerPrice, getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+
+// Bunker sanity range (USD/mt). Mirrors oilmonster-adapter — reject implausible
+// values instead of writing them to the DB.
+const RANGE = { min: 200, max: 2500 } as const;
 
 const USDA_URL = 'https://agtransport.usda.gov/resource/y4ft-fdwn.json?$limit=1000';
 
@@ -57,6 +61,16 @@ export async function refreshUsdaBunker(
 
       const priceValue = parseFloat(rec.price_per_mt);
       if (!Number.isFinite(priceValue)) continue;
+
+      if (priceValue < RANGE.min || priceValue > RANGE.max) {
+        const last = getLatestBunkerPrice(db, portUnlocode, fuelGrade);
+        console.warn(
+          `[USDA] ${rec.location} ${fuelGrade} ${priceValue} out of range ` +
+          `[${RANGE.min}–${RANGE.max}] — keeping last-good ` +
+          `(${last?.price_usd_per_mt ?? 'none'})`,
+        );
+        continue;
+      }
 
       const priceDate = rec.report_date.slice(0, 10);
 

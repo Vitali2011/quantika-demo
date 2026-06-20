@@ -1,7 +1,11 @@
 import type Database from 'better-sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
-import { upsertBunkerPrice } from '@/lib/market/bunker-repository';
+import { upsertBunkerPrice, getLatestBunkerPrice } from '@/lib/market/bunker-repository';
+
+// Bunker sanity range (USD/mt). Mirrors oilmonster-adapter — reject implausible
+// scrapes (decimal-shift, header-as-price) instead of writing them to the DB.
+const RANGE_VLSFO = { min: 200, max: 2500 } as const;
 
 const SNB_URL = 'https://shipandbunker.com/prices';
 const DEFAULT_CACHE_PATH = '/var/cache/quantika/shipandbunker.html';
@@ -166,7 +170,16 @@ export async function refreshShipAndBunker(
   let rowsChanged = 0;
 
   const upsert = db.transaction(() => {
-    for (const [, { vlsfo, unlocode }] of parsed) {
+    for (const [portName, { vlsfo, unlocode }] of parsed) {
+      if (vlsfo < RANGE_VLSFO.min || vlsfo > RANGE_VLSFO.max) {
+        const last = getLatestBunkerPrice(db, unlocode, 'VLSFO');
+        console.warn(
+          `[ShipAndBunker] ${portName} VLSFO ${vlsfo} out of range ` +
+          `[${RANGE_VLSFO.min}–${RANGE_VLSFO.max}] — keeping last-good ` +
+          `(${last?.price_usd_per_mt ?? 'none'})`,
+        );
+        continue;
+      }
       upsertBunkerPrice(db, {
         port_unlocode: unlocode,
         fuel_grade: 'VLSFO',
