@@ -1446,6 +1446,26 @@ function centroidFallbackDistance(
   const cb = endpointCoords(to, getPortMaster);
   if (!ca || !cb) return null;
   if (!ca.viaCentroid && !cb.viaCentroid) return null; // both real → direct already decided
+
+  // Tier 3 FIRST: the centroids are real lat/lon, so the SAME canal/strait-aware
+  // searoute used for real ports applies — a straight haversine chord between two
+  // region centroids cuts through land (Sahara, Asian landmass) and systematically
+  // under-reports ballast distance (→ wrong TCE). exact:false because the endpoints
+  // themselves are approximate regions, not surveyed ports.
+  if (process.env.DISTANCE_USE_SEAROUTE_LIVE !== 'false') {
+    const liveFn = getLiveSearouteFn();
+    if (liveFn) {
+      try {
+        const live = liveFn({ lat: ca.lat, lon: ca.lon }, { lat: cb.lat, lon: cb.lon });
+        if (live != null) return { nm: live.nm, exact: false };
+      } catch {
+        // fall through to the haversine safety net below
+      }
+    }
+  }
+
+  // Tier 4 safety net: haversine great-circle when searoute is unavailable, returns
+  // null (unroutable centroid), or throws. Approximate by construction.
   return { nm: haversineDistanceNm(ca.lat, ca.lon, cb.lat, cb.lon), exact: false };
 }
 
