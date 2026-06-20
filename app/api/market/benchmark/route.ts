@@ -79,7 +79,12 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
   } else if (typedIndicator === 'EUA') {
     const db = getStore().getDatabase();
-    const row = getLatestEuaPrice(db);
+    // Bypass the repository freshness gate ({ maxAgeDays: Infinity }) so a
+    // stale-but-present row is still returned here. This route owns its own
+    // staleness contract: it surfaces the row with `stale: true` (below) rather
+    // than letting a null bubble up to getCurrentBenchmark and 404 a price the
+    // UI could show with a stale warning.
+    const row = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
     if (row) {
       const ageMs = Date.now() - new Date(row.price_date).getTime();
       benchmark = {
