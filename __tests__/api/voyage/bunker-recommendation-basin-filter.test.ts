@@ -26,16 +26,16 @@ beforeAll(() => {
       UNIQUE(port_unlocode, fuel_grade, price_date)
     );
     -- Med + Black Sea hubs (must appear for Med voyages)
-    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('GRPIR', 'VLSFO', 760, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('ROCND', 'VLSFO', 740, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('ITAUG', 'VLSFO', 755, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, '2026-06-02', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GRPIR', 'VLSFO', 760, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ROCND', 'VLSFO', 740, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ITAUG', 'VLSFO', 755, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, date('now','-2 day'), 'seed', datetime('now'));
     -- Far-away hubs — basin filter must EXCLUDE for Med voyages
-    INSERT INTO bunker_prices VALUES ('USLAX', 'VLSFO', 950, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('BRSSZ', 'VLSFO', 720, '2026-06-02', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('ZADUR', 'VLSFO', 700, '2026-06-02', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('USLAX', 'VLSFO', 950, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('BRSSZ', 'VLSFO', 720, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ZADUR', 'VLSFO', 700, date('now','-2 day'), 'seed', datetime('now'));
   `);
 });
 

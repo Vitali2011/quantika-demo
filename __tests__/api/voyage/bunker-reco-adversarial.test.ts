@@ -30,16 +30,16 @@ function createDb(): Database.Database {
       fetched_at       TEXT NOT NULL,
       UNIQUE(port_unlocode, fuel_grade, price_date)
     );
-    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('AEFJR', 'VLSFO', 880, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('USHOU', 'VLSFO', 806, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('NLRTM', 'MGO',  1192, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('GIGIB', 'MGO',  1172, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('SGSIN', 'MGO',  1144, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('AEFJR', 'MGO',  1482, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('USHOU', 'MGO',  1170, '2026-05-09', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('AEFJR', 'VLSFO', 880, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('USHOU', 'VLSFO', 806, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('NLRTM', 'MGO',  1192, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GIGIB', 'MGO',  1172, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('SGSIN', 'MGO',  1144, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('AEFJR', 'MGO',  1482, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('USHOU', 'MGO',  1170, date('now','-2 day'), 'seed', datetime('now'));
   `);
   return d;
 }
