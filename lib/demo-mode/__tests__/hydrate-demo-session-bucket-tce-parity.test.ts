@@ -74,6 +74,9 @@ function makeSeedDb(): Database.Database {
   // Realism-bucket sentinel row carrying a STALE seed TCE.
   db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured, tce_usd_per_day, freight_rate_usd_per_mt, freight_rate_source)
     VALUES ('c1','v1',50,'review bucket','potential','__demo_review__',0,0,NULL,?,NULL,NULL)`).run(SEED_SENTINEL_TCE);
+  // Main shortlist sentinel row (user_id IS NULL) — same resolvable ports, STALE seed TCE.
+  db.prepare(`INSERT INTO matches (cargo_id, vessel_id, score, reason, status, user_id, created_at, updated_at, reason_structured, tce_usd_per_day, freight_rate_usd_per_mt, freight_rate_source)
+    VALUES ('c1','v1',80,'shortlist',NULL,NULL,0,0,NULL,?,NULL,NULL)`).run(SEED_SENTINEL_TCE);
   return db;
 }
 
@@ -110,5 +113,25 @@ describe('buildDemoSessionBlob bucket economics == live board TCE (audit-1 LOW 8
     // Bucket TCE matches the board's live recompute, NOT the stale seed column.
     expect(tce).toBe(expectedLive);
     expect(tce).not.toBe(SEED_SENTINEL_TCE);
+  });
+
+  it('does NOT live-recompute main shortlist economics at hydrate (perf: persist-session-matches owns it)', () => {
+    // audit-1 LOW 8 perf follow-up: the live recompute is scoped to bucket rows
+    // only. Main matchRows (user_id IS NULL) carry the cheap seed economics — they
+    // are recomputed later by persist-session-matches, so a live recompute here is
+    // redundant O(N_main) work on every demo login. Proof: the main row keeps the
+    // seed-sentinel TCE (which a live Rotterdam→Santos recompute would never yield),
+    // while the bucket row in the test above DID get live-recomputed.
+    const db = makeSeedDb();
+    const expectedLive = liveBoardTce(db);
+    const blob = buildDemoSessionBlob(db);
+    db.close();
+
+    expect(expectedLive).not.toBe(SEED_SENTINEL_TCE);
+    expect(blob.matches).toHaveLength(1);
+    const mainTce = blob.matches[0].economics!.tceUsdPerDay;
+    // Main row kept the seed column — NOT live-recomputed.
+    expect(mainTce).toBe(SEED_SENTINEL_TCE);
+    expect(mainTce).not.toBe(expectedLive);
   });
 });
