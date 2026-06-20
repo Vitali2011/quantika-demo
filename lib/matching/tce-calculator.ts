@@ -158,7 +158,13 @@ export function computeEstimatedTce(
 // For Suez purposes, 'blacksea' is treated as 'westOfSuez' (same as 'med').
 type _PortBasin = 'indian' | 'eastafrica' | 'med' | 'blacksea' | 'atlantic' | 'westafrica' | 'unknown';
 
-function _classifyPortBasin(port: string | null | undefined): _PortBasin {
+function _classifyPortBasin(
+  port: string | null | undefined,
+  // Counterpart voyage port (audit-1 LOW #5 follow-up). Threaded into the
+  // resolvePort fallback below so an *alias* that resolves to a different
+  // canonical name disambiguates by route context (PR #1080 homonym API).
+  counterpart?: string | null,
+): _PortBasin {
   if (!port) return 'unknown';
   const p = port.toLowerCase().trim();
   if (/kandla|mundra|mumbai|nhava|chennai|kolkata|karachi|kakinada|kochi|cochin|colombo|tuticorin|bandar.?abb?as?|dubai|abu.?dhabi|fujairah|sohar|muscat|salalah|jebel.?ali|ruwais|jeddah|yanbu|aqaba|djibouti|aden|berbera/.test(p)) return 'indian';
@@ -171,14 +177,24 @@ function _classifyPortBasin(port: string | null | undefined): _PortBasin {
   // Fallback: try resolving the port name to its canonical name and re-classify.
   // This handles aliases like "Nemrut Bay" → resolves to "Aliaga" (med),
   // "Hereke" → "Marmara" (med), so canal detection works on vague port strings.
-  const resolved = resolvePort(port);
+  //
+  // Homonym note (audit-1 LOW #5 follow-up): basin is keyed on the *name string*,
+  // not the resolved port identity. Two ports sharing a name (Cartagena ES/CO,
+  // Tripoli LB/LY) therefore hit the SAME branch — for names absent from every
+  // regex above that means 'unknown' (conservative: no Suez/Bosporus charge), so a
+  // bare homonym is already safe. The counterpart hint disambiguates only the
+  // *alias* case (an alias resolving to a different canonical name). It does NOT
+  // help a bare homonym whose canonical name is ever added to a regex above — such
+  // an addition must be guarded by LOCODE/context, never matched by the bare name.
+  const ctx = counterpart ? resolvePort(counterpart) : null;
+  const resolved = resolvePort(port, ctx ? { counterpart: ctx } : undefined);
   if (resolved && resolved.portName !== port) {
-    return _classifyPortBasin(resolved.portName);
+    return _classifyPortBasin(resolved.portName, counterpart);
   }
   // Second fallback: try vague descriptor resolution ("Eastern Central Greece" → Piraeus).
   const vague = resolveVaguePort(port);
   if (vague && vague.portName !== port) {
-    return _classifyPortBasin(vague.portName);
+    return _classifyPortBasin(vague.portName, counterpart);
   }
   return 'unknown';
 }
@@ -188,8 +204,9 @@ function _classifyPortBasin(port: string | null | undefined): _PortBasin {
 // ports are reached via Cape so they do NOT trigger Suez even when paired with East-Africa.
 function _routeTransitsSuez(portA: string | null | undefined, portB: string | null | undefined): boolean {
   if (!portA || !portB) return false;
-  const basinA = _classifyPortBasin(portA);
-  const basinB = _classifyPortBasin(portB);
+  // Disambiguate each endpoint with the other as counterpart context.
+  const basinA = _classifyPortBasin(portA, portB);
+  const basinB = _classifyPortBasin(portB, portA);
   const eastOfSuez = new Set<_PortBasin>(['indian', 'eastafrica']);
   // blacksea is reachable from Indian Ocean via Suez + Bosporus, so it is west-of-Suez.
   const westOfSuez = new Set<_PortBasin>(['med', 'atlantic', 'blacksea']);
@@ -204,8 +221,8 @@ function _routeTransitsSuez(portA: string | null | undefined, portB: string | nu
 // the old med↔blacksea-only rule dropped the Bosporus fee on Black Sea ↔
 // east-of-Suez voyages — Novorossiysk→Mumbai paid Suez but not Bosporus.)
 function _routeTransitsBosporus(portA: string | null | undefined, portB: string | null | undefined): boolean {
-  const a = _classifyPortBasin(portA);
-  const b = _classifyPortBasin(portB);
+  const a = _classifyPortBasin(portA, portB);
+  const b = _classifyPortBasin(portB, portA);
   if (a === 'unknown' || b === 'unknown') return false;
   return (a === 'blacksea') !== (b === 'blacksea');
 }
