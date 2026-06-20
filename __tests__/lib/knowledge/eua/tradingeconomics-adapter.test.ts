@@ -140,7 +140,10 @@ describe('refreshTradingEconomics', () => {
     );
     await refreshTradingEconomics(db, fetcher);
 
-    const row = getLatestEuaPrice(db);
+    // Seed row is 2026-05-30 — older than EUA_STALE_DAYS vs the real clock, so we
+    // bypass the freshness gate to assert the last-good row survived. This mirrors
+    // the adapter's own last-good lookup, which calls with { maxAgeDays: Infinity }.
+    const row = getLatestEuaPrice(db, 'spot', { maxAgeDays: Infinity });
     expect(row!.price_eur_per_tco2).toBeCloseTo(71.0, 2); // unchanged
   });
 
