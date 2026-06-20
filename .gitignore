@@ -115,3 +115,8 @@ scripts/demo-seed/.llm-cache/
 
 # QA scratch (/test-skill adversarial output) — not for VCS
 .test-review/
+
+# Orchestrator recon/plan scratch docs — root-level only.
+# Intentional docs live under docs/research/ and docs/superpowers/plans/ (NOT ignored).
+/recon-*.md
+/plan-*.md
