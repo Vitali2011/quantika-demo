@@ -141,6 +141,23 @@ describe('usda-adapter', () => {
       expect(result.rowsChanged).toBe(0);
     });
 
+    it('skips out-of-range price, still writes in-range prices', async () => {
+      const fetcher = async (): Promise<UsdaRecord[]> => [
+        { location: 'Rotterdam', fuel_type: 'IFO380', price_per_mt: '9999.00', report_date: '2026-05-08T00:00:00.000' },
+        { location: 'Singapore', fuel_type: 'IFO380', price_per_mt: '812.00', report_date: '2026-05-08T00:00:00.000' },
+      ];
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const result = await refreshUsdaBunker(db, fetcher);
+
+      expect(result.rowsChanged).toBe(1); // only Singapore
+      const rtm = db.prepare("SELECT * FROM bunker_prices WHERE port_unlocode='NLRTM' AND source='usda'").get();
+      expect(rtm).toBeUndefined();
+      const sgsin = db.prepare("SELECT * FROM bunker_prices WHERE port_unlocode='SGSIN' AND source='usda'").get() as any;
+      expect(sgsin.price_usd_per_mt).toBeCloseTo(812.0);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('out of range'));
+      warnSpy.mockRestore();
+    });
+
     it('upstreamVersion reflects latest report_date', async () => {
       const fetcher = async (): Promise<UsdaRecord[]> => [
         { location: 'Rotterdam', fuel_type: 'IFO380', price_per_mt: '789.50', report_date: '2026-05-07T00:00:00.000' },
