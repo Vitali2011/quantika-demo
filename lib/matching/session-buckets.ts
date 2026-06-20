@@ -52,13 +52,15 @@ export function toBucketRows(
     const speedKts = vessel ? parseLeadingNumber(vessel.speedLaden) : 0;
     const consumptionMt = vessel ? parseConsumption(vessel.consumption) : 0;
 
-    // Canonical engine economics (#819 Phase B(b)): pair-analyzer attaches
-    // m.economics (computeStoredMatchEconomics — live bunker, port-DA, canal,
-    // war-risk-excluded convention) to every pair with a resolvable distance
-    // before bucket partition, so bucket matches already carry the same
-    // one-truth TCE the shortlist stores. Read it here (same economics-first
-    // read as regenerate-matches.ts writeBucket) so bucket tabs and the main
-    // board agree numerically.
+    // Canonical engine economics (#819 Phase B(b)): both producers of m.economics
+    // attach the LIVE computeStoredMatchEconomics value (live bunker, port-DA,
+    // canal, war-risk-excluded convention) before bucket partition —
+    // pair-analyzer on the live create-demo-session path, and
+    // hydrate-demo-session.rowsToMatches on the demo-seed path (audit-1 LOW 8:
+    // it used to read the stale regen-time tce_usd_per_day seed column, so bucket
+    // tabs diverged from the live board when bunker prices drifted). Reading
+    // m.economics here therefore agrees numerically with the main board on both
+    // paths. Same economics-first read as regenerate-matches.ts writeBucket.
     let tce_usd_per_day: number | null = m.economics?.tceUsdPerDay ?? null;
     let freight_rate_usd_per_mt: number | null = m.economics?.freightRateUsdPerMt ?? null;
     let freight_rate_source: string | null = m.economics?.freightRateSource ?? null;
