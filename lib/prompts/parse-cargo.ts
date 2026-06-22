@@ -376,6 +376,35 @@ TERMS TEMPLATE WARNING: A subject line ending in "// [PORT] TERMS" or "[PORT] TE
 FIXTURE TERMS GUARD: Return empty items array if the email is a charter party acceptance message — when the body contains phrases like "chrtrs full terms a/e as fllws for X mins", "charterers' terms as follows for X hours", "please find attached charterers' full terms for X minutes". These are fixture terms documents offered for time-limited acceptance, NOT cargo inquiries.
 
 VESSEL POSITION GUARD: Also return empty items array if the email is a vessel availability/tonnage circular where a shipowner or operator is offering their vessel for employment. Identifies: (1) vessel capacity specs (DWCC, DWT) combined with vessel type descriptors (SID = single-deck, BOX = box-hold, GLESS = gearless, OHG = open-hatch) — these describe the ship, not the cargo; (2) "open [PORT] [date]/onw" or "open [PORT] ppt" — describes where the vessel is currently available; (3) "=> [REGION]" or "looking for employment in [REGION]" — describes preferred trading area, not a discharge port for specific cargo; (4) "line up [tonnage] DWCC" or "please line up [X/Y] dwcc [date] [location]" without a named commodity — this is a request to provide a vessel of that capacity, not a cargo movement. These emails read as "we have a ship available at X, seeking cargo toward Y" — NOT as a shipper seeking transportation for a specific cargo. Return empty items[] and set missing_info: ["This appears to be a vessel availability/tonnage circular, not a cargo inquiry"].
+<market_circular_multi_item>
+A market circular is one email containing several independent cargo offers, usually
+sent by a broker to a distribution list. Offers are commonly divided by block
+separators such as:
+  ++++    ====    ----    ***    ~~~
+  "Cargo N:"   "Inquiry N:"   "REF: [code]"
+  a blank line followed by a fresh commodity/route on a new line
+
+When two or more blocks are separated this way, each block is a separate cargo
+inquiry — emit one item per block.
+
+Worked example — three blocks become three items:
+Input:
+  8000mt urea, Sohar -> Mombasa, laycan Jul ++++
+  12000mt clinker, El Arish -> POC, spot ++++
+  5500mt salt, Constanta -> Lagos, Aug/Sep
+Output:
+  { "items": [
+    { "origin_port": { "value": "Sohar" }, "destination_port": { "value": "Mombasa" }, "weight_mt": { "value": 8000 } },
+    { "origin_port": { "value": "El Arish" }, "destination_port": { "value": "Egypt (port unspecified)" }, "weight_mt": { "value": 12000 } },
+    { "origin_port": { "value": "Constanta" }, "destination_port": { "value": "Lagos" }, "weight_mt": { "value": 5500 } }
+  ] }
+
+If you return a single item while the body still contains a ++++ (or ==== / ----)
+separator between distinct cargo/route/quantity combinations, add a missing_info
+entry: "Body contains ++++ separator —
+verify this is not a multi-cargo market circular." That keeps the omission
+visible instead of silently dropping cargoes.
+</market_circular_multi_item>
 IMPORTANT negative examples — these ARE cargo inquiries (do NOT trigger the guard):
 - "pls propose [suitable] vessels for our [cargo]" = shipper asking broker to find tonnage for specific cargo → PARSE as cargo inquiry
 - "pls propose described ladies for our firm cargo" = same — "ladies" is informal for ships — still a cargo inquiry
