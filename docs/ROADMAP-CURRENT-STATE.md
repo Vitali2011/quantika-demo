@@ -1,18 +1,29 @@
 # Quantika Demo — ROADMAP (Текущее состояние)
 
-> ## ⏩ CURRENT — 2026-06-13 (prod HEAD `c1e4e836`, auto-deploy LIVE на outreach-vps)
+> ## ⏩ CURRENT — 2026-06-22 (prod HEAD `5749dc74` = main, auto-deploy LIVE на outreach-vps)
 >
-> Детальный построчный changelog ниже обрывается на **2026-06-07**. Кампании 06-08 → 06-13 трекаются в **memory** (не backfill построчно — дешевле и свежее). Сводка:
+> ▶ **NEXT (запускается):** аудит парсеров — как отработают на реальной почте клиента, если подключить живой ящик к приложению (robustness на real-email, не на demo-корпусе).
 >
-> | Дата  | Кампания                                                                                                                                                         | Статус  | memory                                            |
-> | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------- |
-> | 06-11 | **War-risk v2** — живые JWC-ставки + Suez-детект, 46 матчей +$372k                                                                                               | ✅ LIVE | `project_quantika_war_risk_v2_shipped_2026_06_11` |
-> | 06-11 | **Очередь P4** — payout / port-data / L2-осадка / TCE-5-9                                                                                                        | ✅ LIVE | `project_quantika_queue_p4_done_2026_06_11`       |
-> | 06-12 | **Аудит логики A/B/C/D** (#964/#965/#969/#970/#971) — паспорт судна оживлён, доска 77→105, charterer/PSC/FuelEU/сортировка, ~2000 LOC мёртвого снесено           | ✅ LIVE | `project_quantika_logic_audit_2026_06_12`         |
-> | 06-13 | **QA-backlog** (#962/#973/#974) — port-master из /matches бандла, session-rehydrate/dedup/capacity, laytime D/D EPSILON + **оживлены 809 regression-локов в CI** | ✅ LIVE | `project_quantika_qa_backlog_2026_06_13`          |
-> | 06-13 | **Ready-but-off** (#972) — ⌘K-палитра +4 роута, TMI 3-й график + quote-фолбэк                                                                                    | ✅ LIVE | `project_quantika_ready_but_off_2026_06_13`       |
-> | 06-13 | **qa-walker tail #976** — ёмкость-clamp (CBFT-as-CBM, null при cbm>2.5×DWT), main `d7fa1f9a`                                                                     | ✅ LIVE | `project_quantika_976_capacity_clamp_2026_06_13`  |
-> | 06-13 | **qa-walker tail #975** — deeplink-rehydrate (6 detail routes + stale match-ID), main `c1e4e836`                                                                 | ✅ LIVE | `project_quantika_975_deeplink_2026_06_13`        |
+> Детальный построчный changelog ниже обрывается на **2026-06-07**. Кампании 06-08 → 06-22 трекаются в **memory** (не backfill построчно — дешевле и свежее). Сводка:
+>
+> | Дата     | Кампания                                                                                                                                                                                                         | Статус  | memory                                              |
+> | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------- |
+> | 06-11    | **War-risk v2** — живые JWC-ставки + Suez-детект, 46 матчей +$372k                                                                                                                                               | ✅ LIVE | `project_quantika_war_risk_v2_shipped_2026_06_11`   |
+> | 06-11    | **Очередь P4** — payout / port-data / L2-осадка / TCE-5-9                                                                                                                                                        | ✅ LIVE | `project_quantika_queue_p4_done_2026_06_11`         |
+> | 06-12    | **Аудит логики A/B/C/D** (#964/#965/#969/#970/#971) — паспорт судна оживлён, доска 77→105, charterer/PSC/FuelEU/сортировка, ~2000 LOC мёртвого снесено                                                           | ✅ LIVE | `project_quantika_logic_audit_2026_06_12`           |
+> | 06-13    | **QA-backlog** (#962/#973/#974) — port-master из /matches бандла, session-rehydrate/dedup/capacity, laytime D/D EPSILON + **оживлены 809 regression-локов в CI**                                                 | ✅ LIVE | `project_quantika_qa_backlog_2026_06_13`            |
+> | 06-13    | **Ready-but-off** (#972) — ⌘K-палитра +4 роута, TMI 3-й график + quote-фолбэк                                                                                                                                    | ✅ LIVE | `project_quantika_ready_but_off_2026_06_13`         |
+> | 06-13    | **qa-walker tail #976** — ёмкость-clamp (CBFT-as-CBM, null при cbm>2.5×DWT), main `d7fa1f9a`                                                                                                                     | ✅ LIVE | `project_quantika_976_capacity_clamp_2026_06_13`    |
+> | 06-13    | **qa-walker tail #975** — deeplink-rehydrate (6 detail routes + stale match-ID), main `c1e4e836`                                                                                                                 | ✅ LIVE | `project_quantika_975_deeplink_2026_06_13`          |
+> | 06-15    | **EPIC #1004 «одно число»** — TCE-консистентность, 5 багов (Recalculate starved-inputs / DA list↔detail / explain-deal 403 / bucket-naming / route-aware bunker)                                                 | ✅ LIVE | `project_quantika_1004_tce_high_2026_06_15`         |
+> | 06-17    | **qa-walker backlog** (#1024 laycan / #1034 quote-cargo / #1021+#1023 backfill / #1036 CBM-overflow)                                                                                                             | ✅ LIVE | `project_quantika_qa_backlog_campaign_2026_06_17`   |
+> | 06-17→19 | **Data-fill + correctness** (6 PR: DD-панель / vetting 0.6→0.5 / 111 distance-keys / LOA-gate / commission 3.75% / lastCargoes honest) — доска 96→103                                                            | ✅ LIVE | `project_quantika_data_fill_campaign_2026_06_17`    |
+> | 06-19    | **Divergence audit** (16 confirmed; TOP-4 LIVE: #1051 multi-word ports / #1050 freight-clamp / #1053 FX-live / #1056 regen weightMt)                                                                             | ✅ LIVE | `project_quantika_divergence_audit_2026_06_19`      |
+> | 06-19    | **Audit fix-waves 3+4** (8 PR: suez-roundtrip / ets-clock / TMI-reseed + EUA-cron / NEEDS_ACTION-48h / quote-IDOR-security / commission-$0)                                                                      | ✅ LIVE | `project_quantika_audit_fix_waves_2026_06_19`       |
+> | 06-20    | **Uncovered-areas Wave-1** (7 fixes #1060: compare-DA $0 / quote-dedup+mig054 / draft-quote item-aware / ageInDays / laytime weatherDelay / commission pct)                                                      | ✅ LIVE | `project_quantika_uncovered_audit_wave1_2026_06_20` |
+> | 06-20    | **East/West-Med centroid $0-fix** (#1076) — 12 board-матчей distance 0→1271nm, реальный TCE; regex `eastern/western` adjective                                                                                   | ✅ LIVE | `project_quantika_eastwest_med_centroid_2026_06_20` |
+> | 06-20    | **LOW + 19-disputed triage** (9 PR #1077-1085: laytime-FHEX-Fridays / defensive-guards / **port_da↔master + name→UNLOCODE CI-gate** = headline)                                                                  | ✅ LIVE | `project_quantika_audit_low_disputed_2026_06_20`    |
+> | 06-22    | **PR-cleanup + canal-distance verify** — 6 стейл-PR закрыто; **A6 canal-distance подтверждён УЖЕ закрытым** (#1074/#1076), прод `distance_nm=0` = 0 строк; 108 null-distance = by-design (unspecified discharge) | ✅      | эта сессия                                          |
 >
 > **Backlog-решения (founder 2026-06-13):**
 >
@@ -20,6 +31,7 @@
 > - ❌ **route-map** (Imagen-4 `/api/ai/generate-route-map`) — выкинут (нужен Imagen-биллинг + UI, низкий ROI).
 > - 🟡 Остаётся: **мобильная навигация** инструментов (низкий приоритет).
 > - ⚠️ **ROI 90-day aging-бомба** (`lib/analytics/roi-metrics.ts` берёт SQLite now(), не frozen-clock → демо-ROI покажет **$0 после ~2026-08-28**) — **единственный живой латентный хвост**, само сломается к концу лета.
+> - ✅ **A6 canal-corridor distance ЗАКРЫТ** (был «единственная не-LOW computation-находка без фикса» в §0): centroid-маршруты теперь идут через searoute (canal-aware), не haversine-прямую. #1074 + #1076 (06-20), прод-verified 06-22 (`distance_nm=0` → 0 строк, было сломано). Recon #1073 был stale-снимком ДО фикса.
 >
 > ⬇️ Ниже без изменений: §0 forward-roadmap матчинга (L1→L4, актуально) + исторический changelog по 2026-06-07.
 
