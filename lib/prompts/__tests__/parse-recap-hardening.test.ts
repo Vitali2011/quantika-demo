@@ -50,8 +50,8 @@ describe('FIXTURE_RECAP_PARSER_PROMPT — European-decimal all-fields (FM-10)', 
   });
 
   it('includes the 3.858 -> 3858 and 22.500 -> 22500 worked examples', () => {
-    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/3\.858.*3858/s);
-    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/22\.500.*22500/s);
+    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/3\.858.*3858/);
+    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/22\.500.*22500/);
   });
 
   it('keeps the existing vessel_dwt-scoped European-decimal note intact', () => {
