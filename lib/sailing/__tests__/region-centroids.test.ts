@@ -13,6 +13,11 @@ describe('regionCentroid — demo vague-range coverage', () => {
     ['CONTINENT', 'nw-europe'],
     ['Egypt Mediterranean port (unspecified)', 'egypt-med'],
     ['East Mediterranean', 'east-med'],
+    // Adjective forms ("Eastern"/"Western") must reach the SAME distinct centroid
+    // as the bare "East"/"West" forms — otherwise both fall through to the generic
+    // `med` centroid and searoute(med, med) ≈ 0 (broken $0 TCE). (#1074 residual)
+    ['Eastern Mediterranean (unspecified)', 'east-med'],
+    ['Western Mediterranean (unspecified)', 'west-med'],
     ['1 safe port Spanish Mediterranean', 'spanish-med'],
     ['Agadir or any West Med', 'west-med'],
     ['RED SEA', 'red-sea'],

@@ -1,4 +1,4 @@
-import { calculateLaytime, isSunday, isHoliday, isExcluded } from '../laytime/calculator';
+import { calculateLaytime, isSunday, isFriday, isHoliday, isExcluded } from '../laytime/calculator';
 import type { LaytimeInput } from '../types';
 
 // ── Helper function tests ──
@@ -35,6 +35,29 @@ describe('isSunday', () => {
 
   test('returns false for Saturday 2026-05-09', () => {
     expect(isSunday('2026-05-09')).toBe(false);
+  });
+});
+
+describe('isFriday', () => {
+  test('throws TypeError on empty string', () => {
+    expect(() => isFriday('')).toThrow(TypeError);
+  });
+
+  test('throws TypeError on invalid date string', () => {
+    expect(() => isFriday('not-a-date')).toThrow(TypeError);
+  });
+
+  // 2026-05-15 is a Friday (Sun 05-10 + 5 days)
+  test('returns true for Friday 2026-05-15', () => {
+    expect(isFriday('2026-05-15')).toBe(true);
+  });
+
+  test('returns false for Sunday 2026-05-10', () => {
+    expect(isFriday('2026-05-10')).toBe(false);
+  });
+
+  test('returns false for Saturday 2026-05-16', () => {
+    expect(isFriday('2026-05-16')).toBe(false);
   });
 });
 
@@ -124,8 +147,21 @@ describe('isExcluded', () => {
     expect(isExcluded('2026-05-12', 'SHEX', ['2026-05-12'])).toBe(true);
   });
 
-  test('FHEX excludes Sunday', () => {
-    expect(isExcluded('2026-05-10', 'FHEX', [])).toBe(true); // Sunday
+  // FHEX = Fridays and Holidays Excluded (glossary.ts). FH = Fridays, NOT Sundays.
+  test('FHEX excludes Friday', () => {
+    expect(isExcluded('2026-05-15', 'FHEX', [])).toBe(true); // Friday
+  });
+
+  test('FHEX does NOT exclude Sunday', () => {
+    expect(isExcluded('2026-05-10', 'FHEX', [])).toBe(false); // Sunday counts in FHEX
+  });
+
+  test('FHEX excludes holiday', () => {
+    expect(isExcluded('2026-05-12', 'FHEX', ['2026-05-12'])).toBe(true);
+  });
+
+  test('FHINC does not exclude Friday', () => {
+    expect(isExcluded('2026-05-15', 'FHINC', [])).toBe(false); // Friday
   });
 
   test('FHINC does not exclude Sunday', () => {
@@ -448,16 +484,33 @@ describe('calculateLaytime SHEX mode', () => {
 // ── Additional mode coverage ──
 
 describe('calculateLaytime FHEX and FHINC modes', () => {
-  test('FHEX: behaves like SHEX (simplified)', () => {
+  // FHEX = Fridays and Holidays Excluded. Friday is the weekend day, NOT Sunday.
+  test('FHEX: excludes Friday and holiday, counts Sunday', () => {
+    // Range Tue 2026-05-12 → Mon 2026-05-18 (full week). Friday = 05-15.
     const input: LaytimeInput = {
       allowedLaytimeDays: 5,
       mode: 'FHEX',
       commencedAt: '2026-05-12T00:00:00Z',
-      completedAt: '2026-05-17T00:00:00Z',
+      completedAt: '2026-05-18T00:00:00Z',
       portHolidays: ['2026-05-13'],
     };
     const result = calculateLaytime(input);
-    // Should exclude holiday like SHEX
+
+    // Friday 05-15 excluded with reason 'friday'
+    const fri = result.breakdown.find((e) => e.date === '2026-05-15');
+    expect(fri?.excluded).toBe(true);
+    expect(fri?.reason).toBe('friday');
+
+    // Sunday 05-17 must be COUNTED under FHEX (not excluded)
+    const sun = result.breakdown.find((e) => e.date === '2026-05-17');
+    expect(sun?.excluded).toBe(false);
+
+    // Holiday 05-13 excluded with reason 'holiday'
+    const hol = result.breakdown.find((e) => e.date === '2026-05-13');
+    expect(hol?.excluded).toBe(true);
+    expect(hol?.reason).toBe('holiday');
+
+    // Full days 12,14,16,17 counted (13 holiday, 15 Friday excluded; 18 ~0min) = 4*24
     expect(result.usedLaytimeHours).toBeCloseTo(4 * 24, 1);
   });
 

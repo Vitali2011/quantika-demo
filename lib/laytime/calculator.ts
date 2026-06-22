@@ -13,6 +13,17 @@ export function isSunday(dateStr: string): boolean {
   return date.getUTCDay() === 0;
 }
 
+export function isFriday(dateStr: string): boolean {
+  if (!dateStr || typeof dateStr !== 'string') {
+    throw new TypeError('dateStr must be a non-empty string');
+  }
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    throw new TypeError(`Invalid date string: ${dateStr}`);
+  }
+  return date.getUTCDay() === 5;
+}
+
 export function isHoliday(dateStr: string, holidays: string[]): boolean {
   if (!dateStr || typeof dateStr !== 'string') {
     throw new TypeError('dateStr must be a non-empty string');
@@ -48,11 +59,31 @@ export function isExcluded(dateStr: string, mode: LaytimeMode, holidays: string[
     return false;
   }
 
-  if (mode === 'SHEX' || mode === 'FHEX') {
+  // SHEX = Sundays and Holidays Excluded.
+  if (mode === 'SHEX') {
     return isSunday(dateStr) || isHoliday(dateStr, holidays);
   }
 
+  // FHEX = Fridays and Holidays Excluded (glossary.ts) — common in
+  // Middle East/North Africa trades where Friday is the weekly holiday.
+  // FH = Fridays, NOT Sundays.
+  if (mode === 'FHEX') {
+    return isFriday(dateStr) || isHoliday(dateStr, holidays);
+  }
+
   return false;
+}
+
+// Resolves the exclusion reason label for the daily breakdown given the
+// mode-specific weekend day. SHEX → 'sunday', FHEX → 'friday', else 'holiday'.
+export function excludedReason(dateStr: string, mode: LaytimeMode): 'sunday' | 'friday' | 'holiday' {
+  if (mode === 'SHEX' && isSunday(dateStr)) {
+    return 'sunday';
+  }
+  if (mode === 'FHEX' && isFriday(dateStr)) {
+    return 'friday';
+  }
+  return 'holiday';
 }
 
 export function calculateLaytime(input: LaytimeInput): LaytimeResult {
@@ -99,11 +130,7 @@ export function calculateLaytime(input: LaytimeInput): LaytimeResult {
     const minutesInDay = calculateMinutesInDay(currentDate, commencedDate, completedDate);
 
     const excluded = isExcluded(dateStr, mode, portHolidays);
-    const reason = excluded
-      ? isSunday(dateStr)
-        ? 'sunday'
-        : 'holiday'
-      : undefined;
+    const reason = excluded ? excludedReason(dateStr, mode) : undefined;
 
     const hoursInDay = minutesInDay / 60;
 

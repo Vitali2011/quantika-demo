@@ -38,4 +38,26 @@ describe('getPortDistance — centroid fallback (non-detector-vague only)', () =
     expect(r).not.toBeNull();
     expect(r!.exact).toBe(true);
   });
+
+  it('gives a REAL approximate distance for Eastern↔Western Med, not a broken ~0', () => {
+    // Both endpoints are non-vague broker shorthand, so the centroid path fires.
+    // Before the fix the adjective forms collapsed to the generic `med` centroid
+    // on BOTH sides → searoute(med, med) ≈ 0 → falsely-precise $0 TCE. (#1074 residual)
+    expect(isVagueRegion('Eastern Mediterranean (unspecified)').vague).toBe(false);
+    expect(isVagueRegion('Western Mediterranean (unspecified)').vague).toBe(false);
+    const r = getPortDistance('Eastern Mediterranean (unspecified)', 'Western Mediterranean (unspecified)');
+    expect(r).not.toBeNull();
+    expect(r!.exact).toBe(false); // approximate — endpoints are regions
+    expect(r!.nm).toBeGreaterThan(500); // East↔West Med is ~1000nm, never ~0
+  });
+
+  it('returns NULL (not a broken ~0) when two centroids resolve to ~the same point', () => {
+    // "Continent" and "NW Europe" are both non-vague shorthand for the SAME region
+    // (neither resolves to a real port) → identical nw-europe centroid → searoute
+    // ≈ 0. An intra-region ~0 is a meaningless, falsely-precise distance, so the
+    // pair must report unknown rather than a broken $0.
+    expect(isVagueRegion('Continent').vague).toBe(false);
+    expect(isVagueRegion('NW Europe').vague).toBe(false);
+    expect(getPortDistance('Continent', 'NW Europe')).toBeNull();
+  });
 });

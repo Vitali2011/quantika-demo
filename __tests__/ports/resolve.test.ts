@@ -286,6 +286,83 @@ describe('wave-2 ports — alias resolution', () => {
   });
 });
 
+// ── Homonym disambiguation (audit-1 LOW #5) ──────────────────────────────────
+// Two ports share a folded name with a different LOCODE/country:
+//   Cartagena → ESCAR (ES, Mediterranean, first-wins) vs COCTG (CO)
+//   Tripoli   → LBKYE (LB, Eastern Med, first-wins)   vs LYTIP (LY)
+// An OPTIONAL context hint (counterpart port coords/country, or explicit country)
+// breaks the tie. With NO hint the behavior MUST stay exactly first-wins.
+describe('resolvePort — homonym disambiguation via context hint', () => {
+  it('Cartagena with NO hint → unchanged first-wins (ESCAR / Spain)', () => {
+    const r = resolvePort('Cartagena');
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('ESCAR');
+    expect(r!.country).toBe('ES');
+  });
+
+  it('Cartagena with a South-American counterpart → COCTG (Colombia)', () => {
+    // Santos, Brazil (-23.96, -46.30) — Colombian Cartagena is far nearer.
+    const r = resolvePort('Cartagena', { counterpart: { lat: -23.96, lon: -46.3 } });
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('COCTG');
+    expect(r!.country).toBe('CO');
+  });
+
+  it('Cartagena with a Mediterranean counterpart → ESCAR (Spain)', () => {
+    // Genoa, Italy (44.4, 8.9) — Spanish Cartagena is far nearer.
+    const r = resolvePort('Cartagena', { counterpart: { lat: 44.4, lon: 8.9 } });
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('ESCAR');
+    expect(r!.country).toBe('ES');
+  });
+
+  it('Cartagena with an explicit country hint {country:"CO"} → COCTG', () => {
+    const r = resolvePort('Cartagena', { country: 'CO' });
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('COCTG');
+  });
+
+  it('Cartagena with a resolved counterpart port object → uses its coords', () => {
+    const santos = resolvePort('Santos');
+    expect(santos).not.toBeNull();
+    const r = resolvePort('Cartagena', { counterpart: santos });
+    expect(r!.portCode).toBe('COCTG');
+  });
+
+  it('Tripoli with a Lebanon-side counterpart → LBKYE (Lebanon)', () => {
+    // Near Beirut (33.9, 35.5).
+    const r = resolvePort('Tripoli', { counterpart: { lat: 33.9, lon: 35.5 } });
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('LBKYE');
+    expect(r!.country).toBe('LB');
+  });
+
+  it('Tripoli with a Libya-side counterpart → LYTIP (Libya)', () => {
+    // Central/western Med, near Tunisia (37.0, 10.0).
+    const r = resolvePort('Tripoli', { counterpart: { lat: 37.0, lon: 10.0 } });
+    expect(r).not.toBeNull();
+    expect(r!.portCode).toBe('LYTIP');
+    expect(r!.country).toBe('LY');
+  });
+
+  it('Tripoli with NO hint → unchanged first-wins (LBKYE / Lebanon)', () => {
+    const r = resolvePort('Tripoli');
+    expect(r!.portCode).toBe('LBKYE');
+  });
+
+  it('non-homonym port (Rotterdam) is unaffected by a context hint', () => {
+    const withCtx = resolvePort('Rotterdam', { counterpart: { lat: -23.96, lon: -46.3 } });
+    const without = resolvePort('Rotterdam');
+    expect(withCtx!.portCode).toBe(without!.portCode);
+    expect(withCtx!.portCode).toBe('NLRTM');
+  });
+
+  it('homonym with an empty/uninformative context falls back to first-wins', () => {
+    const r = resolvePort('Cartagena', { counterpart: { lat: null, lon: null } });
+    expect(r!.portCode).toBe('ESCAR');
+  });
+});
+
 describe('resolvePort — diacritic folding (Gate5 #4: re-parsed ports carry native diacritics)', () => {
   // Re-parsed demo ports arrive with native diacritics ("Constanța", "Aliağa")
   // that the ASCII port-master entries ("Constanta", "Aliaga") never matched →

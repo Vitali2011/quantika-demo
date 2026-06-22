@@ -29,11 +29,11 @@ beforeAll(() => {
       UNIQUE(port_unlocode, fuel_grade, price_date)
     );
     -- Seed all 5 standard bunker hubs
-    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('AEFJR', 'VLSFO', 880, '2026-05-09', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('USHOU', 'VLSFO', 806, '2026-05-09', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 791, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 771, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('SGSIN', 'VLSFO', 801, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('AEFJR', 'VLSFO', 880, date('now','-2 day'), 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('USHOU', 'VLSFO', 806, date('now','-2 day'), 'seed', datetime('now'));
   `);
 });
 

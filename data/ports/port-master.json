@@ -1427,7 +1427,10 @@
     "sourceNote": "Port de Barcelona",
     "craneSWL": 50,
     "craneType": "gantry",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "WPI-2025",
+    "aliases": [
+      "Port of Barcelona"
+    ]
   },
   {
     "unlocode": "ESTAR",
@@ -2216,7 +2219,11 @@
     "sourceNote": "Port authority web",
     "craneSWL": 25,
     "craneType": "mobile",
-    "craneDataAsOf": "WPI-2025"
+    "craneDataAsOf": "WPI-2025",
+    "aliases": [
+      "Malta Marsaxlokk",
+      "Malta Freeport"
+    ]
   },
   {
     "unlocode": "SIKOP",
@@ -2832,7 +2839,11 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "medium",
-    "sourceNote": "Lloyd's Port Handbk"
+    "sourceNote": "Lloyd's Port Handbk",
+    "aliases": [
+      "Port of Misurata",
+      "Misrata"
+    ]
   },
   {
     "unlocode": "DZALG",
@@ -4008,7 +4019,7 @@
   },
   {
     "unlocode": "AEDXB",
-    "name": "Jebel Ali",
+    "name": "Port Rashid",
     "country": "AE",
     "lat": 25.25,
     "lon": 55.267,
@@ -4026,8 +4037,9 @@
     "tidal": false,
     "icePort": false,
     "dataConfidence": "high",
-    "sourceNote": "DP World Jebel Ali",
+    "sourceNote": "Port Rashid, Dubai (AEDXB) — distinct port from Jebel Ali (AEJEA). port_da/port-master reconciliation.",
     "aliases": [
+      "Port Rashid Dubai",
       "Dubai",
       "Dubai Port",
       "Port of Dubai"
@@ -10858,5 +10870,192 @@
     ],
     "dataConfidence": "low",
     "sourceNote": "public port handbook / approximate coords \u2014 backfill follow-up (#fix-port-names)"
+  },
+  {
+    "unlocode": "AEJEA",
+    "name": "Jebel Ali",
+    "country": "AE",
+    "lat": 25.0046,
+    "lon": 55.0626,
+    "maxDraftM": 17,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 400,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general",
+      "RORO",
+      "tanker"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "high",
+    "sourceNote": "DP World Jebel Ali (AEJEA) \u2014 distinct from Port Rashid (AEDXB).. port_da/port-master reconciliation",
+    "aliases": [
+      "Jebel Ali Port"
+    ]
+  },
+  {
+    "unlocode": "AEKHL",
+    "name": "Khalifa Port",
+    "country": "AE",
+    "lat": 24.833,
+    "lon": 54.667,
+    "maxDraftM": 18,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 400,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "medium",
+    "sourceNote": "Abu Dhabi Ports / Khalifa Port (AEKHL).. port_da/port-master reconciliation",
+    "aliases": [
+      "Khalifa Port Abu Dhabi"
+    ]
+  },
+  {
+    "unlocode": "CGPNR",
+    "name": "Pointe-Noire",
+    "country": "CG",
+    "lat": -4.786,
+    "lon": 11.833,
+    "maxDraftM": 15,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 300,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "medium",
+    "sourceNote": "Port Autonome de Pointe-Noire (CGPNR).. port_da/port-master reconciliation",
+    "aliases": [
+      "Port of Pointe-Noire"
+    ]
+  },
+  {
+    "unlocode": "JOAQJ",
+    "name": "Aqaba",
+    "country": "JO",
+    "lat": 29.5167,
+    "lon": 35.0,
+    "maxDraftM": 13,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 300,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "medium",
+    "sourceNote": "Aqaba Container Terminal / Port of Aqaba (JOAQJ).. port_da/port-master reconciliation",
+    "aliases": [
+      "Port of Aqaba"
+    ]
+  },
+  {
+    "unlocode": "JOAQB",
+    "name": "Aqaba (alt code)",
+    "country": "JO",
+    "lat": 29.5167,
+    "lon": 35.0,
+    "maxDraftM": 13,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 300,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "low",
+    "sourceNote": "Alternate UN/LOCODE for Aqaba, Jordan (canonical JOAQJ). Kept for. port_da/port-master reconciliation"
+  },
+  {
+    "unlocode": "NAWVB",
+    "name": "Walvis Bay",
+    "country": "NA",
+    "lat": -22.94,
+    "lon": 14.502,
+    "maxDraftM": 14,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 300,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "medium",
+    "sourceNote": "Namport / Port of Walvis Bay (NAWVB).. port_da/port-master reconciliation",
+    "aliases": [
+      "Port of Walvis Bay"
+    ]
+  },
+  {
+    "unlocode": "NGTIN",
+    "name": "Tin Can Island",
+    "country": "NG",
+    "lat": 6.433,
+    "lon": 3.35,
+    "maxDraftM": 12,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 250,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general",
+      "RORO"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "medium",
+    "sourceNote": "Nigerian Ports Authority / Tincan Island Port Complex (NGTIN).. port_da/port-master reconciliation",
+    "aliases": [
+      "Tincan Island",
+      "Tin Can Island Port"
+    ]
+  },
+  {
+    "unlocode": "SADAM",
+    "name": "King Abdul Aziz Port Dammam",
+    "country": "SA",
+    "lat": 26.489,
+    "lon": 50.201,
+    "maxDraftM": 16,
+    "hasShoreCranes": true,
+    "berthType": "deep-sea",
+    "maxLOA": 366,
+    "cargoBerthTypes": [
+      "container",
+      "bulk",
+      "general"
+    ],
+    "tidal": false,
+    "icePort": false,
+    "dataConfidence": "medium",
+    "sourceNote": "Saudi Ports Authority (Mawani) / King Abdulaziz Port, Dammam (SADAM).. port_da/port-master reconciliation",
+    "aliases": [
+      "Dammam",
+      "King Abdulaziz Port",
+      "Dammam Port"
+    ]
   }
 ]

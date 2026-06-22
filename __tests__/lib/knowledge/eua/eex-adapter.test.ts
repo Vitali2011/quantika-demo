@@ -19,6 +19,65 @@ function loadFixture(name: string): Buffer {
   return readFileSync(join(FIXTURES_DIR, name));
 }
 
+// Build a minimal "stored" (uncompressed) ZIP with the two entries parseEexXlsx
+// reads, so range-guard behaviour can be exercised with an arbitrary price.
+function storedZip(entries: { name: string; data: Buffer }[]): Buffer {
+  const locals: Buffer[] = [];
+  const centrals: Buffer[] = [];
+  let offset = 0;
+  for (const e of entries) {
+    const nameBuf = Buffer.from(e.name, 'utf8');
+    const lh = Buffer.alloc(30);
+    lh.writeUInt32LE(0x04034b50, 0);
+    lh.writeUInt16LE(20, 4);
+    lh.writeUInt16LE(0, 8); // stored
+    lh.writeUInt32LE(0, 14); // crc (ignored for stored by parser)
+    lh.writeUInt32LE(e.data.length, 18);
+    lh.writeUInt32LE(e.data.length, 22);
+    lh.writeUInt16LE(nameBuf.length, 26);
+    const local = Buffer.concat([lh, nameBuf, e.data]);
+
+    const ch = Buffer.alloc(46);
+    ch.writeUInt32LE(0x02014b50, 0);
+    ch.writeUInt16LE(20, 6);
+    ch.writeUInt16LE(0, 10); // stored
+    ch.writeUInt32LE(0, 16); // crc
+    ch.writeUInt32LE(e.data.length, 20);
+    ch.writeUInt32LE(e.data.length, 24);
+    ch.writeUInt16LE(nameBuf.length, 28);
+    ch.writeUInt32LE(offset, 42);
+    centrals.push(Buffer.concat([ch, nameBuf]));
+
+    locals.push(local);
+    offset += local.length;
+  }
+  const cd = Buffer.concat(centrals);
+  const cdOffset = offset;
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(cd.length, 12);
+  eocd.writeUInt32LE(cdOffset, 16);
+  return Buffer.concat([...locals, cd, eocd]);
+}
+
+// XLSX with a single EU CAP3 auction row at `price` on serial 46030 (2026-01-08).
+function makeEexXlsx(price: number): Buffer {
+  const ss =
+    '<sst><si><t>Date</t></si><si><t>Auction Name</t></si>' +
+    '<si><t>Auction Price</t></si><si><t>CAP3 EU Auction</t></si></sst>';
+  const sheet =
+    '<worksheet><sheetData>' +
+    '<row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c></row>' +
+    `<row r="2"><c r="A2"><v>46030</v></c><c r="B2" t="s"><v>3</v></c><c r="C2"><v>${price}</v></c></row>` +
+    '</sheetData></worksheet>';
+  return storedZip([
+    { name: 'xl/worksheets/sheet1.xml', data: Buffer.from(sheet, 'utf8') },
+    { name: 'xl/sharedStrings.xml', data: Buffer.from(ss, 'utf8') },
+  ]);
+}
+
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
   db.pragma('foreign_keys = ON');
@@ -176,6 +235,34 @@ describe('eex-adapter — refreshEex', () => {
     const result = await refreshEex(db, fetcher);
     expect(result).toBeNull();
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[EEX]'), expect.any(String));
+    warnSpy.mockRestore();
+  });
+
+  it('sanity-check: hand-built XLSX parses (in-range price written)', async () => {
+    const fetcher = jest.fn().mockResolvedValue(makeEexXlsx(72));
+    const result = await refreshEex(db, fetcher);
+    expect(result).not.toBeNull();
+    expect(result!.price).toBe(72);
+    const row = db.prepare("SELECT * FROM eua_prices WHERE source='eex-auction'").get() as any;
+    expect(row.price_eur_per_tco2).toBeCloseTo(72, 2);
+  });
+
+  it('returns null + warns on out-of-range high price, writes nothing', async () => {
+    const fetcher = jest.fn().mockResolvedValue(makeEexXlsx(9999));
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = await refreshEex(db, fetcher);
+    expect(result).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('out of range'));
+    const row = db.prepare("SELECT * FROM eua_prices WHERE source='eex-auction'").get();
+    expect(row).toBeUndefined();
+    warnSpy.mockRestore();
+  });
+
+  it('returns null on out-of-range low price', async () => {
+    const fetcher = jest.fn().mockResolvedValue(makeEexXlsx(3));
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = await refreshEex(db, fetcher);
+    expect(result).toBeNull();
     warnSpy.mockRestore();
   });
 

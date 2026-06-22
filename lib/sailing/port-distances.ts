@@ -1446,6 +1446,41 @@ function centroidFallbackDistance(
   const cb = endpointCoords(to, getPortMaster);
   if (!ca || !cb) return null;
   if (!ca.viaCentroid && !cb.viaCentroid) return null; // both real → direct already decided
+
+  // Two vague regions that resolve to ~the same centroid (e.g. "Continent"↔"ARA",
+  // or coarse sea-region pairs whose centroids nearly coincide) would otherwise
+  // searoute to ~0nm — a meaningless, falsely-precise distance that renders a
+  // broken $0 TCE on the board. When BOTH endpoints are centroids sitting within
+  // ~50nm of each other the pair is effectively intra-region: report unknown, not
+  // a fake zero. No two DISTINCT curated centroids fall within 50nm, so this never
+  // false-nulls a genuinely separated pair (e.g. East↔West Med ≈ 1000nm). (#1074 residual)
+  if (
+    ca.viaCentroid &&
+    cb.viaCentroid &&
+    haversineDistanceNm(ca.lat, ca.lon, cb.lat, cb.lon) < 50
+  ) {
+    return null;
+  }
+
+  // Tier 3 FIRST: the centroids are real lat/lon, so the SAME canal/strait-aware
+  // searoute used for real ports applies — a straight haversine chord between two
+  // region centroids cuts through land (Sahara, Asian landmass) and systematically
+  // under-reports ballast distance (→ wrong TCE). exact:false because the endpoints
+  // themselves are approximate regions, not surveyed ports.
+  if (process.env.DISTANCE_USE_SEAROUTE_LIVE !== 'false') {
+    const liveFn = getLiveSearouteFn();
+    if (liveFn) {
+      try {
+        const live = liveFn({ lat: ca.lat, lon: ca.lon }, { lat: cb.lat, lon: cb.lon });
+        if (live != null) return { nm: live.nm, exact: false };
+      } catch {
+        // fall through to the haversine safety net below
+      }
+    }
+  }
+
+  // Tier 4 safety net: haversine great-circle when searoute is unavailable, returns
+  // null (unroutable centroid), or throws. Approximate by construction.
   return { nm: haversineDistanceNm(ca.lat, ca.lon, cb.lat, cb.lon), exact: false };
 }
 

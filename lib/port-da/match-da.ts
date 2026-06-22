@@ -53,13 +53,18 @@ export function sumMatchPortDaUsd(
   let total = 0;
   let confidence: PortDaBreakdown['confidence'] = 'verified';
   let anyResolved = false;
-  for (const name of portNames) {
+  // Pre-resolve each name (no context) so a sibling can act as the homonym
+  // counterpart — a bare "Cartagena" then resolves to the basin of the other leg.
+  const rawResolved = portNames.map((n) => (n ? resolvePort(n) : null));
+  for (let i = 0; i < portNames.length; i++) {
+    const name = portNames[i];
     if (!name) continue;
     try {
+      const counterpart = rawResolved.find((r, j) => j !== i && r) ?? null;
       // Exact match first; fall back to vague-descriptor resolution (ARA, "European
       // Continent", etc.) exactly as resolvePortOrPassthrough does in the detail route,
       // so the LIST path no longer silently drops discharge DA for range descriptors.
-      const resolved = resolvePort(name) ?? resolveVaguePort(name);
+      const resolved = resolvePort(name, { counterpart }) ?? resolveVaguePort(name);
       if (!resolved) continue;
       // Pass cargoType=undefined → getPortDa resolves to 'general' (the only seed
       // cargo type).  This mirrors resolveDaUsd in the detail route and guarantees

@@ -9,6 +9,12 @@ import { calculateWarRiskPremium } from '@/lib/economics/war-risk';
 import { estimateVesselValueUsd } from '@/lib/economics/vessel-value';
 import { normalizeVesselCapacityToCbm } from '@/lib/parsing/vessel-capacity-units';
 import { summarizeCommissions } from '@/lib/commission';
+import { cfValue } from '@/lib/types';
+import { computeStoredMatchEconomics } from '@/lib/matching/stored-match-economics';
+import { resolveRecommendedBunkerPort } from '@/lib/economics/bunker-routing';
+import { estimateVoyageDays } from '@/lib/economics/voyage-days';
+import { parseLeadingNumber, parseConsumption } from '@/lib/matching/tce-calculator';
+import { getPortDistance } from '@/lib/sailing/port-distances';
 import type {
   Email, Classification, ParsedCargo, ParsedVessel, ParsedFixtureRecap, Match, ScoreBreakdown, SessionData,
 } from '@/lib/types';
@@ -179,7 +185,20 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     `SELECT ${selectCols} FROM matches WHERE user_id = '__demo_insufficient__'`,
   ).all() as MatchRow[];
 
-  function rowsToMatches(rows: MatchRow[]): Match[] {
+  // Keyed by emailId|itemIndex so a bucket row can find its seeded cargo/vessel
+  // and recompute economics the same way the board does (see below).
+  const cargoByKey = new Map(dedupedCargos.map((c) => [`${c.emailId}|${c.itemIndex}`, c]));
+  const vesselByKey = new Map(dedupedVessels.map((v) => [`${v.emailId}|${v.itemIndex}`, v]));
+
+  // liveRecompute: run the expensive resolveRecommendedBunkerPort +
+  // computeStoredMatchEconomics ONLY for the realism-bucket rows whose economics
+  // is read by session-buckets.ts (toBucketRows reads m.economics.tceUsdPerDay).
+  // The main shortlist (matchRows) is handed to persist-session-matches.ts, which
+  // ALWAYS recomputes economics itself (ignores m.economics) — so recomputing it
+  // here too would be O(N_main) wasted work on every demo login (audit-1 LOW 8
+  // perf follow-up to #1079). Main rows keep the cheap seedEconomics; correctness
+  // is unchanged because persist-session-matches overwrites it deterministically.
+  function rowsToMatches(rows: MatchRow[], liveRecompute: boolean): Match[] {
     return rows.map((r) => {
       const tce = r.tce_usd_per_day;
       // #883: compute demo war-risk from seeded ports + dwt, mirroring the live
@@ -197,7 +216,7 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
       // Also carry the seed freight pair (QA FINDING-002): toBucketRows reads
       // the economics triple, so a tce-only object would render canonical TCE
       // with a NULL rate/source → "≈ Estimate" badge over a canonical value.
-      const economics: import('@/lib/types').EconomicsResult | undefined =
+      const seedEconomics: import('@/lib/types').EconomicsResult | undefined =
         tce != null && Number.isFinite(tce)
           ? {
               breakdown: {
@@ -216,6 +235,32 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
               freightRateSource: r.freight_rate_source ?? undefined,
             }
           : undefined;
+      // audit-1 LOW 8: the bucket tabs render m.economics.tceUsdPerDay (via
+      // toBucketRows), but the seed column is a regen-time snapshot. The board /
+      // shortlist path recomputes economics LIVE on every render
+      // (persist-session-matches.ts 86-98: resolveRecommendedBunkerPort +
+      // computeStoredMatchEconomics), so the SAME pair drifts to a different TCE
+      // across tabs when bunker prices move. Recompute here with the SAME helper +
+      // inputs so bucket TCE == board TCE. Falls back to seedEconomics when the
+      // seeded cargo/vessel lacks resolvable ports (e.g. ports only on the match
+      // row — the #883 war-risk path), keeping that behaviour intact.
+      const cargo = cargoByKey.get(`${r.cargo_id}|${r.cargo_item_index ?? 0}`);
+      const vessel = vesselByKey.get(`${r.vessel_id}|${r.vessel_item_index ?? 0}`);
+      let economics = seedEconomics;
+      if (liveRecompute && cargo && vessel) {
+        const loadPort = cfValue(cargo.originPort);
+        const dischargePort = cfValue(cargo.destinationPort);
+        const distance = loadPort && dischargePort ? getPortDistance(loadPort, dischargePort) : null;
+        const recoSpeed = parseLeadingNumber(vessel.speedLaden) || 0;
+        const reco = resolveRecommendedBunkerPort(db, loadPort, dischargePort, 'VLSFO', {
+          dwt: cfValue(vessel.dwtSummer) ?? 0,
+          speedKn: recoSpeed,
+          consMtPerDay: parseConsumption(vessel.consumption, 0),
+          voyageDays: estimateVoyageDays(distance?.nm ?? null, recoSpeed),
+        });
+        const live = computeStoredMatchEconomics({ cargo, vessel, db, bunkerPriceUsdPerMt: reco.priceUsdPerMt });
+        if (live.economics) economics = live.economics;
+      }
       return {
         cargoEmailId: r.cargo_id,
         cargoItemIndex: r.cargo_item_index ?? 0,
@@ -234,9 +279,11 @@ export function buildDemoSessionBlob(db: Database.Database): DemoBlob {
     });
   }
 
-  const matches = rowsToMatches(matchRows);
-  const lowConfidenceMatches = rowsToMatches(reviewRows);
-  const insufficientData = rowsToMatches(insufficientRows);
+  // Main shortlist: persist-session-matches recomputes economics — skip live recompute here.
+  const matches = rowsToMatches(matchRows, false);
+  // Bucket rows: session-buckets reads m.economics — recompute live for board parity.
+  const lowConfidenceMatches = rowsToMatches(reviewRows, true);
+  const insufficientData = rowsToMatches(insufficientRows, true);
 
   const processedEmails = buildProcessedEmails(emails, classifications, dedupedCargos, dedupedVessels);
 

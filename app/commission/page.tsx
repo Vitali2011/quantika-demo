@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSession } from '@/lib/session';
 import { formatNumber } from '@/lib/utils';
+import { currencySymbol } from '@/lib/currency';
 import { Card } from '@/design-system/primitives';
 import { ChevronLeft, AlertTriangle } from 'lucide-react';
 
@@ -60,7 +61,7 @@ export default async function CommissionPage() {
                       {commissionSummary.totalByCurrency.map((t, i) => (
                         <span key={i}>
                           {i > 0 ? ' + ' : ''}
-                          ~{t.currency === 'EUR' ? '€' : '$'}{formatNumber(t.amount)}
+                          ~{currencySymbol(t.currency)}{formatNumber(t.amount)}
                         </span>
                       ))}
                     </span>

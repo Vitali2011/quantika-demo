@@ -35,4 +35,24 @@ describe('isIgClub', () => {
     expect(isIgClub('')).toBe(false);
     expect(isIgClub('Some Maritime Club')).toBe(false);
   });
+
+  it('matches IG club name variants with a leading "The "', () => {
+    // Real-world false-negative: "The North of England" is a legit IG club
+    // name variant but startsWith('north') never fires because of the prefix.
+    expect(isIgClub('The North of England')).toBe(true);
+    expect(isIgClub('The North of England P&I')).toBe(true);
+    expect(isIgClub('The Standard Club')).toBe(true);
+    expect(isIgClub('The West of England')).toBe(true);
+    expect(isIgClub('The Swedish Club')).toBe(true);
+    expect(isIgClub('The Britannia')).toBe(true);
+  });
+
+  it('does NOT match non-IG names that merely share a prefix (no false-positives)', () => {
+    // startsWith over-matched these: "standard"→Standard, "north"→North, "west"→West.
+    expect(isIgClub('Standard Chartered Bank')).toBe(false);
+    expect(isIgClub('Northern Trust')).toBe(false);
+    expect(isIgClub('Western Union')).toBe(false);
+    expect(isIgClub('London Stock Exchange')).toBe(false);
+    expect(isIgClub('American Express')).toBe(false);
+  });
 });

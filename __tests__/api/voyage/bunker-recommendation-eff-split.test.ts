@@ -38,11 +38,13 @@ beforeAll(() => {
       fetched_at         TEXT NOT NULL
     );
     -- CYLMS: cheapest raw price but EU ETS carbon cost applies (CY prefix = Cyprus = EU)
-    INSERT INTO bunker_prices VALUES ('CYLMS', 'VLSFO', 595, '2026-06-02', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('CYLMS', 'VLSFO', 595, date('now','-2 day'), 'seed', datetime('now'));
     -- ESCEU: higher raw price but NON_EU_ETS_OVERRIDE → no carbon → lower effective $/MT
-    INSERT INTO bunker_prices VALUES ('ESCEU', 'VLSFO', 609, '2026-06-02', 'seed', datetime('now'));
-    -- EUA at 70 EUR/tCO2 — carbon surcharge on CYLMS ≈ 70*1.08*3.151*500/500 ≈ 238 USD/MT
-    INSERT INTO eua_prices VALUES ('2026-06-02', 70, 'spot', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ESCEU', 'VLSFO', 609, date('now','-2 day'), 'seed', datetime('now'));
+    -- EUA at 70 EUR/tCO2 — carbon surcharge on CYLMS ≈ 70*1.08*3.151*500/500 ≈ 238 USD/MT.
+    -- date('now') keeps it within the 7-day freshness gate (#1069); a hardcoded
+    -- past date would go stale vs the CI clock and null the lookup → no carbon.
+    INSERT INTO eua_prices VALUES (date('now'), 70, 'spot', 'seed', datetime('now'));
   `);
 });
 

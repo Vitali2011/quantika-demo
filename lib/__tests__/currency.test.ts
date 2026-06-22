@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-import { convertCurrency, formatCurrencyAmount, clearCurrencyCache } from "../currency";
+import { convertCurrency, formatCurrencyAmount, currencySymbol, clearCurrencyCache } from "../currency";
 import { upsertFxRate } from "../market/fx-rates-repository";
 
 function buildTestDb(): Database.Database {
@@ -199,5 +199,32 @@ describe("formatCurrencyAmount", () => {
 
   it("negative NOK: minus precedes currency prefix", () => {
     expect(formatCurrencyAmount(-500.5, "NOK")).toBe("-NOK 500.50");
+  });
+});
+
+describe("currencySymbol", () => {
+  it("USD maps to dollar sign", () => {
+    expect(currencySymbol("USD")).toBe("$");
+  });
+
+  it("EUR maps to euro sign (NOT the text EUR)", () => {
+    expect(currencySymbol("EUR")).toBe("€");
+  });
+
+  it("GBP maps to pound sign", () => {
+    expect(currencySymbol("GBP")).toBe("£");
+  });
+
+  it("JPY maps to yen sign", () => {
+    expect(currencySymbol("JPY")).toBe("¥");
+  });
+
+  it("NOK maps to kr", () => {
+    expect(currencySymbol("NOK")).toBe("kr");
+  });
+
+  it("unknown currency falls back to the code itself", () => {
+    expect(currencySymbol("AED")).toBe("AED");
+    expect(currencySymbol("ZZZ")).toBe("ZZZ");
   });
 });

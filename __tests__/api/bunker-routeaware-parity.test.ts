@@ -28,6 +28,17 @@ import { estimateVoyageDays } from '@/lib/economics/voyage-days';
 import { getPortDistance } from '@/lib/sailing/port-distances';
 import type { ParsedCargo, ParsedVessel } from '@/lib/types';
 
+/**
+ * Fresh seed date (2 days old) so prices pass the BUNKER_STALE_DAYS=7 freshness
+ * gate (FIX #15). A hard-coded calendar date would silently age past 7 days and
+ * get excluded, collapsing every on-route candidate to the fallback (cf. #1075).
+ */
+const SEED_DATE = (() => {
+  const d = new Date();
+  d.setDate(d.getDate() - 2);
+  return d.toISOString().slice(0, 10);
+})();
+
 /** DB with bunker_prices (Med hubs cheaper than NLRTM), eua + port_da for economics. */
 function makeDb(): Database.Database {
   const db = new Database(':memory:');
@@ -42,15 +53,15 @@ function makeDb(): Database.Database {
       UNIQUE(port_unlocode, fuel_grade, price_date)
     );
     -- Med + Black Sea hubs (on-route for Black-Sea → UK), all CHEAPER than NLRTM
-    INSERT INTO bunker_prices VALUES ('ESCEU', 'VLSFO', 720, '2026-06-10', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 745, '2026-06-10', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('ESALG', 'VLSFO', 748, '2026-06-10', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('GRPIR', 'VLSFO', 760, '2026-06-10', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('ROCND', 'VLSFO', 770, '2026-06-10', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('ITAUG', 'VLSFO', 758, '2026-06-10', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ESCEU', 'VLSFO', 720, '${SEED_DATE}', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GIGIB', 'VLSFO', 745, '${SEED_DATE}', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ESALG', 'VLSFO', 748, '${SEED_DATE}', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('GRPIR', 'VLSFO', 760, '${SEED_DATE}', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ROCND', 'VLSFO', 770, '${SEED_DATE}', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('ITAUG', 'VLSFO', 758, '${SEED_DATE}', 'seed', datetime('now'));
     -- NW Europe hubs
-    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 800, '2026-06-10', 'seed', datetime('now'));
-    INSERT INTO bunker_prices VALUES ('BEANR', 'VLSFO', 815, '2026-06-10', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('NLRTM', 'VLSFO', 800, '${SEED_DATE}', 'seed', datetime('now'));
+    INSERT INTO bunker_prices VALUES ('BEANR', 'VLSFO', 815, '${SEED_DATE}', 'seed', datetime('now'));
 
     CREATE TABLE eua_prices (
       contract_type     TEXT,
@@ -58,7 +69,7 @@ function makeDb(): Database.Database {
       price_date        TEXT,
       source            TEXT DEFAULT 'test'
     );
-    INSERT INTO eua_prices (contract_type, price_eur_per_tco2, price_date) VALUES ('spot', 77, '2026-06-10');
+    INSERT INTO eua_prices (contract_type, price_eur_per_tco2, price_date) VALUES ('spot', 77, '${SEED_DATE}');
 
     CREATE TABLE port_da_estimates (
       port_code TEXT, vessel_dwt_min INTEGER, vessel_dwt_max INTEGER,
