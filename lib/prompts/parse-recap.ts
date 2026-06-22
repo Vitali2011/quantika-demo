@@ -24,6 +24,21 @@ NULL FIELD RULE: When information is absent, set the field to null (plain JSON n
 vessel_yob NULL RULE: vessel_yob must be null (not 0) when the build year is not stated in the recap. 0 is not a valid year-of-build.
   ✗ vessel_yob: 0
   ✓ vessel_yob: null
+<european_decimal_rule>
+This applies to every numeric field: vessel_dwt, cargo_quantity_min,
+cargo_quantity_max, freight_rate, demurrage_rate, despatch_rate, loading_rate,
+discharging_rate, and any other numeric value.
+
+When a number uses a dot as a thousands separator followed by exactly three digits
+(pattern X.YYY or X.YYY.ZZZ), the dot is a thousands separator, not a decimal point:
+  "3.858 TON"    -> 3858      (not 3.858)
+  "22.500 USD"   -> 22500     (not 22.5)
+  "1.500.000 kg" -> 1500000
+A comma is the decimal mark in this notation ("3,5" -> 3.5).
+
+The vessel_dwt note in the field definitions below is one instance of this rule;
+this general version takes precedence and covers all numeric fields.
+</european_decimal_rule>
 
 freight_payment ANTI-FABRICATION: extract freight_payment ONLY from verbatim text in the email. NEVER fabricate percentage splits, payment schedules, or split-payment structures that are not written in the email.
   ✗ freight_payment = "90% on signing B/L, 10% on delivery" (not in email) → correct: null or verbatim text

@@ -33,3 +33,28 @@ describe('FIXTURE_RECAP_PARSER_PROMPT — role-noun guard (FM-13)', () => {
     expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/ACCOUNT vs CHARTERERS vs BROKER/);
   });
 });
+
+describe('FIXTURE_RECAP_PARSER_PROMPT — European-decimal all-fields (FM-10)', () => {
+  it('wraps the European-decimal rule in an XML tag', () => {
+    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/<european_decimal_rule>/);
+    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/<\/european_decimal_rule>/);
+  });
+
+  it('applies the rule to freight_rate, demurrage_rate, and cargo quantities (not just vessel_dwt)', () => {
+    const block = FIXTURE_RECAP_PARSER_PROMPT
+      .split('<european_decimal_rule>')[1]
+      .split('</european_decimal_rule>')[0];
+    expect(block).toMatch(/freight_rate/);
+    expect(block).toMatch(/demurrage_rate/);
+    expect(block).toMatch(/cargo_quantity_min/);
+  });
+
+  it('includes the 3.858 -> 3858 and 22.500 -> 22500 worked examples', () => {
+    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/3\.858.*3858/s);
+    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/22\.500.*22500/s);
+  });
+
+  it('keeps the existing vessel_dwt-scoped European-decimal note intact', () => {
+    expect(FIXTURE_RECAP_PARSER_PROMPT).toMatch(/vessel_dwt = 3858/);
+  });
+});
