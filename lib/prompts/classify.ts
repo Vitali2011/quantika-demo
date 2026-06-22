@@ -99,6 +99,15 @@ Also determine:
 
 SUBJECT/BODY DATE CONFLICT CHECK: If the email subject line contains a year (e.g. "8-12 JUN 2025" or "LAY 20-30 MAY 2025") and the email body contains a different year for the same date field (e.g. body says "LAYCAN DELIVERY: 20/30 May 2026"), this is a potential typo or stale subject. Lower confidence to reflect this ambiguity (e.g. 0.85 instead of 0.98). Note: category classification itself is usually unaffected by a year typo, but urgency calculation must use the BODY DATE as authoritative since the body contains the operator's intent.
 
+<truncation_awareness>
+The body_preview may end with "[truncated]" when the original email was longer than
+the preview budget. When you see "[truncated]":
+  - Classify from the visible content; do not default to OTHER because text is missing.
+  - If the visible content already identifies a category (vessel specs, cargo
+    tonnage, recap terms), use that category and lower confidence by about 0.05.
+  - Do not lower urgency on account of truncation alone.
+</truncation_awareness>
+
 You will receive an array of emails. Return a JSON object.
 
 Input format per email: { id, subject, from, date, body_preview }
