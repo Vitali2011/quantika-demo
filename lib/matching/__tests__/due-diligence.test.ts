@@ -137,7 +137,7 @@ describe('buildDueDiligence', () => {
     expect(m.categories).toHaveLength(5);
   });
 
-  it('honesty: Воздушный габарит / RightShip / KYC are permanent gap rows — always inactive', () => {
+  it('honesty: Air draught clearance / RightShip / KYC are permanent gap rows — always inactive', () => {
     const m = buildDueDiligence(fullArgs());
     for (const label of ['Air draught clearance', 'RightShip score', 'Charterer KYC']) {
       const row = byLabel(m, label);
@@ -145,7 +145,7 @@ describe('buildDueDiligence', () => {
       expect(row?.state).toBe('inactive');
     }
     // LOA is inactive in this fixture because vessel.loa is null — not because it's unimplemented.
-    // LOA behaviour is tested in the 'LOA берth row' describe block.
+    // LOA behaviour is tested in the 'LOA berth row' describe block.
   });
 
   it('counter: ran = pass + caution + info, excludes inactive', () => {
@@ -223,7 +223,7 @@ describe('buildDueDiligence', () => {
     expect(byLabel(m, 'TCE vs breakeven')?.state).toBe('inactive');
   });
 
-  it('freight estimate source → caution «оценка»', () => {
+  it('freight estimate source → caution (estimate)', () => {
     const m = buildDueDiligence(fullArgs({ freightRateSource: 'baltic', consumptionEstimated: true }));
     const fr = byLabel(m, 'Freight vs Baltic');
     expect(fr?.state).toBe('caution');
@@ -232,7 +232,7 @@ describe('buildDueDiligence', () => {
   });
 });
 
-// ── LOA-под-причал berth gate (Task #8) ──────────────────────────────────────
+// ── LOA vs berth gate (Task #8) ──────────────────────────────────────────────
 
 describe('buildDueDiligence — LOA berth row', () => {
   it('active PASS: vessel LOA within restrictive port berth max', () => {
@@ -258,7 +258,7 @@ describe('buildDueDiligence — LOA berth row', () => {
     expect(row?.evidence).toMatch(/LOA/i);
   });
 
-  it('honesty: vessel LOA absent → inactive «нет данных в письме», never fake-pass', () => {
+  it('honesty: vessel LOA absent → inactive (no data in fixture), never fake-pass', () => {
     const ws = fullWorksheet(); // no loa on fixture vessel
     ws.cargo = { ...ws.cargo, loadPort: 'Sfax', dischargePort: 'Sfax' };
     const m = buildDueDiligence(fullArgs({ worksheet: ws }));
@@ -267,7 +267,7 @@ describe('buildDueDiligence — LOA berth row', () => {
     expect(row?.evidence).toMatch(/circular/i);
   });
 
-  it('honesty: vessel LOA present but no berth data on the ports → inactive «нет данных по причалу»', () => {
+  it('honesty: vessel LOA present but no berth data on the ports → inactive (no berth data for ports)', () => {
     const ws = fullWorksheet();
     ws.vessel.loa = 150;
     // Odesa has no maxLOA (backfill pending); Alexandria likewise.
@@ -294,7 +294,7 @@ describe('buildDueDiligence — LOA berth row', () => {
   });
 });
 
-// ── detail / source disclosure (demo «Подробнее») ─────────────────────────────
+// ── detail / source disclosure (Details toggle) ───────────────────────────────
 
 describe('buildDueDiligence — detail + source disclosure', () => {
   it('every ACTIVE check carries non-empty detail AND source', () => {
@@ -305,7 +305,7 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     expect(missing).toEqual([]);
   });
 
-  it('permanent gap rows (Воздушный габарит / RightShip / KYC) → detail null AND source null', () => {
+  it('permanent gap rows (Air draught clearance / RightShip / KYC) → detail null AND source null', () => {
     const m = buildDueDiligence(fullArgs());
     for (const label of ['Air draught clearance', 'RightShip score', 'Charterer KYC']) {
       const row = byLabel(m, label);
@@ -315,7 +315,7 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     }
   });
 
-  it('founder honesty: null lastCargoes → hold-cleanliness inactive BUT keeps detail + «уточнить» evidence (never fake-pass)', () => {
+  it('founder honesty: null lastCargoes → hold-cleanliness inactive BUT keeps detail + confirm evidence (never fake-pass)', () => {
     const vessel = { ...fullVessel(), lastCargoes: null };
     const m = buildDueDiligence(fullArgs({ vessel }));
     const hold = byLabel(m, 'Hold cleanliness / prior cargo');
@@ -388,7 +388,7 @@ describe('buildDueDiligence — detail + source disclosure', () => {
     expect(row?.derivation?.pass).toBe(true);
   });
 
-  it('draft derivation: null + «нет данных» honesty when DWT/cargo missing (no laden steps possible)', () => {
+  it('draft derivation: null + (no data) honesty when DWT/cargo missing (no laden steps possible)', () => {
     const ws = fullWorksheet();
     ws.vessel.dwtSummer = null;
     ws.hardFilters.draft = { pass: true }; // no stored estimate either
