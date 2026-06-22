@@ -102,6 +102,29 @@ ACCOUNT vs CHARTERERS vs BROKER:
   ACCOUNT NULL RULE: account=null when NONE of these signals are present: "ACCT:", "for account of", "Account [Company]" in header. Purpose phrases are NOT account signals:
   ✗ account = "owners" from "Pls kindly find below recap of agreed terms for owners final confirmation" → WRONG (this is the PURPOSE of the email, not an account designation — "owners" here is a role, not a company)
   ✓ account = null when no explicit account label is present
+<role_noun_guard>
+The words "Charterers", "Owners", "Master", "Broker" appearing inside a clause
+body are roles — the grammatical subject of an obligation — not party names. A CP
+contains many such clauses, so matching a few example phrases is not enough; the
+test is structural.
+
+Worked example — a role-noun resolves to null:
+  Body: "...DEMURRAGE TO BE PAID BY CHARTERERS WITHIN 10 BANKING DAYS..."
+        (no "Charterers:" label anywhere in the body)
+  -> charterers = null   (the word is a role inside a clause, not a disclosed party)
+
+A role-noun (do not use as a party name):
+  "FOR CHARTERERS ACCOUNT"   "AT OWNERS RISK"   "MASTER TO SIGN B/L"
+A party name (safe to use):
+  "Charterers: Acme Shipping Ltd"   "Owners: Varan Ltd"
+
+Set charterers / owners / broker only from a line where the role label is directly
+followed by a company name, e.g. "Charterers: [Company]". For charterers, the
+source_text should contain the "Charterers:" label together with the company name;
+if your only candidate is a clause sentence such as "FOR CHARTERERS ACCOUNT",
+that is a role-noun, so set the field to null. When no labeled line exists, the
+field is null.
+</role_noun_guard>
 - charterers: the party who contracted the vessel charter. Source: explicit "Charterers:" label in the recap body ONLY. Do NOT populate charterers from the "ACCT:" field — that maps to account.
   ✗ charterers = "ETMS" from the email FROM: line (ETMS is the forwarding broker, not the contracting charterer)
   ✓ charterers extracted from explicit "Charterers:" label in the recap body only
