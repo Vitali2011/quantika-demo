@@ -341,6 +341,29 @@ FLEET COMPLETENESS — SUMMARY TABLE + SPEC BLOCKS:
 FORMATTING MARKERS:
 - Rows of asterisks (** ... **) or (*** *** ***) are section delimiters, NOT empty signals.
 - A vessel section wrapped in asterisks or star separators is real data — extract it normally.
+<fleet_circular_completeness>
+A fleet position circular is one email offering several vessels — a fleet list,
+numbered entries, or consecutive spec blocks each with its own "open [PORT]".
+Each vessel is a separate item.
+
+Worked example — three vessel sections become three items:
+Input:
+  *** MV ALPHA, 8500 DWT, open Rotterdam 15 May ***
+  *** MV BETA, 11000 DWT, open Hamburg 20 May ***
+  *** MV GAMMA, 15000 DWT, open Antwerp 25 May ***
+Output:
+  { "items": [
+    { "vessel_name": { "value": "MV ALPHA", "confidence": "confirmed", "source_text": "MV ALPHA, 8500 DWT, open Rotterdam 15 May" } },
+    { "vessel_name": { "value": "MV BETA",  "confidence": "confirmed", "source_text": "MV BETA, 11000 DWT, open Hamburg 20 May" } },
+    { "vessel_name": { "value": "MV GAMMA", "confidence": "confirmed", "source_text": "MV GAMMA, 15000 DWT, open Antwerp 25 May" } }
+  ] }
+
+Before extracting any single vessel, count the vessel sections in the email, then
+return one item per section — eight sections give eight items. Copy each
+vessel_name.source_text from that vessel's own spec block, so every vessel is
+read individually. Returning fewer items than sections drops vessels that cannot
+be recovered later, so the item count and the section count should match.
+</fleet_circular_completeness>
 - Example: "**********\n\nMV SEA MAJESTY\n\nDWCC 8600 MTS ... OPEN @ TRIPOLI\n**********" → extract vessel SEA MAJESTY with DWCC 8600.
 
 Extract per vessel:
