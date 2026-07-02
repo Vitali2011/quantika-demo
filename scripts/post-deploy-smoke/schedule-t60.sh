@@ -11,6 +11,14 @@ PR="${1:?Usage: schedule-t60.sh <pr#> <sha> [base-url]}"
 SHA="${2:?sha required}"
 BASE="${3:-https://demo.quantika.org}"
 
+# PR feeds PRDIR below — reject anything that isn't a plain PR number (or the
+# 'manual' sentinel) BEFORE it touches a path, so "../../../etc" can't escape
+# ROOT and write/read outside the intended per-PR directory.
+if ! [[ "$PR" =~ ^[0-9]+$ || "$PR" == "manual" ]]; then
+  echo "invalid PR, refusing to use in path: $PR" >&2
+  exit 1
+fi
+
 UNIT="quantika-t60-smoke"
 ROOT="$HOME/orchestrator-state/quantika-demo/post-deploy-checks"
 PRDIR="$ROOT/$PR"
