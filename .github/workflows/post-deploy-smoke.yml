@@ -83,6 +83,8 @@ jobs:
               -o StrictHostKeyChecking=accept-new \
               scripts/post-deploy-smoke/smoke.mjs \
               scripts/post-deploy-smoke/run-quantika.sh \
+              scripts/post-deploy-smoke/run-t60.sh \
+              scripts/post-deploy-smoke/schedule-t60.sh \
               root@157.173.124.116:/root/post-deploy-smoke/
 
       - name: Run smoke on dev-vps
@@ -105,6 +107,17 @@ jobs:
               "root@157.173.124.116:orchestrator-state/quantika-demo/post-deploy-checks/$PR/summary.json" \
               ./summary.json 2>/dev/null || echo '{"overall":"ERROR","routes_passed":0,"routes_checked":0}' > summary.json
           exit 0
+
+      - name: Schedule t60 bake window (only on PASS)
+        if: steps.smoke.outputs.rc == '0' && steps.resolve.outputs.pr != 'manual'
+        run: |
+          PR="${{ steps.resolve.outputs.pr }}"
+          SHA="${{ steps.resolve.outputs.sha }}"
+          ssh -i ~/.ssh/dev_vps_key \
+              -o StrictHostKeyChecking=accept-new \
+              -o ConnectTimeout=15 \
+              root@157.173.124.116 \
+              "bash /root/post-deploy-smoke/schedule-t60.sh $PR $SHA"
 
       - name: Upload smoke artifacts
         if: always()
