@@ -35,3 +35,8 @@ teardown() { rm -rf "$TMP"; }
   grep -q "unit=quantika-t60-smoke" "$CALLS"
   grep -q "run-t60.sh 42 ABC123" "$CALLS"
 }
+
+@test "passes HOME through to the transient unit (systemd-run does not inherit it)" {
+  run bash "$SCRIPT" 42 ABC123
+  grep -q "setenv=HOME=$TMP" "$CALLS"
+}
