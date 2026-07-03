@@ -36,10 +36,15 @@ systemctl reset-failed "$UNIT.service" 2>/dev/null || true
 
 # Schedule the delayed run. --on-active=60min => fire 60 min from now, on dev-vps,
 # runner exits immediately (no Actions minutes burned on the wait).
+# systemd-run's transient unit does NOT inherit HOME from this shell (only PATH/USER
+# are set by default) — run-t60.sh derives its output dir from $HOME, so without this
+# --setenv it silently writes summary-t60.json under "/" instead of "$HOME/...",
+# where nothing ever looks for it.
 systemd-run \
   --unit="$UNIT" \
   --collect \
   --on-active=60min \
+  --setenv="HOME=$HOME" \
   --description="quantika-demo post-deploy t60 bake window (PR #$PR, $SHA)" \
   /root/post-deploy-smoke/run-t60.sh "$PR" "$SHA" "$BASE"
 
