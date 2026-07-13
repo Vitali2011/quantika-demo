@@ -68,7 +68,7 @@ jobs:
           echo "Resolved: PR=#$PR SHA=$SHA"
 
       - name: Checkout (for smoke script sync)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup SSH to dev-vps
         run: |
