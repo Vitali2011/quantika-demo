@@ -224,6 +224,22 @@ class ContractCliTest(unittest.TestCase):
             )
             self.assertEqual(json.loads(drift.stdout)["status"], "DRIFT")
 
+            unavailable = self.run_cli(
+                "reconcile",
+                "--service",
+                "quantika-demo",
+                "--main-sha",
+                SHA_A,
+                "--receipt",
+                str(receipt_path.with_name("missing.json")),
+                "--production-sha",
+                "unknown",
+                expected_rc=1,
+            )
+            unavailable_result = json.loads(unavailable.stdout)
+            self.assertEqual(unavailable_result["status"], "DRIFT")
+            self.assertIn("errors", unavailable_result)
+
 
 class WorkflowContractTest(unittest.TestCase):
     def test_one_actor_neutral_dispatcher_and_no_duplicate_trigger(self) -> None:
@@ -235,7 +251,6 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertEqual(dispatchers, ["deploy-dispatch-publish.yml"])
         collector = (WORKFLOWS / "deploy-dispatch.yml").read_text(encoding="utf-8")
         self.assertIn("pull_request_target:", collector)
-        self.assertIn("actions/upload-artifact@v4", collector)
         self.assertNotIn("secrets.", collector)
         publisher = (WORKFLOWS / "deploy-dispatch-publish.yml").read_text(
             encoding="utf-8"
@@ -257,12 +272,37 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("steps.request.outputs.sha", deploy)
         self.assertNotIn("github.sha", deploy)
 
+    def test_dispatch_is_serialized_rerun_safe_and_actions_are_pinned(self) -> None:
+        collector = (WORKFLOWS / "deploy-dispatch.yml").read_text(encoding="utf-8")
+        publisher = (WORKFLOWS / "deploy-dispatch-publish.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("group: deploy-dispatch-collector-quantika-demo", collector)
+        self.assertIn("queue: max", collector)
+        self.assertIn("cancel-in-progress: false", collector)
+        self.assertIn("group: deploy-dispatch-publisher-quantika-demo", publisher)
+        self.assertIn("queue: max", publisher)
+        self.assertIn("cancel-in-progress: false", publisher)
+        self.assertIn("github.event.workflow_run.run_attempt == 1", publisher)
+        self.assertIn("github.run_attempt == 1", publisher)
+
+        for name in (
+            "deploy-dispatch.yml",
+            "deploy-dispatch-publish.yml",
+            "deploy.yml",
+            "deploy-reconcile.yml",
+        ):
+            for line in (WORKFLOWS / name).read_text(encoding="utf-8").splitlines():
+                if "uses:" in line:
+                    reference = line.split("@", 1)[-1].split()[0]
+                    self.assertRegex(reference, r"^[0-9a-f]{40}$", f"{name}: {line}")
+
     def test_receipt_and_reconciliation_workflows_are_closed_and_read_only(
         self,
     ) -> None:
         deploy = (WORKFLOWS / "deploy.yml").read_text(encoding="utf-8")
         self.assertIn("DEPLOY_RECEIPT_SHA", deploy)
-        self.assertIn("actions/upload-artifact@v4", deploy)
+        self.assertIn("actions/upload-artifact@ea165f8d", deploy)
         self.assertIn("deployment-receipt-quantika-demo", deploy)
 
         reconcile = (WORKFLOWS / "deploy-reconcile.yml").read_text(encoding="utf-8")
