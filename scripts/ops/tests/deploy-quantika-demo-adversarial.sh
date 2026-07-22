@@ -41,6 +41,10 @@ mkdir -p "$MOCKBIN"
 
 export CMDLOG="$SANDBOX/cmd.log"
 export MOCK_STATE="$SANDBOX/state"
+export TEST_PREV_SHA="1111111111111111111111111111111111111111"
+export TEST_REQUEST_SHA="2222222222222222222222222222222222222222"
+export TEST_MAIN_SHA="3333333333333333333333333333333333333333"
+export TEST_ROLLBACK_SHA="4444444444444444444444444444444444444444"
 PRISTINE="$SANDBOX/pristine.sh"
 cp "$SCRIPT" "$PRISTINE"
 
@@ -53,15 +57,17 @@ DIR=""
 if [ "$1" = "-C" ]; then DIR="$2"; shift 2; fi
 case "$1" in
   rev-parse)
-    case "$2" in
-      HEAD)        echo "prevsha1111111111111111111111111111111111" ;;
-      origin/main) echo "targetsha22222222222222222222222222222222" ;;
-      *)           echo "othersha333333333333333333333333333333333" ;;
+    case "$*" in
+      *origin/main*) echo "$TEST_MAIN_SHA" ;;
+      *"$TEST_REQUEST_SHA"*) echo "$TEST_REQUEST_SHA" ;;
+      *HEAD*) cat "$MOCK_STATE/current_head" ;;
+      *) echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" ;;
     esac ;;
+  merge-base) exit 0 ;;
   fetch) [ "${GIT_FETCH_FAIL:-0}" = "1" ] && exit 1; exit 0 ;;
   remote) echo "git@example.com:fake/repo.git" ;;
   clone) mkdir -p "$3/.git"; exit 0 ;;
-  reset) exit 0 ;;
+  reset) printf '%s\n' "${*: -1}" > "$MOCK_STATE/current_head"; exit 0 ;;
   show)
     case "${GIT_SHOW_MODE:-fail}" in
       fail)     exit 1 ;;
@@ -158,6 +164,7 @@ setup_dirs() {
   echo "SOME_VAR=1" > "$SANDBOX/repo/.env.local"
   : > "$CMDLOG"
   echo 0 > "$MOCK_STATE/health_count"
+  echo "$TEST_PREV_SHA" > "$MOCK_STATE/current_head"
 }
 
 # run_script <script-path> <arg> [ENV=VAL ...]
@@ -189,7 +196,7 @@ run_deploy() { # <arg> [ENV=VAL...]
 # So after a mid-flip failure either live .next must be restored, or the exit
 # code must be 2 (manual intervention). Neither -> contract violation.
 setup_dirs
-run_deploy somesha FAIL_MV_DEST="$SANDBOX/repo/.next" FAIL_MV_SRC_PREFIX="$SANDBOX/build/"
+run_deploy "$TEST_REQUEST_SHA" FAIL_MV_DEST="$SANDBOX/repo/.next" FAIL_MV_SRC_PREFIX="$SANDBOX/build/"
 
 if [[ -d "$SANDBOX/repo/.next" ]]; then
   pass "A1a: live .next present after mid-flip mv failure (restored)"
@@ -211,7 +218,7 @@ fi
 
 # A1b: .next swap OK, node_modules swap fails.
 setup_dirs
-run_deploy somesha FAIL_MV_DEST="$SANDBOX/repo/node_modules" FAIL_MV_SRC_PREFIX="$SANDBOX/build/"
+run_deploy "$TEST_REQUEST_SHA" FAIL_MV_DEST="$SANDBOX/repo/node_modules" FAIL_MV_SRC_PREFIX="$SANDBOX/build/"
 
 if [[ -d "$SANDBOX/repo/node_modules" ]]; then
   pass "A1b: live node_modules present after mid-flip mv failure (restored)"
@@ -224,7 +231,7 @@ fi
 # A1c: first deploy — live dir has no .next/node_modules at all.
 setup_dirs
 rm -rf "$SANDBOX/repo/.next" "$SANDBOX/repo/node_modules"
-run_deploy somesha
+run_deploy "$TEST_REQUEST_SHA"
 
 [[ $RC -eq 0 ]] \
   && pass "A1c: first-deploy (no prior artifacts) exits 0" \
@@ -237,7 +244,7 @@ run_deploy somesha
 
 # A2a: health fails after flip AND after swap-back -> exit 2 (INV-7).
 setup_dirs
-run_deploy somesha HEALTH_FAIL_FIRST_N=99
+run_deploy "$TEST_REQUEST_SHA" HEALTH_FAIL_FIRST_N=99
 
 [[ $RC -eq 2 ]] \
   && pass "A2a: rollback-also-failed exits 2 per contract" \
@@ -251,7 +258,7 @@ grep -q "MANUAL INTERVENTION" "$OUT" \
 
 # A2b: --rollback with NO .old artifacts -> rebuild fallback path.
 setup_dirs
-echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
 run_deploy --rollback
 
 [[ $RC -eq 1 ]] \
@@ -260,7 +267,7 @@ run_deploy --rollback
 grep -q "npm run build pwd=$SANDBOX/repo" "$CMDLOG" \
   && pass "A2b: rebuild fallback builds in live dir" \
   || fail "A2b: no rebuild despite missing .old artifacts"
-grep -q "git reset --hard rollbacktarget444444444444444444444444444" "$CMDLOG" \
+grep -q "git reset --hard $TEST_ROLLBACK_SHA" "$CMDLOG" \
   && pass "A2b: rebuild fallback resets to backed-up SHA" \
   || fail "A2b: no git reset to backup SHA"
 grep -q "systemctl restart" "$CMDLOG" \
@@ -291,7 +298,7 @@ echo "gen-B" > "$SANDBOX/repo/node_modules/marker"
 mkdir -p "$SANDBOX/repo/.next.old" "$SANDBOX/repo/node_modules.old"
 echo "gen-A" > "$SANDBOX/repo/.next.old/marker"
 echo "gen-A" > "$SANDBOX/repo/node_modules.old/marker"
-echo "shaBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+echo "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
 run_deploy --rollback
 
 REPORTED_OK=$(grep -c "rollback OK" "$OUT" || true)
@@ -314,7 +321,7 @@ selfupdate_setup() {
 
 # A3a: origin copy differs -> install + .bak + re-exec ONCE, arg preserved.
 selfupdate_setup
-run_script "$INSTALLED" somesha GIT_SHOW_MODE=modified
+run_script "$INSTALLED" "$TEST_REQUEST_SHA" GIT_SHOW_MODE=modified
 
 UPDATES=$(grep -c "self-updated from origin/main" "$OUT" || true)
 [[ "$UPDATES" -eq 1 ]] \
@@ -329,7 +336,7 @@ grep -q "adv-marker-self-update" "$INSTALLED" \
 [[ $RC -eq 0 ]] \
   && pass "A3a: deploy proceeded to success after re-exec (arg preserved)" \
   || fail "A3a: rc=$RC after re-exec"
-grep -q "deploy SHA=somesha" "$OUT" \
+grep -q "deploy SHA=$TEST_REQUEST_SHA" "$OUT" \
   && pass "A3a: <sha> arg survived re-exec" \
   || fail "A3a: sha arg lost in re-exec"
 [[ ! -f "$INSTALLED.new" ]] \
@@ -341,10 +348,10 @@ selfupdate_setup
 mkdir -p "$SANDBOX/repo/.next.old" "$SANDBOX/repo/node_modules.old"
 echo "gen-A" > "$SANDBOX/repo/.next.old/marker"
 echo "gen-A" > "$SANDBOX/repo/node_modules.old/marker"
-echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
 run_script "$INSTALLED" --rollback GIT_SHOW_MODE=modified
 
-grep -q "ROLLBACK to rollbacktarget" "$OUT" \
+grep -q "ROLLBACK to $TEST_ROLLBACK_SHA" "$OUT" \
   && pass "A3a-rb: --rollback arg survived re-exec" \
   || fail "A3a-rb: --rollback arg lost after self-update (rc=$RC)"
 [[ $RC -eq 1 ]] \
@@ -353,7 +360,7 @@ grep -q "ROLLBACK to rollbacktarget" "$OUT" \
 
 # A3b: fetch fails (offline) -> run as-is.
 selfupdate_setup
-run_script "$INSTALLED" somesha GIT_FETCH_FAIL=1
+run_script "$INSTALLED" "$TEST_REQUEST_SHA" GIT_FETCH_FAIL=1
 
 grep -q "self-updated" "$OUT" \
   && fail "A3b: self-updated despite fetch failure" \
@@ -371,7 +378,7 @@ grep -q "self-updated" "$OUT" \
 
 # A3c: git show fails (canonical path not on origin/main yet — pre-merge window).
 selfupdate_setup
-run_script "$INSTALLED" somesha GIT_SHOW_MODE=fail
+run_script "$INSTALLED" "$TEST_REQUEST_SHA" GIT_SHOW_MODE=fail
 
 grep -q "self-updated" "$OUT" \
   && fail "A3c: self-updated despite git-show failure" \
@@ -382,7 +389,7 @@ grep -q "self-updated" "$OUT" \
 
 # A3d: git show succeeds but emits EMPTY file -> -s guard refuses install.
 selfupdate_setup
-run_script "$INSTALLED" somesha GIT_SHOW_MODE=empty
+run_script "$INSTALLED" "$TEST_REQUEST_SHA" GIT_SHOW_MODE=empty
 
 grep -q "self-updated" "$OUT" \
   && fail "A3d: installed an EMPTY script" \
@@ -396,7 +403,7 @@ cmp -s "$INSTALLED" "$PRISTINE" \
 
 # A3e: identical content -> no update, no .bak churn.
 selfupdate_setup
-run_script "$INSTALLED" somesha GIT_SHOW_MODE=same
+run_script "$INSTALLED" "$TEST_REQUEST_SHA" GIT_SHOW_MODE=same
 
 grep -q "self-updated" "$OUT" \
   && fail "A3e: self-updated on identical content" \
@@ -410,7 +417,7 @@ grep -q "self-updated" "$OUT" \
 
 # A3f: QD_SKIP_SELF_UPDATE=1 honored even when update available.
 selfupdate_setup
-run_script "$INSTALLED" somesha GIT_SHOW_MODE=modified QD_SKIP_SELF_UPDATE=1
+run_script "$INSTALLED" "$TEST_REQUEST_SHA" GIT_SHOW_MODE=modified QD_SKIP_SELF_UPDATE=1
 
 grep -q "self-updated" "$OUT" \
   && fail "A3f: QD_SKIP_SELF_UPDATE=1 ignored" \
@@ -419,7 +426,7 @@ grep -q "self-updated" "$OUT" \
 # ═════ A5: lock contention ═══════════════════════════════════════════════════
 
 setup_dirs
-run_deploy somesha FLOCK_FAIL=1
+run_deploy "$TEST_REQUEST_SHA" FLOCK_FAIL=1
 
 [[ $RC -ne 0 ]] \
   && pass "A5: locked-out deploy fails fast (rc=$RC)" \
@@ -433,24 +440,20 @@ else
   pass "A5: no state mutation after lock failure"
 fi
 
-# ═════ A6: deploy.yml functional surface vs main ═════════════════════════════
+# ═════ A6: exact-SHA receipt surface ═════════════════════════════════════════
 
-YML_DIFF=$(diff \
-  <(git -C "$REPO_ROOT" show main:.github/workflows/deploy.yml | grep -vE '^[[:space:]]*#') \
-  <(grep -vE '^[[:space:]]*#' "$REPO_ROOT/.github/workflows/deploy.yml") 2>/dev/null | grep -E '^[<>]' || true)
-YML_DIFF_COUNT=$(printf '%s' "$YML_DIFF" | grep -c . || true)
-# Allowed functional drift vs main (both intentional in #940):
-#   - health-fail hint string (pm2 → systemctl)
-#   - timeout-minutes 15 → 30 (FINDING-006: first staged run + rollback-rebuild
-#     exceed 15; an SSH cut mid-rollback must not happen)
-UNEXPECTED=$(printf '%s' "$YML_DIFF" | grep -vE 'check VPS|timeout-minutes: (15|30)$' || true)
-if [[ "$YML_DIFF_COUNT" -eq 0 ]]; then
-  pass "A6: deploy.yml functionally identical to main"
-elif [[ -z "$UNEXPECTED" ]]; then
-  pass "A6: deploy.yml functional drift is exactly the allowed set (hint string + timeout 15→30)"
-else
-  fail "A6: unexpected functional YAML drift: $(printf '%s' "$UNEXPECTED" | head -4 | tr '\n' ';')"
-fi
+setup_dirs
+run_deploy "$TEST_REQUEST_SHA"
+MARKERS=$(grep -c "^DEPLOY_RECEIPT_SHA=$TEST_REQUEST_SHA$" "$OUT" || true)
+[[ $RC -eq 0 && "$MARKERS" -eq 1 ]] \
+  && pass "A6: success emits exactly one requested-SHA receipt marker" \
+  || fail "A6: expected one exact receipt marker, got $MARKERS (rc=$RC)"
+
+setup_dirs
+run_deploy "$TEST_REQUEST_SHA" FAIL_BUILD=1
+grep -q '^DEPLOY_RECEIPT_SHA=' "$OUT" \
+  && fail "A6: failed deploy emitted a receipt marker" \
+  || pass "A6: failed deploy emits no receipt marker"
 
 # ── Results ──────────────────────────────────────────────────────────────────
 
