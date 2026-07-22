@@ -1,0 +1,46 @@
+name: Deploy request collector
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  collect:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Read changed paths from GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh api --paginate \
+            "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" \
+            --jq '.[].filename' > "$RUNNER_TEMP/changed-files.txt"
+          test -s "$RUNNER_TEMP/changed-files.txt"
+
+      - name: Build closed deployment request
+        run: |
+          python3 ops/deploy_contract.py build-dispatch \
+            --service quantika-demo \
+            --event "$GITHUB_EVENT_PATH" \
+            --changed-files "$RUNNER_TEMP/changed-files.txt" \
+            > "$RUNNER_TEMP/deployment-request.json"
+
+      - name: Upload closed request for trusted publisher
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-request
+          path: ${{ runner.temp }}/deployment-request.json
+          if-no-files-found: error
+          retention-days: 7
