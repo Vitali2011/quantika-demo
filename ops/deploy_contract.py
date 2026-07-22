@@ -45,7 +45,9 @@ def positive_int(value: object, field: str) -> int:
 
 def validate_payload(payload: object, expected_service: str) -> dict[str, object]:
     if not isinstance(payload, dict) or set(payload) != PAYLOAD_KEYS:
-        raise ContractError("client_payload must use exactly service, sha, and source_pr")
+        raise ContractError(
+            "client_payload must use exactly service, sha, and source_pr"
+        )
     if payload["service"] != expected_service:
         raise ContractError(f"service must be {expected_service}")
     exact_sha(payload["sha"], "sha")
@@ -62,7 +64,9 @@ def docs_only(path: str) -> bool:
     )
 
 
-def build_dispatch(service: str, event: object, changed_files: list[str]) -> dict[str, object]:
+def build_dispatch(
+    service: str, event: object, changed_files: list[str]
+) -> dict[str, object]:
     if not isinstance(event, dict) or event.get("action") != "closed":
         raise ContractError("dispatcher accepts only a closed pull request event")
     pull_request = event.get("pull_request")
@@ -87,7 +91,11 @@ def build_dispatch(service: str, event: object, changed_files: list[str]) -> dic
 
 def utc_timestamp(value: str | None) -> str:
     if value is None:
-        return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+        return (
+            datetime.now(timezone.utc)
+            .isoformat(timespec="seconds")
+            .replace("+00:00", "Z")
+        )
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as exc:

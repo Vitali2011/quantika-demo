@@ -17,7 +17,9 @@ SHA_A = "a" * 40
 SHA_B = "b" * 40
 
 
-def merged_event(actor: str = "Vitali2011", sha: str = SHA_A, number: int = 1104) -> dict:
+def merged_event(
+    actor: str = "Vitali2011", sha: str = SHA_A, number: int = 1104
+) -> dict:
     return {
         "action": "closed",
         "sender": {"login": actor},
@@ -31,7 +33,9 @@ def merged_event(actor: str = "Vitali2011", sha: str = SHA_A, number: int = 1104
 
 
 class ContractCliTest(unittest.TestCase):
-    def run_cli(self, *args: str, expected_rc: int = 0) -> subprocess.CompletedProcess[str]:
+    def run_cli(
+        self, *args: str, expected_rc: int = 0
+    ) -> subprocess.CompletedProcess[str]:
         self.assertTrue(CONTRACT.exists(), f"missing contract CLI: {CONTRACT}")
         result = subprocess.run(
             ["python3", str(CONTRACT), *args],
@@ -64,7 +68,9 @@ class ContractCliTest(unittest.TestCase):
     def test_human_dependabot_and_merge_queue_dispatch_identically(self) -> None:
         for actor in ("Vitali2011", "dependabot[bot]", "github-merge-queue[bot]"):
             with self.subTest(actor=actor):
-                result = self.build_dispatch(merged_event(actor=actor), ["app/page.tsx"])
+                result = self.build_dispatch(
+                    merged_event(actor=actor), ["app/page.tsx"]
+                )
                 self.assertEqual(
                     result,
                     {
@@ -85,7 +91,9 @@ class ContractCliTest(unittest.TestCase):
         mixed = self.build_dispatch(merged_event(), ["docs/runbook.md", "app/page.tsx"])
         self.assertEqual(mixed["event_type"], "prod-deploy")
 
-    def test_validate_request_rejects_wrong_service_short_uppercase_and_extra_keys(self) -> None:
+    def test_validate_request_rejects_wrong_service_short_uppercase_and_extra_keys(
+        self,
+    ) -> None:
         payload = {"service": "quantika-demo", "sha": SHA_A, "source_pr": 1104}
         accepted = self.run_cli(
             "validate-request",
@@ -160,7 +168,9 @@ class ContractCliTest(unittest.TestCase):
             },
         )
         self.assertEqual(receipt["requested_sha"], receipt["deployed_sha"])
-        self.assertNotRegex(json.dumps(receipt).lower(), r"secret|token|password|environment|env_")
+        self.assertNotRegex(
+            json.dumps(receipt).lower(), r"secret|token|password|environment|env_"
+        )
         self.run_cli(
             "create-receipt",
             "--service",
@@ -227,7 +237,9 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("pull_request_target:", collector)
         self.assertIn("actions/upload-artifact@v4", collector)
         self.assertNotIn("secrets.", collector)
-        publisher = (WORKFLOWS / "deploy-dispatch-publish.yml").read_text(encoding="utf-8")
+        publisher = (WORKFLOWS / "deploy-dispatch-publish.yml").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("workflow_run:", publisher)
         self.assertIn("validate-request", publisher)
 
@@ -245,14 +257,22 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("steps.request.outputs.sha", deploy)
         self.assertNotIn("github.sha", deploy)
 
-    def test_receipt_and_reconciliation_workflows_are_closed_and_read_only(self) -> None:
+    def test_receipt_and_reconciliation_workflows_are_closed_and_read_only(
+        self,
+    ) -> None:
         deploy = (WORKFLOWS / "deploy.yml").read_text(encoding="utf-8")
         self.assertIn("DEPLOY_RECEIPT_SHA", deploy)
         self.assertIn("actions/upload-artifact@v4", deploy)
         self.assertIn("deployment-receipt-quantika-demo", deploy)
 
         reconcile = (WORKFLOWS / "deploy-reconcile.yml").read_text(encoding="utf-8")
-        for forbidden in ("/dispatches", "repository_dispatch", "ssh ", "deploy.sh", "rollback"):
+        for forbidden in (
+            "/dispatches",
+            "repository_dispatch",
+            "ssh ",
+            "deploy.sh",
+            "rollback",
+        ):
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, reconcile)
 
