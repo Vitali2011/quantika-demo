@@ -38,10 +38,18 @@ SMOKE_URL="${QD_SMOKE_URL:-http://localhost:3000/}"
 LOCK_FILE="${QD_LOCK_FILE:-/tmp/deploy-${SERVICE}.lock}"
 SHA_FILE="$HOME/.last-deployed-sha-${SERVICE}"
 SHA_BACKUP="${SHA_FILE}.bak"
+RUNTIME_SHA_FILE="$REPO_DIR/.deploy-sha"
 CANONICAL_PATH="ops/scripts/deploy-quantika-demo.sh"
 
 log()  { echo "[$(date '+%H:%M:%S')] deploy-${SERVICE}: $*"; }
 fail() { log "FATAL: $*"; exit 1; }
+
+record_runtime_sha() {
+  local sha="$1" tmp="${RUNTIME_SHA_FILE}.tmp.$$"
+  [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || fail "runtime SHA must be canonical"
+  printf '%s\n' "$sha" > "$tmp" || fail "cannot write runtime SHA marker"
+  mv -f "$tmp" "$RUNTIME_SHA_FILE" || fail "cannot publish runtime SHA marker"
+}
 
 ARG1="${1:-}"
 [[ -z "$ARG1" ]] && fail "usage: $0 <sha> | --rollback"
@@ -147,7 +155,11 @@ swap_back_old() {
 # a restore here would leave prod 500ing indefinitely (#940 review FINDING-001).
 flip_failed() {
   log "FLIP FAILED ($1) — restoring previous artifacts immediately"
-  git reset --hard "$PREV_SHA" || log "WARN: git reset to PREV_SHA failed"
+  if git reset --hard "$PREV_SHA"; then
+    record_runtime_sha "$PREV_SHA"
+  else
+    log "WARN: git reset to PREV_SHA failed"
+  fi
   restore_artifact .next || log "WARN: no .next.old to restore"
   restore_artifact node_modules || log "WARN: no node_modules.old to restore"
   if restart_and_health; then
@@ -163,6 +175,7 @@ if [[ "$ARG1" == "--rollback" ]]; then
   TARGET_SHA=$(cat "$SHA_BACKUP" 2>/dev/null) || fail "no SHA_BACKUP found at $SHA_BACKUP"
   log "ROLLBACK to $TARGET_SHA"
   git reset --hard "$TARGET_SHA" || fail "rollback git reset failed"
+  record_runtime_sha "$TARGET_SHA"
   if ! swap_back_old "$TARGET_SHA"; then
     log "no .old artifacts — rebuilding previous version in place (slow path)"
     npm ci || log "WARN: npm ci on rollback failed (continuing)"
@@ -183,8 +196,6 @@ REQUESTED_SHA="$ARG1"
 log "deploy SHA=$REQUESTED_SHA"
 
 PREV_SHA=$(git rev-parse HEAD) && [[ -n "$PREV_SHA" ]] || fail "cannot resolve current HEAD"
-echo "$PREV_SHA" > "$SHA_BACKUP"
-log "PREV_SHA=$PREV_SHA saved to $SHA_BACKUP"
 
 git fetch origin main || fail "git fetch failed"
 ORIGIN_MAIN=$(git rev-parse origin/main) || fail "cannot resolve origin/main"
@@ -197,6 +208,7 @@ git merge-base --is-ancestor "$TARGET_SHA" "$ORIGIN_MAIN" \
 
 if [[ "$PREV_SHA" == "$TARGET_SHA" ]]; then
   log "NOOP: requested SHA is already deployed; verifying health and smoke"
+  record_runtime_sha "$TARGET_SHA"
   if check_health && smoke_root; then
     echo "$TARGET_SHA" > "$SHA_FILE"
     printf 'DEPLOY_RECEIPT_SHA=%s\n' "$TARGET_SHA"
@@ -228,10 +240,14 @@ log "npm run build (build dir)..."
 ( cd "$BUILD_DIR" && NODE_OPTIONS='--max-old-space-size=8192' npm run build ) || fail "build failed"
 [[ -s "$BUILD_DIR/.next/BUILD_ID" ]] || fail "build produced no .next/BUILD_ID — refusing to deploy"
 
+echo "$PREV_SHA" > "$SHA_BACKUP"
+log "PREV_SHA=$PREV_SHA saved to $SHA_BACKUP"
+
 # Stage 2 — flip live dir: code reset + artifact swap (mv renames, same fs,
 # instant) + restart. The only degraded window is these few seconds.
 log "flip: resetting live dir to $TARGET_SHA..."
 git reset --hard "$TARGET_SHA" || fail "live git reset failed"
+record_runtime_sha "$TARGET_SHA"
 
 log "flip: swapping .next + node_modules..."
 rm -rf "$REPO_DIR/.next.old" "$REPO_DIR/node_modules.old" "$REPO_DIR/.next.failed" "$REPO_DIR/node_modules.failed"
@@ -246,6 +262,7 @@ log "restart + health + smoke..."
 if ! { restart_and_health && smoke_root; }; then
   log "HEALTH/SMOKE FAILED — auto-rollback to $PREV_SHA"
   git reset --hard "$PREV_SHA" || fail "rollback reset failed (prod broken!)"
+  record_runtime_sha "$PREV_SHA"
   if ! swap_back_old; then
     log "no .old artifacts — rebuilding previous version in place (slow path)"
     npm ci || log "WARN: rollback npm ci failed (continuing)"
