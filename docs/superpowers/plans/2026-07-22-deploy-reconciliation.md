@@ -4,7 +4,7 @@
 
 **Goal:** Make every Quantika merge actor dispatch one exact production SHA, queue all requests, prove the deployed SHA in a secret-free receipt, and detect drift without auto-deploying.
 
-**Architecture:** Move the existing dispatch job out of auto-merge into one actor-neutral merge dispatcher with a closed payload. Validate and forward `client_payload.sha` instead of `github.sha`; update the repository-owned forced-command deploy script to pin and prove that exact commit. Publish a closed receipt and compare it with `origin/main` plus a public health SHA in a separate read-only workflow.
+**Architecture:** Move dispatch out of auto-merge into an actor-neutral collector that creates a closed request artifact without secrets, then publish exactly one `repository_dispatch` from a `workflow_run` workflow after revalidation. This boundary covers Dependabot because GitHub withholds Actions secrets from its `pull_request_target` runs but permits secrets in the downstream `workflow_run`. Validate and forward `client_payload.sha` instead of `github.sha`; update the repository-owned forced-command deploy script to pin and prove that exact commit. Publish a closed receipt and compare it with `origin/main` plus a public health SHA in a separate read-only workflow.
 
 **Tech Stack:** GitHub Actions YAML, Python 3 standard library contract fixtures, Bash deploy script fixtures, Next.js 16 health route and Jest.
 
@@ -75,6 +75,7 @@ git commit -m "test(deploy): lock Quantika reconciliation contract"
 
 **Files:**
 - Create: `.github/workflows/deploy-dispatch.yml`
+- Create: `.github/workflows/deploy-dispatch-publish.yml`
 - Modify: `.github/workflows/auto-merge.yml`
 - Modify: `.github/workflows/deploy.yml`
 - Modify: `.github/workflows/ci.yml`
@@ -82,11 +83,11 @@ git commit -m "test(deploy): lock Quantika reconciliation contract"
 
 **Interfaces:**
 - Consumes: all closed merged PRs and GitHub Pulls API file names.
-- Produces: one canonical `prod-deploy`; validated workflow output `steps.request.outputs.sha` is the only SSH SHA.
+- Produces: one closed `deployment-request` artifact and one canonical `prod-deploy` from the downstream publisher; validated workflow output `steps.request.outputs.sha` is the only SSH SHA.
 
 - [ ] **Step 1: Add failing static workflow assertions**
 
-Assert exactly one file contains `event_type=prod-deploy`, `auto-merge.yml` has no `trigger-deploy`, deploy has no `push/pull_request` triggers, queue is `max`, cancellation is false, and the SSH command contains `steps.request.outputs.sha` but no `github.sha`.
+Assert exactly one file calls `/dispatches` and it is `deploy-dispatch-publish.yml`; `auto-merge.yml` has no `trigger-deploy`, deploy has no `push/pull_request` triggers, queue is `max`, cancellation is false, and the SSH command contains `steps.request.outputs.sha` but no `github.sha`.
 
 - [ ] **Step 2: Run and record RED**
 
@@ -96,7 +97,7 @@ Expected: FAIL because dispatch currently lives inside auto-merge and deploy for
 
 - [ ] **Step 3: Create trusted actor-neutral dispatcher**
 
-Use `pull_request_target: {types: [closed], branches: [main]}` and guard only `merged == true`. Checkout base `main`, query changed filenames using the Pulls API, execute the trusted contract CLI, then send its closed REST body with existing `AUTO_REBASE_PAT`. Never checkout or run PR code under the privileged event.
+Use `pull_request_target: {types: [closed], branches: [main]}` and guard only `merged == true`. Checkout base `main`, query changed filenames using the Pulls API, execute the trusted contract CLI, and upload only its closed JSON artifact. Never checkout or run PR code and never request a secret in this collector. A separate successful-`workflow_run` publisher downloads the upstream artifact, revalidates it, and is the only workflow that sends the body with existing `AUTO_REBASE_PAT`.
 
 - [ ] **Step 4: Validate exact request before SSH and add queue**
 
@@ -127,7 +128,7 @@ Expected: one dispatcher, every actor, docs skip, exact payload/forwarding, queu
 - [ ] **Step 6: Commit dispatcher and workflow queue**
 
 ```bash
-git add .github/workflows/deploy-dispatch.yml .github/workflows/auto-merge.yml .github/workflows/deploy.yml .github/workflows/ci.yml scripts/ops/tests/deploy-reconciliation-contract.py
+git add .github/workflows/deploy-dispatch.yml .github/workflows/deploy-dispatch-publish.yml .github/workflows/auto-merge.yml .github/workflows/deploy.yml .github/workflows/ci.yml scripts/ops/tests/deploy-reconciliation-contract.py
 git commit -m "fix(deploy): canonicalize Quantika exact-SHA dispatch"
 ```
 
@@ -281,4 +282,3 @@ gh pr create --repo Vitali2011/quantika-demo --base main --head codex/deploy-rec
 ```
 
 Do not label `code-only`, enable auto-merge, merge, dispatch, rerun, deploy, or reconcile production in this thread. After a future merge, Quantika drift recovery remains a separate production change: record rollback SHA, dry-run the exact forced-command path, dispatch target once, verify receipt/public health/HEAD, and rollback on failure.
-

@@ -222,7 +222,14 @@ class WorkflowContractTest(unittest.TestCase):
             text = workflow.read_text(encoding="utf-8")
             if "/dispatches" in text:
                 dispatchers.append(workflow.name)
-        self.assertEqual(dispatchers, ["deploy-dispatch.yml"])
+        self.assertEqual(dispatchers, ["deploy-dispatch-publish.yml"])
+        collector = (WORKFLOWS / "deploy-dispatch.yml").read_text(encoding="utf-8")
+        self.assertIn("pull_request_target:", collector)
+        self.assertIn("actions/upload-artifact@v4", collector)
+        self.assertNotIn("secrets.", collector)
+        publisher = (WORKFLOWS / "deploy-dispatch-publish.yml").read_text(encoding="utf-8")
+        self.assertIn("workflow_run:", publisher)
+        self.assertIn("validate-request", publisher)
 
         auto_merge = (WORKFLOWS / "auto-merge.yml").read_text(encoding="utf-8")
         self.assertNotIn("trigger-deploy:", auto_merge)
