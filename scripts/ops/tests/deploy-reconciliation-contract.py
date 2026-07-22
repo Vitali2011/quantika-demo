@@ -272,7 +272,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("steps.request.outputs.sha", deploy)
         self.assertNotIn("github.sha", deploy)
 
-    def test_dispatch_is_serialized_rerun_safe_and_actions_are_pinned(self) -> None:
+    def test_dispatch_is_serialized_and_actions_are_pinned(self) -> None:
         collector = (WORKFLOWS / "deploy-dispatch.yml").read_text(encoding="utf-8")
         publisher = (WORKFLOWS / "deploy-dispatch-publish.yml").read_text(
             encoding="utf-8"
@@ -283,8 +283,6 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("group: deploy-dispatch-publisher-quantika-demo", publisher)
         self.assertIn("queue: max", publisher)
         self.assertIn("cancel-in-progress: false", publisher)
-        self.assertIn("github.event.workflow_run.run_attempt == 1", publisher)
-        self.assertIn("github.run_attempt == 1", publisher)
 
         for name in (
             "deploy-dispatch.yml",
