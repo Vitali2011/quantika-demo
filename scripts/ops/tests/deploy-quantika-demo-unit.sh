@@ -262,7 +262,7 @@ run_deploy
 # ── T1c: non-canonical SHA input is rejected before mutation ────────────────
 
 setup_dirs
-DEPLOY_ARG="${TEST_REQUEST_SHA^^}" run_deploy
+DEPLOY_ARG="A${TEST_REQUEST_SHA:1}" run_deploy
 if [[ $RC -ne 0 ]] && ! grep -qE "git (fetch|reset)|npm |systemctl" "$CMDLOG" \
   && ! grep -q "DEPLOY_RECEIPT_SHA=" "$SANDBOX/out.txt"; then
   pass "T1c: uppercase SHA rejected without mutation or receipt"
