@@ -254,6 +254,7 @@ grep -qx "DEPLOY_RECEIPT_SHA=$TEST_REQUEST_SHA" "$SANDBOX/out.txt" \
 
 setup_dirs
 echo "$TEST_REQUEST_SHA" > "$MOCK_STATE/current_head"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
 run_deploy
 
 [[ $RC -eq 0 ]] && ! grep -q "npm " "$CMDLOG" \
@@ -262,6 +263,10 @@ run_deploy
   && grep -qx "DEPLOY_RECEIPT_SHA=$TEST_REQUEST_SHA" "$SANDBOX/out.txt" \
   && pass "T1b: exact duplicate is health/smoke checked and receipted" \
   || fail "T1b: exact duplicate did not follow idempotent receipt path"
+
+[[ "$(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak" 2>/dev/null)" == "$TEST_ROLLBACK_SHA" ]] \
+  && pass "T1b: exact duplicate preserves the rollback backup" \
+  || fail "T1b: exact duplicate overwrote the rollback backup"
 
 # ── T1c: non-canonical SHA input is rejected before mutation ────────────────
 
