@@ -304,8 +304,16 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("DEPLOY_RECEIPT_SHA", deploy)
         self.assertIn("actions/upload-artifact@ea165f8d", deploy)
         self.assertIn("deployment-receipt-quantika-demo", deploy)
+        self.assertIn("jq -er '.git_sha'", deploy)
+        self.assertIn('test "$production_sha" = "$REQUESTED_SHA"', deploy)
+
+        ci = (WORKFLOWS / "ci.yml").read_text(encoding="utf-8")
+        self.assertIn("bash scripts/ops/tests/deploy-quantika-demo-unit.sh", ci)
+        self.assertIn("bash scripts/ops/tests/deploy-quantika-demo-adversarial.sh", ci)
 
         reconcile = (WORKFLOWS / "deploy-reconcile.yml").read_text(encoding="utf-8")
+        self.assertEqual(reconcile.count("continue-on-error: true"), 2)
+        self.assertIn("production_sha=unknown", reconcile)
         for forbidden in (
             "/dispatches",
             "repository_dispatch",

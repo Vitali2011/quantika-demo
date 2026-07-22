@@ -175,13 +175,13 @@ if [[ "$ARG1" == "--rollback" ]]; then
   TARGET_SHA=$(cat "$SHA_BACKUP" 2>/dev/null) || fail "no SHA_BACKUP found at $SHA_BACKUP"
   log "ROLLBACK to $TARGET_SHA"
   git reset --hard "$TARGET_SHA" || fail "rollback git reset failed"
-  record_runtime_sha "$TARGET_SHA"
   if ! swap_back_old "$TARGET_SHA"; then
     log "no .old artifacts — rebuilding previous version in place (slow path)"
     npm ci || log "WARN: npm ci on rollback failed (continuing)"
     NODE_OPTIONS='--max-old-space-size=8192' npm run build || fail "rollback build failed"
   fi
   if restart_and_health; then
+    record_runtime_sha "$TARGET_SHA"
     echo "$TARGET_SHA" > "$SHA_FILE"
     log "rollback OK — /health=200 on $TARGET_SHA"
     exit 1
@@ -247,7 +247,6 @@ log "PREV_SHA=$PREV_SHA saved to $SHA_BACKUP"
 # instant) + restart. The only degraded window is these few seconds.
 log "flip: resetting live dir to $TARGET_SHA..."
 git reset --hard "$TARGET_SHA" || fail "live git reset failed"
-record_runtime_sha "$TARGET_SHA"
 
 log "flip: swapping .next + node_modules..."
 rm -rf "$REPO_DIR/.next.old" "$REPO_DIR/node_modules.old" "$REPO_DIR/.next.failed" "$REPO_DIR/node_modules.failed"
@@ -276,6 +275,8 @@ if ! { restart_and_health && smoke_root; }; then
     exit 2
   fi
 fi
+
+record_runtime_sha "$TARGET_SHA"
 
 # Eager schema migration of the served DB (#677): migrate the runtime-configured
 # DB (SESSIONS_DB_PATH=demo-seed.db) at deploy time instead of relying on the

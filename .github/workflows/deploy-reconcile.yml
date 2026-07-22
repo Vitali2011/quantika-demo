@@ -13,13 +13,14 @@ jobs:
   reconcile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: main
           fetch-depth: 1
           persist-credentials: false
 
       - name: Download latest successful receipt
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -38,6 +39,7 @@ jobs:
             --dir "$RUNNER_TEMP/receipt"
 
       - name: Read public production SHA
+        continue-on-error: true
         run: |
           curl -fsS --max-time 15 https://demo.quantika.org/api/health \
             > "$RUNNER_TEMP/health.json"
@@ -46,9 +48,13 @@ jobs:
 
       - name: Compare main, receipt, and production
         run: |
+          production_sha=unknown
+          if [ -s "$RUNNER_TEMP/production-sha.txt" ]; then
+            production_sha="$(tr -d '\n' < "$RUNNER_TEMP/production-sha.txt")"
+          fi
           python3 ops/deploy_contract.py reconcile \
             --service quantika-demo \
             --main-sha "$(git rev-parse HEAD)" \
             --receipt "$RUNNER_TEMP/receipt/deployment-receipt.json" \
-            --production-sha "$(tr -d '\n' < "$RUNNER_TEMP/production-sha.txt")" \
+            --production-sha "$production_sha" \
             | tee "$RUNNER_TEMP/reconciliation.json"

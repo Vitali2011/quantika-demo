@@ -141,6 +141,10 @@ cat > "$MOCKBIN/curl" <<'EOF'
 echo "curl $*" >> "$CMDLOG"
 case "$*" in
   *"/api/health"*)
+    if [ -n "${EXPECT_HEALTH_SHA:-}" ] \
+      && [ "$(cat "$QD_REPO_DIR/.deploy-sha" 2>/dev/null)" != "$EXPECT_HEALTH_SHA" ]; then
+      exit 23
+    fi
     N=0
     [ -f "$MOCK_STATE/health_count" ] && N=$(cat "$MOCK_STATE/health_count")
     N=$((N+1)); mkdir -p "$MOCK_STATE"; echo "$N" > "$MOCK_STATE/health_count"
@@ -280,6 +284,15 @@ else
 fi
 unset DEPLOY_ARG
 
+# ── T1d: marker changes only after the new runtime is healthy ───────────────
+
+setup_dirs
+echo "$TEST_PREV_SHA" > "$SANDBOX/repo/.deploy-sha"
+run_deploy EXPECT_HEALTH_SHA="$TEST_PREV_SHA"
+[[ $RC -eq 0 && "$(cat "$SANDBOX/repo/.deploy-sha")" == "$TEST_REQUEST_SHA" ]] \
+  && pass "T1d: runtime marker changes only after successful health/smoke" \
+  || fail "T1d: runtime marker changed before cutover health succeeded"
+
 # ── T2: build failure → live untouched, no restart ──────────────────────────
 
 setup_dirs
@@ -382,6 +395,17 @@ grep -q "git reset --hard $TEST_ROLLBACK_SHA" "$CMDLOG" \
 [[ "$(cat "$SANDBOX/repo/.deploy-sha" 2>/dev/null)" == "$TEST_ROLLBACK_SHA" ]] \
   && pass "T6: manual rollback updates runtime SHA marker" \
   || fail "T6: manual rollback left stale runtime SHA marker"
+
+# ── T6b: failed slow rollback keeps the currently served SHA marker ─────────
+
+setup_dirs
+echo "$TEST_PREV_SHA" > "$SANDBOX/repo/.deploy-sha"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+DEPLOY_ARG="--rollback" run_deploy FAIL_BUILD=1
+[[ $RC -ne 0 && "$(cat "$SANDBOX/repo/.deploy-sha")" == "$TEST_PREV_SHA" ]] \
+  && pass "T6b: failed rollback leaves the served runtime SHA marker unchanged" \
+  || fail "T6b: failed rollback published a SHA that never became healthy"
+unset DEPLOY_ARG
 
 # ── T7: mv of build .next fails mid-flip → restore + restart, never bare exit ─
 

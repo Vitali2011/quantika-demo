@@ -226,13 +226,32 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(output, sort_keys=True, separators=(",", ":")))
             return 0
         if args.command == "reconcile":
-            receipt = json.loads(args.receipt.read_text(encoding="utf-8"))
-            output, return_code = reconcile(
-                args.service,
-                args.main_sha,
-                receipt,
-                args.production_sha,
-            )
+            try:
+                receipt = json.loads(args.receipt.read_text(encoding="utf-8"))
+                output, return_code = reconcile(
+                    args.service,
+                    args.main_sha,
+                    receipt,
+                    args.production_sha,
+                )
+            except (ContractError, json.JSONDecodeError, OSError) as exc:
+                output = {
+                    "schema_version": 1,
+                    "service": args.service,
+                    "status": "DRIFT",
+                    "main_sha": args.main_sha
+                    if SHA_RE.fullmatch(args.main_sha)
+                    else "unknown",
+                    "receipt_sha": "unknown",
+                    "production_sha": (
+                        args.production_sha
+                        if SHA_RE.fullmatch(args.production_sha)
+                        else "unknown"
+                    ),
+                    "receipt_run_id": None,
+                    "errors": [f"{type(exc).__name__}: {exc}"],
+                }
+                return_code = 1
             print(json.dumps(output, sort_keys=True, separators=(",", ":")))
             return return_code
         raise ContractError(f"unsupported command: {args.command}")
