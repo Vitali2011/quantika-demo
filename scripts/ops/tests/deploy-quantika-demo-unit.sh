@@ -65,7 +65,13 @@ case "$1" in
       *HEAD*) cat "$MOCK_STATE/current_head" ;;
       *) echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" ;;
     esac ;;
-  merge-base) exit 0 ;;
+  merge-base)
+    if [ "$2" = "--is-ancestor" ] \
+      && [ "$3" = "$TEST_REQUEST_SHA" ] \
+      && [ "$4" = "$TEST_PREV_SHA" ]; then
+      exit 1
+    fi
+    exit 0 ;;
   fetch) exit 0 ;;
   remote) echo "git@example.com:fake/repo.git" ;;
   clone) mkdir -p "$3/.git"; exit 0 ;;
