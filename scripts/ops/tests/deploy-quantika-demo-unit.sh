@@ -226,6 +226,10 @@ grep -q "git clone" "$CMDLOG" \
   && pass "T1: deployed SHA recorded" \
   || fail "T1: SHA file wrong: $(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo" 2>/dev/null)"
 
+[[ "$(cat "$SANDBOX/repo/.deploy-sha" 2>/dev/null)" == "$TEST_REQUEST_SHA" ]] \
+  && pass "T1: public-health runtime SHA marker recorded" \
+  || fail "T1: runtime SHA marker missing or wrong"
+
 [[ "$(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak" 2>/dev/null)" == "$TEST_PREV_SHA" ]] \
   && pass "T1: previous SHA backed up" \
   || fail "T1: SHA backup wrong"
@@ -318,6 +322,10 @@ run_deploy HEALTH_FAIL_FIRST_N=6
   && pass "T4: node_modules swapped back" \
   || fail "T4: rollback did not restore node_modules"
 
+[[ "$(cat "$SANDBOX/repo/.deploy-sha" 2>/dev/null)" == "$TEST_PREV_SHA" ]] \
+  && pass "T4: failed deploy restores previous runtime SHA marker" \
+  || fail "T4: runtime SHA marker does not match rolled-back code"
+
 RESTARTS=$(grep -c "systemctl restart" "$CMDLOG")
 [[ "$RESTARTS" -ge 2 ]] \
   && pass "T4: service restarted again after swap-back" \
@@ -365,6 +373,10 @@ grep -q "npm run build" "$CMDLOG" \
 grep -q "git reset --hard $TEST_ROLLBACK_SHA" "$CMDLOG" \
   && pass "T6: --rollback reset live repo to backed-up SHA" \
   || fail "T6: --rollback did not git reset to backup SHA"
+
+[[ "$(cat "$SANDBOX/repo/.deploy-sha" 2>/dev/null)" == "$TEST_ROLLBACK_SHA" ]] \
+  && pass "T6: manual rollback updates runtime SHA marker" \
+  || fail "T6: manual rollback left stale runtime SHA marker"
 
 # ── T7: mv of build .next fails mid-flip → restore + restart, never bare exit ─
 
