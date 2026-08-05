@@ -120,3 +120,19 @@ scripts/demo-seed/.llm-cache/
 # Intentional docs live under docs/research/ and docs/superpowers/plans/ (NOT ignored).
 /recon-*.md
 /plan-*.md
+
+# Secrets — never commit. Real values live outside the repo.
+# `.env` was NOT covered before: the rules only matched .env*.local and
+# .env*.stale*, so a plain `.env` would have been committed by `git add -A`.
+.env
+.env.*
+!.env.example
+!.env*.example
+!.env.demo
+
+# Agent home directories. On 2026-06-14 a worker committed its own home dir to
+# branch eval/token-savers-quality, publishing a live Claude OAuth token.
+**/.jcfg/
+**/.credentials.json
+**/.claude.json
+**/.claude.json.backup*
