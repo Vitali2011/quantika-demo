@@ -10,7 +10,7 @@
 Ты DevOps-агент. Выполни задачи на VPS через SSH.
 
 Подключение:
-  sshpass -p 'Vit15932' ssh -o StrictHostKeyChecking=no root@185.249.225.169 'КОМАНДА'
+  ssh -o StrictHostKeyChecking=no root@185.249.225.169 'КОМАНДА'
 
 ---
 
@@ -231,6 +231,7 @@
 3. **Промпт 3** — правка в коде (быстрая, 3 строки)
 
 После применения промптов 2+3 — перезапустить Next.js:
+
 ```bash
-sshpass -p 'Vit15932' ssh root@185.249.225.169 'systemctl restart quantika-demo 2>/dev/null || pm2 restart quantika-demo 2>/dev/null || echo "перезапусти next-server вручную"'
+ssh root@185.249.225.169 'systemctl restart quantika-demo 2>/dev/null || pm2 restart quantika-demo 2>/dev/null || echo "перезапусти next-server вручную"'
 ```
