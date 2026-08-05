@@ -83,6 +83,8 @@ jobs:
               -o StrictHostKeyChecking=accept-new \
               scripts/post-deploy-smoke/smoke.mjs \
               scripts/post-deploy-smoke/run-quantika.sh \
+              scripts/post-deploy-smoke/run-t60.sh \
+              scripts/post-deploy-smoke/schedule-t60.sh \
               root@157.173.124.116:/root/post-deploy-smoke/
 
       - name: Run smoke on dev-vps
@@ -105,6 +107,30 @@ jobs:
               "root@157.173.124.116:orchestrator-state/quantika-demo/post-deploy-checks/$PR/summary.json" \
               ./summary.json 2>/dev/null || echo '{"overall":"ERROR","routes_passed":0,"routes_checked":0}' > summary.json
           exit 0
+
+      - name: Schedule t60 bake window (only on PASS)
+        if: steps.smoke.outputs.rc == '0' && steps.resolve.outputs.pr != 'manual'
+        run: |
+          PR="${{ steps.resolve.outputs.pr }}"
+          SHA="${{ steps.resolve.outputs.sha }}"
+          # PR/SHA reach this step from workflow_dispatch inputs (attacker-controlled
+          # free text) or gh pr list/head_sha (trusted, but validate anyway — defense
+          # in depth). Reject anything that isn't the exact shape expected BEFORE it
+          # touches the remote command string, so a shell metacharacter never gets a
+          # chance to break out of the intended argv on dev-vps.
+          if ! [[ "$PR" =~ ^[0-9]+$ || "$PR" == "manual" ]]; then
+            echo "::error::invalid PR value, refusing to schedule t60: $PR"
+            exit 1
+          fi
+          if ! [[ "$SHA" =~ ^[0-9a-f]{7,40}$ ]]; then
+            echo "::error::invalid SHA value, refusing to schedule t60: $SHA"
+            exit 1
+          fi
+          ssh -i ~/.ssh/dev_vps_key \
+              -o StrictHostKeyChecking=accept-new \
+              -o ConnectTimeout=15 \
+              root@157.173.124.116 \
+              "bash /root/post-deploy-smoke/schedule-t60.sh '$PR' '$SHA'"
 
       - name: Upload smoke artifacts
         if: always()

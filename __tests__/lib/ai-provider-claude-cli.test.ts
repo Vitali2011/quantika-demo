@@ -12,7 +12,7 @@ jest.mock('child_process', () => ({
 // Import after mock registration so the inline require() in callClaudeCliRaw
 // gets the mocked module from Jest's module registry.
 const childProcess = require('child_process') as { spawnSync: jest.Mock };
-const { callClaudeCliRaw } = require('@/lib/ai-provider') as typeof import('@/lib/ai-provider');
+const { callClaudeCliRaw, getModel } = require('@/lib/ai-provider') as typeof import('@/lib/ai-provider');
 
 const OK_RESPONSE = (result: string) => ({
   status: 0,
@@ -22,6 +22,20 @@ const OK_RESPONSE = (result: string) => ({
   output: [null, '', ''],
   signal: null,
   error: undefined,
+});
+
+describe('getModel — claude-cli provider', () => {
+  const originalProvider = process.env.AI_PROVIDER;
+
+  afterEach(() => {
+    if (originalProvider === undefined) delete process.env.AI_PROVIDER;
+    else process.env.AI_PROVIDER = originalProvider;
+  });
+
+  it('returns claude-opus-4-8 when AI_PROVIDER=claude-cli', () => {
+    process.env.AI_PROVIDER = 'claude-cli';
+    expect(getModel('judge')).toBe('claude-opus-4-8');
+  });
 });
 
 describe('callClaudeCliRaw', () => {

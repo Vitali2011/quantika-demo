@@ -65,7 +65,7 @@ export const DEMO_SESSION_TTL_MS =
   parseInt(process.env.DEMO_SESSION_TTL_MS ?? '', 10) || 30 * 24 * 60 * 60 * 1000;
 export const EMAIL_FETCH_COUNT = 50;
 export const MIN_THREAD_LENGTH_FOR_RECAP = 5;
-export const MAX_EMAIL_BODY_CHARS = 3000;
+export const MAX_EMAIL_BODY_CHARS = 8000;
 export const UNANSWERED_THRESHOLD_HOURS = 48;
 
 export const MINUTES_SAVED_PER_RATE_REQUEST = 15;

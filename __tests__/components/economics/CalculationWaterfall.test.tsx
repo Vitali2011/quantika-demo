@@ -71,8 +71,8 @@ describe('CalculationWaterfall — DA DataQualityBadge (W6a)', () => {
   });
 
   it('W6a: no war-risk stale badge when war_risk_rate_date is fresh (within 90 days)', () => {
-    // Use a date clearly within 90 days of test execution (2026-04-12 = ~60 days before 2026-06-11)
-    const breakdown = makeBreakdown({ war_risk_usd: 5000, war_risk_rate_date: '2026-04-12' });
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const breakdown = makeBreakdown({ war_risk_usd: 5000, war_risk_rate_date: thirtyDaysAgo });
     render(<CalculationWaterfall breakdown={breakdown} />);
     // tier='live' → badge suppressed (CalculationWaterfall only shows badge when tier !== 'live')
     expect(screen.queryByTestId('war-risk-rate-badge')).toBeNull();
