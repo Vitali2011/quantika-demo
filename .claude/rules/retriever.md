@@ -1,3 +1,8 @@
+---
+paths:
+  - lib/knowledge/embeddings/retriever*.ts
+---
+
 # Rules: lib/knowledge/embeddings/retriever\*
 
 ## Invariants
