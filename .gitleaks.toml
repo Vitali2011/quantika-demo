@@ -1,0 +1,152 @@
+title = "quantika secret rules"
+
+# Default ruleset (~170 provider signatures) PLUS rules for the classes that
+# actually leaked here. Both real incidents were invisible to the defaults:
+#   2026-04-09  an 8-char VPS root password — no provider shape, nothing matched
+#   2026-06-14  a Claude Code OAuth token   — no detector exists for sk-ant-oat01
+[extend]
+useDefault = true
+
+# --- Credentials with no provider shape -------------------------------------
+
+[[rules]]
+id = "sshpass-inline-password"
+description = "sshpass invoked with an inline password"
+regex = '''sshpass\s+(?:-[a-zA-Z]+\s+)*-p\s*['"]?([^'"\s]{5,})['"]?'''
+secretGroup = 1
+keywords = ["sshpass"]
+tags = ["password", "ssh"]
+
+[[rules]]
+id = "url-embedded-credentials"
+description = "credentials embedded in a URL (user:pass@host)"
+regex = '''[a-zA-Z][a-zA-Z0-9+.\-]{1,15}://[^/\s:@'"]{2,}:([^/\s:@'"]{4,})@[^/\s:@'"]+'''
+secretGroup = 1
+keywords = ["://"]
+tags = ["password", "url"]
+
+[[rules]]
+id = "password-literal-assignment"
+description = "password/passwd/pwd assigned a literal value"
+regex = '''(?i)\b(?:password|passwd|pwd|pass)\b\s*[:=]{1,2}\s*['"]([^'"\s$#{}<>]{8,80})['"]'''
+secretGroup = 1
+keywords = ["password", "passwd", "pwd", "pass"]
+tags = ["password"]
+
+[[rules]]
+id = "shell-password-env"
+description = "password or token exported as a shell/env variable"
+regex = '''(?i)^\s*(?:export\s+)?[A-Z0-9_]*(?:PASS|PASSWORD|PASSWD|SECRET|TOKEN)[A-Z0-9_]*\s*=\s*['"]?([^'"\s$#{}<>]{8,120})['"]?\s*$'''
+secretGroup = 1
+keywords = ["PASS", "PASSWORD", "PASSWD", "SECRET", "TOKEN"]
+tags = ["password", "env"]
+
+[[rules]]
+id = "basic-auth-header-literal"
+description = "hardcoded HTTP Basic auth credential"
+regex = '''(?i)(?:authorization|www-authenticate)\s*[:=]\s*['"]?Basic\s+([A-Za-z0-9+/]{12,}={0,2})'''
+secretGroup = 1
+keywords = ["basic"]
+tags = ["password", "http"]
+
+[[rules]]
+id = "caddy-basicauth-bcrypt"
+description = "Caddy/htpasswd bcrypt credential"
+regex = '''\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}'''
+keywords = ["$2a$", "$2b$", "$2y$"]
+tags = ["password", "hash"]
+
+[[rules]]
+id = "db-connection-string"
+description = "database connection string with credentials"
+regex = '''(?i)(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis|amqp|mssql)://[^/\s:@'"]+:([^/\s:@'"]{4,})@'''
+secretGroup = 1
+keywords = ["postgres", "mysql", "mongodb", "redis", "amqp", "mssql"]
+tags = ["database"]
+
+# --- Agent credentials: no upstream detector covers these --------------------
+
+[[rules]]
+id = "claude-code-oauth"
+description = "Claude Code OAuth access or refresh token"
+regex = '''sk-ant-(?:oat|ort)01-[A-Za-z0-9_-]{80,}'''
+keywords = ["sk-ant-"]
+tags = ["anthropic", "oauth"]
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API key"
+regex = '''sk-ant-api\d{2}-[A-Za-z0-9_-]{80,}'''
+keywords = ["sk-ant-"]
+tags = ["anthropic"]
+
+# Path rule, not content: an agent home directory must never enter a repo,
+# whether or not a detector recognises what is inside it.
+[[rules]]
+id = "agent-home-committed"
+description = "agent home directory or credential store committed"
+path = '''(?:^|/)(?:\.credentials\.json|\.claude\.json(?:\.backup.*)?|\.jcfg/.*)$'''
+tags = ["agent-home"]
+
+# --- Our providers -----------------------------------------------------------
+
+[[rules]]
+id = "allegro-api-credential"
+description = "Allegro API client credential"
+regex = '''(?i)allegro[_\-]?(?:client[_\-]?(?:id|secret)|refresh[_\-]?token|access[_\-]?token)\s*[:=]\s*['"]?([A-Za-z0-9_\-]{20,})['"]?'''
+secretGroup = 1
+keywords = ["allegro"]
+tags = ["allegro"]
+
+[[rules]]
+id = "telegram-bot-token"
+description = "Telegram bot token"
+regex = '''\b(\d{8,10}:AA[A-Za-z0-9_\-]{33})\b'''
+keywords = [":AA"]
+tags = ["telegram"]
+
+[[rules]]
+id = "brightdata-credential"
+description = "Bright Data proxy credential"
+regex = '''(?i)brd-customer-[A-Za-z0-9_\-]+(?:-zone-[A-Za-z0-9_\-]+)?:([A-Za-z0-9]{8,})'''
+secretGroup = 1
+keywords = ["brd-customer"]
+tags = ["brightdata"]
+
+[[rules]]
+id = "smtp-credential"
+description = "SMTP credential assignment"
+regex = '''(?i)\bsmtp[_\-]?(?:pass(?:word)?|pwd|secret|key)\s*[:=]\s*['"]?([^'"\s$#{}<>]{6,})['"]?'''
+secretGroup = 1
+keywords = ["smtp"]
+tags = ["smtp"]
+
+# --- Allowlists: the known false-positive generators -------------------------
+# Measured against 113 days of history across four repos. Without these the
+# signal is buried in pytest/jest fixtures and documentation examples.
+
+[[allowlists]]
+description = "placeholder and example values"
+regexTarget = "secret"
+regexes = [
+  '''(?i)^(?:your|my|the)[_\-]?''',
+  '''(?i)(?:example|sample|dummy|placeholder|changeme|change[_\-]?me|redacted|removed|masked|fake|test123|xxx+|yyy+|zzz+|todo|tbd|none|null|nil|undefined|unset|empty)''',
+  '''(?i)^(?:abc|foo|bar|baz|qwerty|secret|password|passwd|pass|token|apikey|api[_\-]?key|s3cr3t|hunter2|admin|user|root)$''',
+  '''^\$\{?[A-Za-z_]''',
+  '''^<[^>]+>$''',
+  '''^\.{3,}$''',
+  '''^\*+$''',
+]
+
+[[allowlists]]
+description = "documentation, lockfiles and vendored dependencies"
+regexTarget = "match"
+paths = [
+  '''(?i).*\.lock$''',
+  '''(?i).*(?:package-lock\.json|yarn\.lock|pnpm-lock\.yaml|poetry\.lock|Cargo\.lock|uv\.lock)$''',
+  '''(?i)(?:^|/)node_modules/''',
+  '''(?i)(?:^|/)\.venv/''',
+  '''(?i)(?:^|/)vendor/''',
+  '''(?i).*\.min\.(?:js|css)$''',
+  '''(?i).*\.(?:map|woff2?|ttf|eot|png|jpe?g|gif|ico|pdf|mp4|zip|gz|tgz)$''',
+]

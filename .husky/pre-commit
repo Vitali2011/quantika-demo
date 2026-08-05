@@ -1,2 +1,22 @@
 #!/bin/sh
 npx lint-staged
+
+# Secret scan. Fails closed: if gitleaks is missing the commit is refused,
+# because a scanner that silently does nothing is worse than none.
+if ! command -v gitleaks >/dev/null 2>&1; then
+	echo "pre-commit: gitleaks is not installed — commit refused." >&2
+	echo "            install it with:  brew install gitleaks" >&2
+	exit 1
+fi
+
+echo "==> pre-commit: scanning staged changes for secrets..."
+if ! gitleaks git --staged --pre-commit --redact \
+	--config .gitleaks.toml --no-banner --exit-code 1; then
+	echo "" >&2
+	echo "pre-commit: a secret was found in the staged changes — commit refused." >&2
+	echo "            Move the value out of the repo (.gitignore says where)," >&2
+	echo "            then stage again. If it is genuinely a placeholder, add it" >&2
+	echo "            to the allowlist in .gitleaks.toml, do not bypass the hook." >&2
+	exit 1
+fi
+echo "==> pre-commit: clean"
