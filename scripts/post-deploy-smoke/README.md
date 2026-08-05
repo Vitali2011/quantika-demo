@@ -72,6 +72,31 @@ auto-merge.yml → repository_dispatch (prod-deploy)
 - Route retry: `SMOKE_ROUTE_ATTEMPTS=3`, `SMOKE_ROUTE_BACKOFF_MS=3000` (линейный backoff).
 - Console-error фильтр в `smoke.mjs` — расширь regex для новых noise patterns.
 
+## t60 bake window
+
+После **PASS** immediate smoke, `post-deploy-smoke.yml` по SSH запускает на dev-vps
+`schedule-t60.sh <pr#> <sha>`, который:
+
+1. пишет `<sha>` в глобальный маркер `~/orchestrator-state/quantika-demo/post-deploy-checks/.deployed-sha`
+   (источник правды «какой SHA задеплоен последним») и в per-PR копию `t60-scheduled-sha`;
+2. останавливает предыдущий таймер (если есть) и планирует новый транзиентный systemd-таймер
+   с фиксированным именем `quantika-t60-smoke` на `--on-active=60min`.
+
+Ожидание идёт **на dev-vps**, не в GH runner'е — раннер завершается сразу, Actions-минуты
+на час простоя не тратятся. Новый деплой заменяет ещё не сработавший таймер (тот же unit name).
+
+Через 60 минут таймер запускает `run-t60.sh <pr#> <sha>`:
+
+- если текущий `.deployed-sha` **не совпадает** с `<sha>` (пришёл более новый деплой) →
+  `overall:"superseded"` — нейтральный вердикт, не FAIL;
+- иначе — переиспользует `smoke.mjs` **без изменений** (тот же прогон 5 routes + health-gate),
+  дополняет результат полями `bake_window`/`scheduled_sha`/`superseded` и пишет в
+  `~/orchestrator-state/quantika-demo/post-deploy-checks/<pr#>/summary-t60.json`
+  (рядом с immediate `summary.json`, не затирая его).
+
+Сравнение `summary-t60.json` с `summary.json` / prod-логами — вне этого репо, делает
+orchestrator.
+
 ## Phase 3 (orchestrator-day integration)
 
 Orchestrator-day skill v3.15.0+ читает `~/orchestrator-state/quantika-demo/post-deploy-checks/<pr#>/summary.json` на wake и выдаёт первой строкой:

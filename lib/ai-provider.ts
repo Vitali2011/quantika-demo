@@ -508,7 +508,7 @@ export function getModel(scope: string): string {
     case 'bedrock':
       return process.env.BEDROCK_MODEL_ID ?? 'anthropic.claude-opus-4-7';
     case 'claude-cli':
-      return 'claude-opus-4-7';
+      return 'claude-opus-4-8';
     case 'openai':
     default:
       return process.env.AI_MODEL_HEAVY ?? 'gpt-5.5';

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  *
  * DDCheckRow — thin 'use client' disclosure leaf for the Due-Diligence panel.
- * Behavioral: «Подробнее» toggles the server-built detail + source badge; rows
+ * Behavioral: Details button toggles the server-built detail + source badge; rows
  * without a detail render no toggle (honesty gap rows stay flat).
  */
 import '@testing-library/jest-dom';
@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event';
 import { DDCheckRow } from '@/components/match/DDCheckRow';
 
 describe('DDCheckRow', () => {
-  it('renders label + evidence always; detail hidden until «Подробнее» clicked', async () => {
+  it('renders label + evidence always; detail hidden until Details clicked', async () => {
     const user = userEvent.setup();
     render(
       <DDCheckRow
@@ -29,7 +29,7 @@ describe('DDCheckRow', () => {
     // detail body NOT in DOM before toggle
     expect(screen.queryByTestId('dd-check-detail')).not.toBeInTheDocument();
 
-    // click «Подробнее» → detail + source badge appear
+    // click Details → detail + source badge appear
     await user.click(screen.getByTestId('dd-check-toggle'));
     const body = screen.getByTestId('dd-check-detail');
     expect(body).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('DDCheckRow', () => {
     expect(screen.queryByTestId('dd-check-detail')).not.toBeInTheDocument();
   });
 
-  it('draft derivation: full formula steps render under «Подробнее» (DWT, formula, laden, margin)', async () => {
+  it('draft derivation: full formula steps render under Details (DWT, formula, laden, margin)', async () => {
     const user = userEvent.setup();
     render(
       <DDCheckRow
@@ -95,7 +95,7 @@ describe('DDCheckRow', () => {
     expect(screen.getByTestId('dd-check-detail')).toHaveTextContent('plain');
   });
 
-  it('detail present but source null → detail shows, no «Источник» badge', async () => {
+  it('detail present but source null → detail shows, no Source badge', async () => {
     const user = userEvent.setup();
     render(
       <DDCheckRow label="X" state="info" evidence="ev" detail="just an explanation" source={null} />,
