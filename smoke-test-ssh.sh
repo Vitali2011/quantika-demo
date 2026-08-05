@@ -10,7 +10,6 @@ set -euo pipefail
 # ── Настройки подключения ────────────────────────────────────────────────────
 VPS_HOST="185.249.225.169"
 VPS_USER="root"
-VPS_PASS="${VPS_PASS:-Vit15932}"          # можно переопределить: VPS_PASS=xxx ./smoke-test-ssh.sh
 APP_PORT=3000
 APP_DIR="/root/quantika-demo"
 DB_PATH="${APP_DIR}/data/sessions.db"
@@ -30,7 +29,7 @@ header(){ echo -e "\n${BOLD}${CYAN}━━━ $1 ━━━${RESET}"; }
 
 # ── SSH хелпер ───────────────────────────────────────────────────────────────
 SSH() {
-  sshpass -p "$VPS_PASS" ssh -o StrictHostKeyChecking=no \
+  ssh \
     -o ConnectTimeout=10 -o LogLevel=ERROR \
     "${VPS_USER}@${VPS_HOST}" "$@"
 }

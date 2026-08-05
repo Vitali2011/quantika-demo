@@ -3,14 +3,13 @@
 # Quantika Demo — Extended Smoke Test L8-L13
 # Phase 3 audit regression & invariant checks (2026-04-17)
 # Запускать: bash smoke-test-extended.sh
-# Зависимости: sshpass, jq (на VPS: python3, sqlite3)
+# Зависимости: jq (доступ к VPS — по ssh-ключу из ~/.ssh/config) (на VPS: python3, sqlite3)
 # =============================================================================
 
 set -uo pipefail
 
 VPS_HOST="185.249.225.169"
 VPS_USER="root"
-VPS_PASS="${VPS_PASS:-Vit15932}"
 APP_DIR="/root/quantika-demo"
 DB_PATH="${APP_DIR}/data/sessions.db"
 
@@ -27,7 +26,7 @@ info()   { echo -e "${CYAN}  ℹ  ${RESET}$1"; }
 header() { echo -e "\n${BOLD}${CYAN}━━━ $1 ━━━${RESET}"; }
 
 SSH() {
-  sshpass -p "$VPS_PASS" ssh -o StrictHostKeyChecking=no \
+  ssh \
     -o ConnectTimeout=10 -o LogLevel=ERROR \
     "${VPS_USER}@${VPS_HOST}" "$@"
 }
