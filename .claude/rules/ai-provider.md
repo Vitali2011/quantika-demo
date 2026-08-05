@@ -1,3 +1,8 @@
+---
+paths:
+  - lib/ai-provider.ts
+---
+
 # Rules: lib/ai-provider.ts
 
 ## Invariants
