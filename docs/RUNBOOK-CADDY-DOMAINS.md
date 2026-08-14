@@ -22,6 +22,14 @@ Key files on the VPS:
 
 Tunnel: `quantika-prod`, id `9f780626-d43c-4969-90fc-af94bffd67c6`.
 
+**The VPS is the source of truth, not this repo.** Verified 2026-08-14: the live
+`demo.quantika.org` block is `tls internal` + `encode gzip zstd` +
+`header /api/* Cache-Control "no-store"` + a plain `reverse_proxy localhost:3000`.
+Two repo files describe the same host — `ops/Caddyfile.demo.quantika.org` and
+`ops/caddy/Caddyfile.demo` — and neither matches it: the latter also carries the
+SSE fixes (compression exclusion, `flush_interval -1`) that were never applied on
+the VPS. Copying either file over the live one changes behaviour; diff first.
+
 ## TLS
 
 Caddy serves **`tls internal`** (Caddy's local CA) on both hosts and cloudflared
