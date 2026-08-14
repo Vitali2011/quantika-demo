@@ -1,4 +1,7 @@
 demo.quantika.org {
+    # Caddy local CA: the origin has no inbound 80/443 (traffic arrives through
+    # Cloudflare Tunnel), so ACME cannot run. See docs/RUNBOOK-CADDY-DOMAINS.md
+    tls internal
     # Exclude SSE path from compression — gzip/zstd buffers the infinite stream
     # before flushing, causing a proxy timeout → HTTP 503. (#626)
     @compressible {
