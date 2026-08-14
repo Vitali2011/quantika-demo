@@ -1,0 +1,21 @@
+# Reference copy of /etc/cloudflared/config.yml on 185.249.225.169.
+# Edit the live file on the VPS, then mirror the change here.
+# The credentials file it points at is a secret and is NOT in this repo.
+# See docs/RUNBOOK-CADDY-DOMAINS.md for the publish/rollback procedure.
+
+tunnel: 9f780626-d43c-4969-90fc-af94bffd67c6
+credentials-file: /root/.cloudflared/9f780626-d43c-4969-90fc-af94bffd67c6.json
+originRequest:
+  noTLSVerify: true
+  connectTimeout: 30s
+
+ingress:
+  - hostname: demo.quantika.org
+    service: https://localhost:443
+    originRequest:
+      originServerName: demo.quantika.org
+  - hostname: allegro.quantika.org
+    service: https://localhost:443
+    originRequest:
+      originServerName: allegro.quantika.org
+  - service: http_status:404
