@@ -38,13 +38,24 @@ SMOKE_URL="${QD_SMOKE_URL:-http://localhost:3000/}"
 LOCK_FILE="${QD_LOCK_FILE:-/tmp/deploy-${SERVICE}.lock}"
 SHA_FILE="$HOME/.last-deployed-sha-${SERVICE}"
 SHA_BACKUP="${SHA_FILE}.bak"
+RUNTIME_SHA_FILE="$REPO_DIR/.deploy-sha"
 CANONICAL_PATH="ops/scripts/deploy-quantika-demo.sh"
 
 log()  { echo "[$(date '+%H:%M:%S')] deploy-${SERVICE}: $*"; }
 fail() { log "FATAL: $*"; exit 1; }
 
+record_runtime_sha() {
+  local sha="$1" tmp="${RUNTIME_SHA_FILE}.tmp.$$"
+  [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || fail "runtime SHA must be canonical"
+  printf '%s\n' "$sha" > "$tmp" || fail "cannot write runtime SHA marker"
+  mv -f "$tmp" "$RUNTIME_SHA_FILE" || fail "cannot publish runtime SHA marker"
+}
+
 ARG1="${1:-}"
 [[ -z "$ARG1" ]] && fail "usage: $0 <sha> | --rollback"
+if [[ "$ARG1" != "--rollback" && ! "$ARG1" =~ ^[0-9a-f]{40}$ ]]; then
+  fail "deploy target must be exactly 40 lowercase hex characters"
+fi
 
 # ── Self-update from repo copy ───────────────────────────────────────────────
 # mv is rename(2): atomic, and a concurrently running old copy keeps its inode —
@@ -70,11 +81,8 @@ flock -n 200 || fail "another deploy in progress (lock $LOCK_FILE)"
 
 cd "$REPO_DIR" || fail "cannot cd to $REPO_DIR"
 
-# restart + 30s warmup + health retry (6 × 10s = 60s window)
-restart_and_health() {
-  systemctl restart "$SERVICE" || { log "systemctl restart failed"; return 1; }
-  log "warmup 30s..."
-  sleep 30
+# health retry (6 × 10s = 60s window)
+check_health() {
   log "health check $HEALTH_URL (6 retries × 10s)..."
   local i
   for i in 1 2 3 4 5 6; do
@@ -86,6 +94,14 @@ restart_and_health() {
     sleep 10
   done
   return 1
+}
+
+# restart + 30s warmup + health retry
+restart_and_health() {
+  systemctl restart "$SERVICE" || { log "systemctl restart failed"; return 1; }
+  log "warmup 30s..."
+  sleep 30
+  check_health
 }
 
 smoke_root() {
@@ -139,7 +155,11 @@ swap_back_old() {
 # a restore here would leave prod 500ing indefinitely (#940 review FINDING-001).
 flip_failed() {
   log "FLIP FAILED ($1) — restoring previous artifacts immediately"
-  git reset --hard "$PREV_SHA" || log "WARN: git reset to PREV_SHA failed"
+  if git reset --hard "$PREV_SHA"; then
+    record_runtime_sha "$PREV_SHA"
+  else
+    log "WARN: git reset to PREV_SHA failed"
+  fi
   restore_artifact .next || log "WARN: no .next.old to restore"
   restore_artifact node_modules || log "WARN: no node_modules.old to restore"
   if restart_and_health; then
@@ -161,6 +181,7 @@ if [[ "$ARG1" == "--rollback" ]]; then
     NODE_OPTIONS='--max-old-space-size=8192' npm run build || fail "rollback build failed"
   fi
   if restart_and_health; then
+    record_runtime_sha "$TARGET_SHA"
     echo "$TARGET_SHA" > "$SHA_FILE"
     log "rollback OK — /health=200 on $TARGET_SHA"
     exit 1
@@ -171,18 +192,36 @@ if [[ "$ARG1" == "--rollback" ]]; then
 fi
 
 # ── Normal deploy ────────────────────────────────────────────────────────────
-GITHUB_SHA="$ARG1"
-log "deploy SHA=$GITHUB_SHA"
+REQUESTED_SHA="$ARG1"
+log "deploy SHA=$REQUESTED_SHA"
 
 PREV_SHA=$(git rev-parse HEAD) && [[ -n "$PREV_SHA" ]] || fail "cannot resolve current HEAD"
-echo "$PREV_SHA" > "$SHA_BACKUP"
-log "PREV_SHA=$PREV_SHA saved to $SHA_BACKUP"
 
 git fetch origin main || fail "git fetch failed"
-# Pin the deploy target once: build dir and live dir must flip to the SAME commit
-# even if main moves mid-deploy.
-TARGET_SHA=$(git rev-parse origin/main) || fail "cannot resolve origin/main"
-log "target SHA=$TARGET_SHA (arg was $GITHUB_SHA)"
+ORIGIN_MAIN=$(git rev-parse origin/main) || fail "cannot resolve origin/main"
+TARGET_SHA=$(git rev-parse --verify --quiet "${REQUESTED_SHA}^{commit}") \
+  || fail "requested SHA does not resolve to a commit"
+[[ "$TARGET_SHA" == "$REQUESTED_SHA" ]] \
+  || fail "requested SHA did not resolve exactly"
+git merge-base --is-ancestor "$TARGET_SHA" "$ORIGIN_MAIN" \
+  || fail "requested SHA is not on origin/main"
+
+if [[ "$PREV_SHA" == "$TARGET_SHA" ]]; then
+  log "NOOP: requested SHA is already deployed; verifying health and smoke"
+  record_runtime_sha "$TARGET_SHA"
+  if check_health && smoke_root; then
+    echo "$TARGET_SHA" > "$SHA_FILE"
+    printf 'DEPLOY_RECEIPT_SHA=%s\n' "$TARGET_SHA"
+    exit 0
+  fi
+  fail "exact target is deployed but health or smoke failed"
+fi
+if git merge-base --is-ancestor "$TARGET_SHA" "$PREV_SHA"; then
+  fail "requested SHA is older than current HEAD; refusing a successful stale result"
+fi
+git merge-base --is-ancestor "$PREV_SHA" "$TARGET_SHA" \
+  || fail "current HEAD and requested SHA have diverged"
+log "target SHA=$TARGET_SHA (origin/main is $ORIGIN_MAIN)"
 
 # Stage 1 — build in BUILD_DIR; live dir keeps serving the old version untouched.
 if [[ ! -d "$BUILD_DIR/.git" ]]; then
@@ -200,6 +239,9 @@ log "npm ci (build dir)..."
 log "npm run build (build dir)..."
 ( cd "$BUILD_DIR" && NODE_OPTIONS='--max-old-space-size=8192' npm run build ) || fail "build failed"
 [[ -s "$BUILD_DIR/.next/BUILD_ID" ]] || fail "build produced no .next/BUILD_ID — refusing to deploy"
+
+echo "$PREV_SHA" > "$SHA_BACKUP"
+log "PREV_SHA=$PREV_SHA saved to $SHA_BACKUP"
 
 # Stage 2 — flip live dir: code reset + artifact swap (mv renames, same fs,
 # instant) + restart. The only degraded window is these few seconds.
@@ -219,6 +261,7 @@ log "restart + health + smoke..."
 if ! { restart_and_health && smoke_root; }; then
   log "HEALTH/SMOKE FAILED — auto-rollback to $PREV_SHA"
   git reset --hard "$PREV_SHA" || fail "rollback reset failed (prod broken!)"
+  record_runtime_sha "$PREV_SHA"
   if ! swap_back_old; then
     log "no .old artifacts — rebuilding previous version in place (slow path)"
     npm ci || log "WARN: rollback npm ci failed (continuing)"
@@ -232,6 +275,8 @@ if ! { restart_and_health && smoke_root; }; then
     exit 2
   fi
 fi
+
+record_runtime_sha "$TARGET_SHA"
 
 # Eager schema migration of the served DB (#677): migrate the runtime-configured
 # DB (SESSIONS_DB_PATH=demo-seed.db) at deploy time instead of relying on the
@@ -251,12 +296,11 @@ else
   log "WARN: fx_rates seed failed (non-critical — app healthy)"
 fi
 
-# Success — record what is actually live (pinned TARGET_SHA; arg may be stale
-# if main moved between merge and deploy).
+# Success — prove and record the exact requested checkout.
+DEPLOYED_SHA=$(git rev-parse HEAD) || fail "cannot resolve deployed HEAD"
+[[ "$DEPLOYED_SHA" == "$TARGET_SHA" ]] \
+  || fail "deployed HEAD does not equal requested SHA"
 echo "$TARGET_SHA" > "$SHA_FILE"
-if [[ "$TARGET_SHA" != "$GITHUB_SHA" ]]; then
-  log "DEPLOY OK — $TARGET_SHA live (arg was $GITHUB_SHA, main moved during deploy), /health=200, / smoked"
-else
-  log "DEPLOY OK — $TARGET_SHA live, /health=200, / smoked"
-fi
+log "DEPLOY OK — $TARGET_SHA live, /health=200, / smoked"
+printf 'DEPLOY_RECEIPT_SHA=%s\n' "$DEPLOYED_SHA"
 exit 0
