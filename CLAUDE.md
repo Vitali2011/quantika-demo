@@ -96,6 +96,7 @@ rtk curl <url>             # компактный HTTP (-70%)
 
 ## Секреты
 
-Инструменты Read и Edit не открывают `.env`, `.env.local`, `.env.*.local`, `.env*.stale*` и
-`.env.prod*` — держит `deny` в `.claude/settings.json`. Образцы (`*.example`, `.env.demo`)
-открыты. Скрипт или `grep -r` значение напечатать могут: по файлам секретов их не запускай.
+Инструменты Read и Edit не открывают `.env` и любой `.env.*`, кроме образцов (`.env.example`,
+`.env.*.example`, `.env.demo`) — то же правило, что в `.gitignore`; держит `deny` в
+`.claude/settings.json`. Скрипт или `grep -r` значение напечатать могут: по файлам секретов их
+не запускай.
