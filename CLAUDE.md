@@ -93,3 +93,9 @@ rtk curl <url>             # компактный HTTP (-70%)
 - `lib/ai-provider.ts` → `.claude/rules/ai-provider.md`
 - `lib/knowledge/embeddings/retriever*` → `.claude/rules/retriever.md`
 - `app/api/admin/**` + `middleware.ts` → `.claude/rules/admin-api.md`
+
+## Секреты
+
+Инструменты Read и Edit не открывают `.env`, `.env.local`, `.env.*.local`, `.env*.stale*` и
+`.env.prod*` — держит `deny` в `.claude/settings.json`. Образцы (`*.example`, `.env.demo`)
+открыты. Скрипт или `grep -r` значение напечатать могут: по файлам секретов их не запускай.
