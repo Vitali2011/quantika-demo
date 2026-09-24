@@ -17,19 +17,19 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "npm"
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         id: cache-node-modules
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
       - run: npm ci
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         id: cache-playwright
         with:
           path: ~/.cache/ms-playwright
