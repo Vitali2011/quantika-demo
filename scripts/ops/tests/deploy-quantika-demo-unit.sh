@@ -45,6 +45,10 @@ mkdir -p "$MOCKBIN"
 
 export CMDLOG="$SANDBOX/cmd.log"
 export MOCK_STATE="$SANDBOX/state"
+export TEST_PREV_SHA="1111111111111111111111111111111111111111"
+export TEST_REQUEST_SHA="2222222222222222222222222222222222222222"
+export TEST_MAIN_SHA="3333333333333333333333333333333333333333"
+export TEST_ROLLBACK_SHA="4444444444444444444444444444444444444444"
 
 # git mock: records calls, simulates rev-parse/fetch/clone/reset/show
 cat > "$MOCKBIN/git" <<'EOF'
@@ -55,15 +59,23 @@ DIR=""
 if [ "$1" = "-C" ]; then DIR="$2"; shift 2; fi
 case "$1" in
   rev-parse)
-    case "$2" in
-      HEAD)        echo "prevsha1111111111111111111111111111111111" ;;
-      origin/main) echo "targetsha22222222222222222222222222222222" ;;
-      *)           echo "othersha333333333333333333333333333333333" ;;
+    case "$*" in
+      *origin/main*) echo "$TEST_MAIN_SHA" ;;
+      *"$TEST_REQUEST_SHA"*) echo "$TEST_REQUEST_SHA" ;;
+      *HEAD*) cat "$MOCK_STATE/current_head" ;;
+      *) echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" ;;
     esac ;;
+  merge-base)
+    if [ "$2" = "--is-ancestor" ] \
+      && [ "$3" = "$TEST_REQUEST_SHA" ] \
+      && [ "$4" = "$TEST_PREV_SHA" ]; then
+      exit 1
+    fi
+    exit 0 ;;
   fetch) exit 0 ;;
   remote) echo "git@example.com:fake/repo.git" ;;
   clone) mkdir -p "$3/.git"; exit 0 ;;
-  reset) exit 0 ;;
+  reset) printf '%s\n' "${*: -1}" > "$MOCK_STATE/current_head"; exit 0 ;;
   show)  exit 1 ;;  # self-update path: no repo copy available
   *) exit 0 ;;
 esac
@@ -129,6 +141,10 @@ cat > "$MOCKBIN/curl" <<'EOF'
 echo "curl $*" >> "$CMDLOG"
 case "$*" in
   *"/api/health"*)
+    if [ -n "${EXPECT_HEALTH_SHA:-}" ] \
+      && [ "$(cat "$QD_REPO_DIR/.deploy-sha" 2>/dev/null)" != "$EXPECT_HEALTH_SHA" ]; then
+      exit 23
+    fi
     N=0
     [ -f "$MOCK_STATE/health_count" ] && N=$(cat "$MOCK_STATE/health_count")
     N=$((N+1)); mkdir -p "$MOCK_STATE"; echo "$N" > "$MOCK_STATE/health_count"
@@ -152,6 +168,7 @@ setup_dirs() {
   echo "SOME_VAR=1" > "$SANDBOX/repo/.env.local"
   : > "$CMDLOG"
   echo 0 > "$MOCK_STATE/health_count"
+  echo "$TEST_PREV_SHA" > "$MOCK_STATE/current_head"
 }
 
 run_deploy() {  # args: extra env assignments... — runs script, captures rc+output
@@ -164,7 +181,7 @@ run_deploy() {  # args: extra env assignments... — runs script, captures rc+ou
       QD_SKIP_SELF_UPDATE=1 \
       CMDLOG="$CMDLOG" MOCK_STATE="$MOCK_STATE" \
       "$@" \
-      bash "$SCRIPT" "${DEPLOY_ARG:-somesha}" > "$OUT" 2>&1
+      bash "$SCRIPT" "${DEPLOY_ARG:-$TEST_REQUEST_SHA}" > "$OUT" 2>&1
   RC=$?
 }
 
@@ -173,7 +190,7 @@ lineno() { grep -n "$1" "$CMDLOG" | head -1 | cut -d: -f1; }
 # ── T1: happy path ───────────────────────────────────────────────────────────
 
 setup_dirs
-DEPLOY_ARG="somesha" run_deploy
+DEPLOY_ARG="$TEST_REQUEST_SHA" run_deploy
 
 [[ $RC -eq 0 ]] \
   && pass "T1: happy path exits 0" \
@@ -209,11 +226,15 @@ grep -q "git clone" "$CMDLOG" \
   && pass "T1: build dir bootstrapped via git clone on first run" \
   || fail "T1: no git clone for missing build dir"
 
-[[ "$(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo" 2>/dev/null)" == "targetsha22222222222222222222222222222222" ]] \
+[[ "$(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo" 2>/dev/null)" == "$TEST_REQUEST_SHA" ]] \
   && pass "T1: deployed SHA recorded" \
   || fail "T1: SHA file wrong: $(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo" 2>/dev/null)"
 
-[[ "$(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak" 2>/dev/null)" == "prevsha1111111111111111111111111111111111" ]] \
+[[ "$(cat "$SANDBOX/repo/.deploy-sha" 2>/dev/null)" == "$TEST_REQUEST_SHA" ]] \
+  && pass "T1: public-health runtime SHA marker recorded" \
+  || fail "T1: runtime SHA marker missing or wrong"
+
+[[ "$(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak" 2>/dev/null)" == "$TEST_PREV_SHA" ]] \
   && pass "T1: previous SHA backed up" \
   || fail "T1: SHA backup wrong"
 
@@ -221,9 +242,56 @@ grep -q 'curl.*localhost:3000/$' "$CMDLOG" \
   && pass "T1: / smoke-checked after restart" \
   || fail "T1: no smoke curl of / found"
 
-[[ "$(cat "$SANDBOX/repo/.next.old/.rollback-sha" 2>/dev/null)" == "prevsha1111111111111111111111111111111111" ]] \
+[[ "$(cat "$SANDBOX/repo/.next.old/.rollback-sha" 2>/dev/null)" == "$TEST_PREV_SHA" ]] \
   && pass "T1: .old generation stamped with PREV_SHA (.rollback-sha)" \
   || fail "T1: .rollback-sha marker missing or wrong"
+
+grep -q "git reset --hard $TEST_REQUEST_SHA" "$CMDLOG" \
+  && pass "T1: deploy pins the requested SHA even when origin/main advanced" \
+  || fail "T1: deploy substituted origin/main for the requested SHA"
+
+grep -qx "DEPLOY_RECEIPT_SHA=$TEST_REQUEST_SHA" "$SANDBOX/out.txt" \
+  && pass "T1: exact deployed SHA receipt marker emitted once" \
+  || fail "T1: missing or malformed deployed SHA receipt marker"
+
+# ── T1b: exact idempotence rechecks health/smoke without rebuilding ─────────
+
+setup_dirs
+echo "$TEST_REQUEST_SHA" > "$MOCK_STATE/current_head"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+run_deploy
+
+[[ $RC -eq 0 ]] && ! grep -q "npm " "$CMDLOG" \
+  && grep -q "curl.*localhost:3000/api/health" "$CMDLOG" \
+  && grep -q 'curl.*localhost:3000/$' "$CMDLOG" \
+  && grep -qx "DEPLOY_RECEIPT_SHA=$TEST_REQUEST_SHA" "$SANDBOX/out.txt" \
+  && pass "T1b: exact duplicate is health/smoke checked and receipted" \
+  || fail "T1b: exact duplicate did not follow idempotent receipt path"
+
+[[ "$(cat "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak" 2>/dev/null)" == "$TEST_ROLLBACK_SHA" ]] \
+  && pass "T1b: exact duplicate preserves the rollback backup" \
+  || fail "T1b: exact duplicate overwrote the rollback backup"
+
+# ── T1c: non-canonical SHA input is rejected before mutation ────────────────
+
+setup_dirs
+DEPLOY_ARG="A${TEST_REQUEST_SHA:1}" run_deploy
+if [[ $RC -ne 0 ]] && ! grep -qE "git (fetch|reset)|npm |systemctl" "$CMDLOG" \
+  && ! grep -q "DEPLOY_RECEIPT_SHA=" "$SANDBOX/out.txt"; then
+  pass "T1c: uppercase SHA rejected without mutation or receipt"
+else
+  fail "T1c: uppercase SHA was accepted or mutated state"
+fi
+unset DEPLOY_ARG
+
+# ── T1d: marker changes only after the new runtime is healthy ───────────────
+
+setup_dirs
+echo "$TEST_PREV_SHA" > "$SANDBOX/repo/.deploy-sha"
+run_deploy EXPECT_HEALTH_SHA="$TEST_PREV_SHA"
+[[ $RC -eq 0 && "$(cat "$SANDBOX/repo/.deploy-sha")" == "$TEST_REQUEST_SHA" ]] \
+  && pass "T1d: runtime marker changes only after successful health/smoke" \
+  || fail "T1d: runtime marker changed before cutover health succeeded"
 
 # ── T2: build failure → live untouched, no restart ──────────────────────────
 
@@ -272,6 +340,10 @@ run_deploy HEALTH_FAIL_FIRST_N=6
   && pass "T4: node_modules swapped back" \
   || fail "T4: rollback did not restore node_modules"
 
+[[ "$(cat "$SANDBOX/repo/.deploy-sha" 2>/dev/null)" == "$TEST_PREV_SHA" ]] \
+  && pass "T4: failed deploy restores previous runtime SHA marker" \
+  || fail "T4: runtime SHA marker does not match rolled-back code"
+
 RESTARTS=$(grep -c "systemctl restart" "$CMDLOG")
 [[ "$RESTARTS" -ge 2 ]] \
   && pass "T4: service restarted again after swap-back" \
@@ -300,8 +372,8 @@ setup_dirs
 mkdir -p "$SANDBOX/repo/.next.old" "$SANDBOX/repo/node_modules.old"
 echo "live-older" > "$SANDBOX/repo/.next.old/marker"
 echo "nm-older" > "$SANDBOX/repo/node_modules.old/marker"
-echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/repo/.next.old/.rollback-sha"
-echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/repo/.next.old/.rollback-sha"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
 DEPLOY_ARG="--rollback" run_deploy
 
 [[ $RC -eq 1 ]] \
@@ -316,9 +388,24 @@ grep -q "npm run build" "$CMDLOG" \
   && fail "T6: --rollback rebuilt despite .old artifacts present" \
   || pass "T6: --rollback needed no rebuild"
 
-grep -q "git reset --hard rollbacktarget444444444444444444444444444" "$CMDLOG" \
+grep -q "git reset --hard $TEST_ROLLBACK_SHA" "$CMDLOG" \
   && pass "T6: --rollback reset live repo to backed-up SHA" \
   || fail "T6: --rollback did not git reset to backup SHA"
+
+[[ "$(cat "$SANDBOX/repo/.deploy-sha" 2>/dev/null)" == "$TEST_ROLLBACK_SHA" ]] \
+  && pass "T6: manual rollback updates runtime SHA marker" \
+  || fail "T6: manual rollback left stale runtime SHA marker"
+
+# ── T6b: failed slow rollback keeps the currently served SHA marker ─────────
+
+setup_dirs
+echo "$TEST_PREV_SHA" > "$SANDBOX/repo/.deploy-sha"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+DEPLOY_ARG="--rollback" run_deploy FAIL_BUILD=1
+[[ $RC -ne 0 && "$(cat "$SANDBOX/repo/.deploy-sha")" == "$TEST_PREV_SHA" ]] \
+  && pass "T6b: failed rollback leaves the served runtime SHA marker unchanged" \
+  || fail "T6b: failed rollback published a SHA that never became healthy"
+unset DEPLOY_ARG
 
 # ── T7: mv of build .next fails mid-flip → restore + restart, never bare exit ─
 
@@ -369,7 +456,7 @@ mkdir -p "$SANDBOX/repo/.next.old" "$SANDBOX/repo/node_modules.old"
 echo "live-older" > "$SANDBOX/repo/.next.old/marker"
 echo "nm-older" > "$SANDBOX/repo/node_modules.old/marker"
 echo "DIFFERENT-generation-sha-555555555555555" > "$SANDBOX/repo/.next.old/.rollback-sha"
-echo "rollbacktarget444444444444444444444444444" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
+echo "$TEST_ROLLBACK_SHA" > "$SANDBOX/home/.last-deployed-sha-quantika-demo.bak"
 DEPLOY_ARG="--rollback" run_deploy
 
 grep -q "npm run build" "$CMDLOG" \

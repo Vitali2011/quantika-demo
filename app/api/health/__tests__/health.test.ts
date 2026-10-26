@@ -8,6 +8,16 @@ import { getSessionCount } from '@/lib/session';
 const mockedGetSessionCount = getSessionCount as jest.MockedFunction<typeof getSessionCount>;
 
 describe('GET /api/health', () => {
+  const originalGitSha = process.env.APP_GIT_SHA;
+
+  afterEach(() => {
+    if (originalGitSha === undefined) {
+      delete process.env.APP_GIT_SHA;
+    } else {
+      process.env.APP_GIT_SHA = originalGitSha;
+    }
+  });
+
   it('status-200: returns HTTP 200', async () => {
     const response = await GET();
     expect(response.status).toBe(200);
@@ -37,6 +47,20 @@ describe('GET /api/health', () => {
     const response = await GET();
     const body = await response.json();
     expect(body.version).toBe('0.1.0');
+  });
+
+  it('git-sha-field: returns one exact deployed commit', async () => {
+    process.env.APP_GIT_SHA = 'c'.repeat(40);
+    const response = await GET();
+    const body = await response.json();
+    expect(body.git_sha).toBe('c'.repeat(40));
+  });
+
+  it('git-sha-field: rejects an unchecked runtime value', async () => {
+    process.env.APP_GIT_SHA = 'main';
+    const response = await GET();
+    const body = await response.json();
+    expect(body.git_sha).toBe('unknown');
   });
 
   it('no-auth: handler without cookies returns 200, not 401', async () => {
